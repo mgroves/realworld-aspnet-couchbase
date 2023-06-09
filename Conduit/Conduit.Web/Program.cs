@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Couchbase.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
+using Microsoft.Extensions.Configuration;
 
 namespace Conduit.Web
 {
@@ -81,6 +83,8 @@ namespace Conduit.Web
                     };
                 });
 
+            builder.Services.AddCouchbase(builder.Configuration.GetSection("Couchbase"));
+
             // ****************************************************
 
             var app = builder.Build();
@@ -101,6 +105,12 @@ namespace Conduit.Web
             app.MapControllers();
 
             app.Run();
+
+            // Add the following line to close the Couchbase connection inside the app.Run() method at the end of Program.cs
+            app.Lifetime.ApplicationStopped.Register(() =>
+            {
+                app.Services.GetRequiredService<ICouchbaseLifetimeService>().Close();
+            });
         }
     }
 }

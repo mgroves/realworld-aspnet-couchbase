@@ -329,7 +329,6 @@ ASALocalRun/
 # MFractors (Xamarin productivity tool) working folder 
 .mfractor/
 Config.Private.cs
-/couchbasetwitchbot
-/MattsTwitchBot.Web/appsettings.Release.json
+appsettings.Release.json
 appsettings.Development.json
-/MattsTwitchBot.Web/appsettings.Production.json
+appsettings.Production.json
