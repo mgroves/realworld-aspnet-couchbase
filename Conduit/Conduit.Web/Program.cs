@@ -4,6 +4,8 @@ using System.Text;
 using Couchbase.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Hosting;
+using Conduit.Web.Services;
 
 namespace Conduit.Web
 {
@@ -83,6 +85,8 @@ namespace Conduit.Web
                     };
                 });
 
+            builder.Services.AddTransient<AuthService>();
+            builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<Program>());
             builder.Services.AddCouchbase(builder.Configuration.GetSection("Couchbase"));
 
             // ****************************************************
