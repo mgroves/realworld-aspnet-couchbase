@@ -332,3 +332,4 @@ Config.Private.cs
 appsettings.Release.json
 appsettings.Development.json
 appsettings.Production.json
+/Conduit/migrateup.bat
