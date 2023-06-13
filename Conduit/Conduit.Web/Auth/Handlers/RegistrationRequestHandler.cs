@@ -3,6 +3,7 @@ using Conduit.Web.Auth.ViewModels;
 using Conduit.Web.Models;
 using Couchbase.Core.Exceptions.KeyValue;
 using Couchbase.Extensions.DependencyInjection;
+using FluentValidation;
 using MediatR;
 
 namespace Conduit.Web.Auth.Handlers;
@@ -11,15 +12,27 @@ public class RegistrationRequestHandler : IRequestHandler<RegistrationRequest, R
 {
     private readonly IBucketProvider _bucketProvider;
     private readonly IAuthService _authService;
+    private readonly IValidator<RegistrationRequest> _validator;
 
-    public RegistrationRequestHandler(IBucketProvider bucketProvider, IAuthService authService)
+    public RegistrationRequestHandler(IBucketProvider bucketProvider, IAuthService authService, IValidator<RegistrationRequest> validator)
     {
         _bucketProvider = bucketProvider;
         _authService = authService;
+        _validator = validator;
     }
 
     public async Task<RegistrationResult> Handle(RegistrationRequest request, CancellationToken cancellationToken)
     {
+        // validation
+        var result = await _validator.ValidateAsync(request, cancellationToken);
+        if (!result.IsValid)
+        {
+            return new RegistrationResult
+            {
+                ValidationErrors = result.Errors
+            };
+        }
+        
         // insert this registration into database
         var bucket = await _bucketProvider.GetBucketAsync("Conduit");
         var collection = await bucket.CollectionAsync("Users");

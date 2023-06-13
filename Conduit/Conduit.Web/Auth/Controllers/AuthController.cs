@@ -31,8 +31,14 @@ public class AuthController : Controller
         var registrationResult = await _mediator.Send(new RegistrationRequest(model));
 
         if (registrationResult.UserAlreadyExists)
-            return Forbid();
+            return Forbid("User already exists.");
 
+        if (registrationResult.ValidationErrors?.Any() ?? false)
+        {
+            // TODO: turn all this string.join noise into an extension method
+            return UnprocessableEntity(string.Join(",",registrationResult.ValidationErrors.Select(e => e.ErrorMessage)));
+        }
+        
         return Ok(new { user = registrationResult.UserView });
     }
 }

@@ -22,7 +22,7 @@ public class Tests
             
             _authServiceMock = new Mock<IAuthService>();
 
-            _loginHandler = new LoginRequestHandler(BucketProviderMock.Object, _authServiceMock.Object);
+            _loginHandler = new LoginRequestHandler(BucketProviderMock.Object, _authServiceMock.Object, new LoginRequestValidator());
         }
 
         [Test]
@@ -76,7 +76,7 @@ public class Tests
         }
 
         [Test]
-        public async Task Handle_MissingCredentials_ReturnsUnAuthorized()
+        public async Task Handle_UserDoesntExist_ReturnsUnAuthorized()
         {
             // arrange
             // setup the login information submitted through the API
@@ -142,6 +142,58 @@ public class Tests
             // assert
             Assert.That(result, Is.Not.Null);
             Assert.That(result.IsUnauthorized, Is.True);
-        }        
+        }
+
+        [TestCase("", "Email address must not be empty.")]
+        [TestCase(null, "Email address must not be empty.")]
+        public async Task Handle_EmailEmpty_ReturnsErrorMessages(string email, string message)
+        {
+            // arrange
+            // setup the login information submitted through the API
+            var loginSubmitModel = new LoginSubmitModel
+            {
+                User = new LoginUserViewModel
+                {
+                    Email = email,
+                    Password = "doesntmatter"
+                }
+            };
+            var request = new LoginRequest(loginSubmitModel);
+
+            // act
+            var result = await _loginHandler.Handle(request, CancellationToken.None);
+
+            // assert
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.ValidationErrors, Is.Not.Null);
+            Assert.That(result.ValidationErrors.Any(), Is.True);
+            Assert.That(result.ValidationErrors.First().ErrorMessage, Is.EqualTo(message));
+        }
+
+        [TestCase("", "Password must not be empty.")]
+        [TestCase(null, "Password must not be empty.")]
+        public async Task Handle_PasswordEmpty_ReturnsErrorMessages(string password, string message)
+        {
+            // arrange
+            // setup the login information submitted through the API
+            var loginSubmitModel = new LoginSubmitModel
+            {
+                User = new LoginUserViewModel
+                {
+                    Email = "validemail@balloons.gov",
+                    Password = password
+                }
+            };
+            var request = new LoginRequest(loginSubmitModel);
+
+            // act
+            var result = await _loginHandler.Handle(request, CancellationToken.None);
+
+            // assert
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.ValidationErrors, Is.Not.Null);
+            Assert.That(result.ValidationErrors.Any(), Is.True);
+            Assert.That(result.ValidationErrors.First().ErrorMessage, Is.EqualTo(message));
+        }
     }
 }
