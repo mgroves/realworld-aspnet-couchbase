@@ -1,9 +1,9 @@
-﻿using Conduit.Web.Requests.Auth;
-using Conduit.Web.ViewModels;
+﻿using Conduit.Web.Auth.Handlers;
+using Conduit.Web.Auth.ViewModels;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Conduit.Web.Controllers;
+namespace Conduit.Web.Auth.Controllers;
 
 public class AuthController : Controller
 {

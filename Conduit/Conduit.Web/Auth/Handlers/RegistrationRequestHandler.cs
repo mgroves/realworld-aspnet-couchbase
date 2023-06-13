@@ -1,18 +1,18 @@
-﻿using Conduit.Web.Models;
-using Conduit.Web.Services;
-using Conduit.Web.ViewModels;
+﻿using Conduit.Web.Auth.Services;
+using Conduit.Web.Auth.ViewModels;
+using Conduit.Web.Models;
 using Couchbase.Core.Exceptions.KeyValue;
 using Couchbase.Extensions.DependencyInjection;
 using MediatR;
 
-namespace Conduit.Web.Requests.Auth;
+namespace Conduit.Web.Auth.Handlers;
 
 public class RegistrationRequestHandler : IRequestHandler<RegistrationRequest, RegistrationResult>
 {
     private readonly IBucketProvider _bucketProvider;
-    private readonly AuthService _authService;
+    private readonly IAuthService _authService;
 
-    public RegistrationRequestHandler(IBucketProvider bucketProvider, AuthService authService)
+    public RegistrationRequestHandler(IBucketProvider bucketProvider, IAuthService authService)
     {
         _bucketProvider = bucketProvider;
         _authService = authService;

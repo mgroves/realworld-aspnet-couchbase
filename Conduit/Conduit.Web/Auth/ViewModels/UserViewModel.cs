@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
-namespace Conduit.Web.ViewModels
+﻿namespace Conduit.Web.Auth.ViewModels
 {
     public record UserViewModel
     {

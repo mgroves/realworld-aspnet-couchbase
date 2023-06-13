@@ -1,17 +1,17 @@
-﻿using Conduit.Web.Models;
-using Conduit.Web.Services;
-using Conduit.Web.ViewModels;
+﻿using Conduit.Web.Auth.Services;
+using Conduit.Web.Auth.ViewModels;
+using Conduit.Web.Models;
 using Couchbase.Extensions.DependencyInjection;
 using MediatR;
 
-namespace Conduit.Web.Requests.Auth;
+namespace Conduit.Web.Auth.Handlers;
 
 public class LoginRequestHandler : IRequestHandler<LoginRequest, LoginResult>
 {
     private readonly IBucketProvider _bucketProvider;
-    private readonly AuthService _authService;
+    private readonly IAuthService _authService;
 
-    public LoginRequestHandler(IBucketProvider bucketProvider, AuthService authService)
+    public LoginRequestHandler(IBucketProvider bucketProvider, IAuthService authService)
     {
         _bucketProvider = bucketProvider;
         _authService = authService;
@@ -26,13 +26,13 @@ public class LoginRequestHandler : IRequestHandler<LoginRequest, LoginResult>
         // make sure user exists
         var userExists = await collection.ExistsAsync(request.Model.User.Email);
         if (!userExists.Exists)
-            return new LoginResult { IsUnauthorized = false };
+            return new LoginResult { IsUnauthorized = true };
 
         // make sure password matches
         var userDoc = await collection.GetAsync(request.Model.User.Email);
         var userObj = userDoc.ContentAs<User>();
         if(!_authService.DoesPasswordMatch(request.Model.User.Password, userObj.Password, userObj.PasswordSalt))
-            return new LoginResult { IsUnauthorized = false };
+            return new LoginResult { IsUnauthorized = true };
 
         // return a user view object WITH a JWT token
         var userView = new UserViewModel

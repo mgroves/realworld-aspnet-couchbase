@@ -1,7 +1,7 @@
-﻿using Conduit.Web.ViewModels;
+﻿using Conduit.Web.Auth.ViewModels;
 using MediatR;
 
-namespace Conduit.Web.Requests.Auth;
+namespace Conduit.Web.Auth.Handlers;
 
 public class LoginResult : IRequest
 {

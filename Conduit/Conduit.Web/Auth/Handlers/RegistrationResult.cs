@@ -1,6 +1,6 @@
-﻿using Conduit.Web.ViewModels;
+﻿using Conduit.Web.Auth.ViewModels;
 
-namespace Conduit.Web.Requests.Auth;
+namespace Conduit.Web.Auth.Handlers;
 
 public class RegistrationResult
 {
