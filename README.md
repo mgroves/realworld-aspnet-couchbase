@@ -56,7 +56,7 @@ This Conduit implementation is being being [live on Twitch](https://twitch.tv/ma
    3. Create the following collections, indexes, documents:
       1. *Users* collection in the *_default* scope.
       2. ... more to come ...
-   4. (Alternative to step 2) Run the migrations in the *Conduit.Migrations* project (see [NoSqlMigrator](https://github.com/mgroves/NoSqlMigrator)).
+   4. (Alternative to above step) Run the migrations in the *Conduit.Migrations* project (see [NoSqlMigrator](https://github.com/mgroves/NoSqlMigrator)).
 3. Configure Conduit.Web
    1. In appsettings.json, add the Couchbase connection string, username, password, and bucket name
 4. Compile and run Conduit.Web
