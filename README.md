@@ -14,7 +14,9 @@ This is a Conduit backend implementation for the [RealWorld project](https://rea
 
 The code is meant to be readable, and simple enough to follow along. If you can't, please create a GitHub issue, so the problem can be addressed!
 
-The main tools you'll need to understand at least a little bit:
+## Main Tools
+
+You'll need to understand at least a little bit:
 
 * [.NET 7](https://dotnet.microsoft.com/en-us/)
 * [C#](https://learn.microsoft.com/en-us/dotnet/csharp/)
@@ -22,6 +24,22 @@ The main tools you'll need to understand at least a little bit:
 * [Couchbase Capella (or Couchbase Server)](https://www.couchbase.com/developers/) - NoSQL database
 * [Mediatr](https://github.com/jbogard/MediatR)
 * Other good things to understand: BCrypt, NUnit, TestContainers.net, JSON serialization, REST APIs, dependency injection, SQL
+
+## Project Organization
+
+* *Conduit.Web* - This is the most important project. It's where the actual implementation is. The project is "sliced" by feature as much as possible. That is, grouping together objects with common functionality.
+
+  * *Models* folder - this is where data access objects are kept. These objects are used only for database interaction.
+  * *Sliced* folders - these contain ASP.NET Core Controller(s), Mediatr request, response, and handler classes, viewmodels, and services for the functionality of the slice.
+    * Auth - Authorization/authentication, JWT, registration, and login.
+    * ...more on the way...
+
+* *Conduit.Tests* - Automated tests for Conduit.Web.
+  * *Fakes* folder - this contains Fakes that may be used by unit tests.
+  * *Unit* folder - this is where unit tests live. The folder structure within mirrors the Conduit.Web folders as much as possible.
+  * *Integration* folder - this is where integration tests (will) live. The folder structure within mirrors the Conduit.Web folders as much as possible.
+
+* *Conduit.Migrations* - Automated creation of database structures. This project uses NoSqlMigrator (see below).
 
 This Conduit implementation is being being [live on Twitch](https://twitch.tv/matthewdgroves). You can follow along with the [recordings on YouTube](https://www.youtube.com/watch?v=HiRj5ntqiXk&list=PLZWwU1YVRehL0psJRk35x8evMeeGAFwBa).
 
