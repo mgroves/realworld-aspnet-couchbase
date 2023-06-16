@@ -1,8 +1,10 @@
-﻿using Conduit.Web.Auth.Handlers;
+﻿using Conduit.Tests.Fakes.Couchbase;
+using Conduit.Web.Auth.Handlers;
 using Conduit.Web.Auth.Services;
 using Conduit.Web.Auth.ViewModels;
 using Conduit.Web.Models;
 using Couchbase.Core.Exceptions.KeyValue;
+using Couchbase.Query;
 using Moq;
 
 namespace Conduit.Tests.Unit.Auth.Handlers;
@@ -20,7 +22,7 @@ public class RegistrationRequestHandlerTests : WithCouchbaseMocks
             
         _authServiceMock = new Mock<IAuthService>();
 
-        _registrationHandler = new RegistrationRequestHandler(BucketProviderMock.Object, _authServiceMock.Object, new RegistrationRequestValidator());
+        _registrationHandler = new RegistrationRequestHandler(BucketProviderMock.Object, _authServiceMock.Object, new RegistrationRequestValidator(ClusterProviderMock.Object));
     }
 
     [Test]
@@ -146,8 +148,36 @@ public class RegistrationRequestHandlerTests : WithCouchbaseMocks
         Assert.That(result.ValidationErrors.Count, Is.EqualTo(1));
         Assert.That(result.ValidationErrors.First().ErrorMessage, Is.EqualTo(errorMessage));        
     }
-    
-    // TODO: test for username already exists
+
+    [Test]
+    public async Task Handle_UsernameAlreadyExists_ReturnsError()
+    {
+        // Arrange
+        // setup registration info submitted through the API
+        var submittedInfo = new RegistrationUserSubmitModel
+        {
+            Username = "iamausernamethatalreadyexists",
+            Password = "PasswordPassword1Strong!Password",
+            Email = "doesntmatter@example.net"
+        };
+        var request = new RegistrationRequest(new RegistrationSubmitModel
+        {
+            User = submittedInfo
+        });
+
+        // setup database mock to return a count of 1 (or greater)
+        ClusterMock.Setup(x => x.QueryAsync<int>(It.IsAny<string>(), It.IsAny<QueryOptions>()))
+            .ReturnsAsync(new FakeQueryResult<int>(new List<int> { 1 }));
+
+        // Act
+        var result = await _registrationHandler.Handle(request, CancellationToken.None);
+
+        // Assert
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.ValidationErrors, Is.Not.Null);
+        Assert.That(result.ValidationErrors.Count, Is.EqualTo(1));
+        Assert.That(result.ValidationErrors.First().ErrorMessage, Is.EqualTo("That username is already in use."));
+    }
 
     [TestCase("","Email address must not be empty.")]
     [TestCase(null,"Email address must not be empty.")]

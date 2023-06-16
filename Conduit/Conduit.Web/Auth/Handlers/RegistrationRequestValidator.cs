@@ -1,17 +1,17 @@
-﻿using EmailValidation;
+﻿using Couchbase.Extensions.DependencyInjection;
+using Couchbase.Query;
+using EmailValidation;
 using FluentValidation;
 
 namespace Conduit.Web.Auth.Handlers;
 
 public class RegistrationRequestValidator : AbstractValidator<RegistrationRequest>
 {
-    public RegistrationRequestValidator()
+    private readonly IClusterProvider _clusterProvider;
+
+    public RegistrationRequestValidator(IClusterProvider clusterProvider)
     {
-        RuleFor(x => x.Model.User.Username)
-            .Cascade(CascadeMode.Stop)
-            .NotEmpty().WithMessage("Username must not be empty.")
-            .MaximumLength(100).WithMessage("Username must be at most 100 characters long.");
-            //.Must(NotAlreadyExist).WithMessage("That username is already in use.");
+        _clusterProvider = clusterProvider;
 
         RuleFor(x => x.Model.User.Email)
             .Cascade(CascadeMode.Stop)
@@ -26,17 +26,47 @@ public class RegistrationRequestValidator : AbstractValidator<RegistrationReques
             .Must(ContainUppercaseLetter).WithMessage("Password must contain at least one uppercase letter.")
             .Must(ContainLowercaseLetter).WithMessage("Password must contain at least one lowercase letter.")
             .Must(ContainSymbol).WithMessage("Password must contain at least one symbol.");
-        
+
+        RuleFor(x => x.Model.User.Username)
+            .Cascade(CascadeMode.Stop)
+            .NotEmpty().WithMessage("Username must not be empty.")
+            .MaximumLength(100).WithMessage("Username must be at most 100 characters long.")
+            .MustAsync(async (username, cancellation) => await NotAlreadyExist(username, cancellation))
+                .WithMessage("That username is already in use.");
+
         // TODO: consider using zxcvbn library to provide a better measure of password strength
         // as the above password policy may be weak
     }
     
-    private bool NotAlreadyExist(string username)
+    private async Task<bool> NotAlreadyExist(string username, CancellationToken cancellationToken)
     {
-        // TODO: need database here?
-        throw new NotImplementedException();
+        var cluster = await _clusterProvider.GetClusterAsync();
+
+        // TODO: revist this hard coding of bucket/scope/collection names
+        var checkForExistingUsernameSql = @"
+        SELECT RAW COUNT(*)
+        FROM `Conduit`.`_default`.`Users` u
+        WHERE u.username = $username";
+
+        // Can potentially be switched to use NotBounded scan consistency
+        // for reduced latency, if the risk of two people trying to get the
+        // same username within a very small window of time is small
+        var queryOptions = new QueryOptions()
+            .Parameter("username", username)
+            .ScanConsistency(QueryScanConsistency.RequestPlus);
+
+        var result = await cluster.QueryAsync<int>(checkForExistingUsernameSql, queryOptions);
+
+        var countResult = await result.ToListAsync(cancellationToken);
+
+        if (!countResult.Any())
+            return true;
+
+        var howManyMatches = countResult.First();
+
+        return howManyMatches < 1;
     }
-    
+
     private bool BeAValidEmailAddress(string password)
     {
         // using EmailValidation library because I find the EmailAddress for FluentValidation to be too naive
