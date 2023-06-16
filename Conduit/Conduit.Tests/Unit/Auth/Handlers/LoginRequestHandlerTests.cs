@@ -22,7 +22,7 @@ public class Tests
             
             _authServiceMock = new Mock<IAuthService>();
 
-            _loginHandler = new LoginRequestHandler(BucketProviderMock.Object, _authServiceMock.Object, new LoginRequestValidator());
+            _loginHandler = new LoginRequestHandler(UsersCollectionProviderMock.Object, _authServiceMock.Object, new LoginRequestValidator());
         }
 
         [Test]
@@ -52,9 +52,9 @@ public class Tests
             var request = new LoginRequest(loginSubmitModel);
 
             // setup database and auth service mocks
-            CollectionMock.Setup(c => c.ExistsAsync(request.Model.User.Email, null))
+            UsersCollectionMock.Setup(c => c.ExistsAsync(request.Model.User.Email, null))
                 .ReturnsAsync(new FakeExistsResult(exists: true));
-            CollectionMock.Setup(c => c.GetAsync(request.Model.User.Email, null))
+            UsersCollectionMock.Setup(c => c.GetAsync(request.Model.User.Email, null))
                 .ReturnsAsync(new FakeGetResult(userInDatabase));
             _authServiceMock.Setup(a => a.DoesPasswordMatch(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
                 .Returns(true);
@@ -89,9 +89,9 @@ public class Tests
                 }
             };
             var request = new LoginRequest(loginSubmitModel);
-            
+
             // setup database and auth service mocks
-            CollectionMock.Setup(c => c.ExistsAsync(request.Model.User.Email, null))
+            UsersCollectionMock.Setup(c => c.ExistsAsync(request.Model.User.Email, null))
                 .ReturnsAsync(new FakeExistsResult(exists: false));
             
             // act
@@ -127,11 +127,11 @@ public class Tests
                 }
             };
             var request = new LoginRequest(loginSubmitModel);
-            
+
             // setup database and auth service mocks
-            CollectionMock.Setup(c => c.ExistsAsync(request.Model.User.Email, null))
+            UsersCollectionMock.Setup(c => c.ExistsAsync(request.Model.User.Email, null))
                 .ReturnsAsync(new FakeExistsResult(exists: true));
-            CollectionMock.Setup(c => c.GetAsync(request.Model.User.Email, null))
+            UsersCollectionMock.Setup(c => c.GetAsync(request.Model.User.Email, null))
                 .ReturnsAsync(new FakeGetResult(userInDatabase));
             _authServiceMock.Setup(a => a.DoesPasswordMatch(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
                 .Returns(false);

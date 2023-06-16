@@ -1,4 +1,4 @@
-﻿using Couchbase.Extensions.DependencyInjection;
+﻿using Conduit.Web.Models;
 using Couchbase.Query;
 using EmailValidation;
 using FluentValidation;
@@ -7,11 +7,11 @@ namespace Conduit.Web.Auth.Handlers;
 
 public class RegistrationRequestValidator : AbstractValidator<RegistrationRequest>
 {
-    private readonly IClusterProvider _clusterProvider;
+    private readonly IConduitUsersCollectionProvider _usersCollectionProvider;
 
-    public RegistrationRequestValidator(IClusterProvider clusterProvider)
+    public RegistrationRequestValidator(IConduitUsersCollectionProvider usersCollectionProvider)
     {
-        _clusterProvider = clusterProvider;
+        _usersCollectionProvider = usersCollectionProvider;
 
         RuleFor(x => x.Model.User.Email)
             .Cascade(CascadeMode.Stop)
@@ -40,12 +40,16 @@ public class RegistrationRequestValidator : AbstractValidator<RegistrationReques
     
     private async Task<bool> NotAlreadyExist(string username, CancellationToken cancellationToken)
     {
-        var cluster = await _clusterProvider.GetClusterAsync();
+        var collection = await _usersCollectionProvider.GetCollectionAsync();
 
-        // TODO: revist this hard coding of bucket/scope/collection names
-        var checkForExistingUsernameSql = @"
+        // bringing scope/bucket/cluster in to avoid hardcoding in the SQL++ query
+        var scope = collection.Scope;
+        var bucket = scope.Bucket;
+        var cluster = bucket.Cluster;
+
+        var checkForExistingUsernameSql = @$"
         SELECT RAW COUNT(*)
-        FROM `Conduit`.`_default`.`Users` u
+        FROM `{bucket.Name}`.`{scope.Name}`.`{collection.Name}` u
         WHERE u.username = $username";
 
         // Can potentially be switched to use NotBounded scan consistency

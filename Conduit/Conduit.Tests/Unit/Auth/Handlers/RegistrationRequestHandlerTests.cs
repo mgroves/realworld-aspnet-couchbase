@@ -22,7 +22,11 @@ public class RegistrationRequestHandlerTests : WithCouchbaseMocks
             
         _authServiceMock = new Mock<IAuthService>();
 
-        _registrationHandler = new RegistrationRequestHandler(BucketProviderMock.Object, _authServiceMock.Object, new RegistrationRequestValidator(ClusterProviderMock.Object));
+        _registrationHandler = new RegistrationRequestHandler(UsersCollectionProviderMock.Object, _authServiceMock.Object, new RegistrationRequestValidator(UsersCollectionProviderMock.Object));
+
+        // by default, username is not a duplicate
+        ClusterMock.Setup(x => x.QueryAsync<int>(It.IsAny<string>(), It.IsAny<QueryOptions>()))
+            .ReturnsAsync(new FakeQueryResult<int>(new List<int> { 0 }));
     }
 
     [Test]
@@ -45,7 +49,7 @@ public class RegistrationRequestHandlerTests : WithCouchbaseMocks
         _authServiceMock.Setup(a => a.GenerateSalt()).Returns("salt");
         _authServiceMock.Setup(a => a.HashPassword(It.IsAny<string>(), It.IsAny<string>())).Returns("hashedPassword");
         _authServiceMock.Setup(a => a.GenerateJwtToken(It.IsAny<string>())).Returns("jwttoken");
-        CollectionMock.Setup(c => c.InsertAsync(submittedInfo.Email, It.IsAny<User>(), null));
+        UsersCollectionMock.Setup(c => c.InsertAsync(submittedInfo.Email, It.IsAny<User>(), null));
         
         // act
         var result = await _registrationHandler.Handle(request, CancellationToken.None);
@@ -78,7 +82,7 @@ public class RegistrationRequestHandlerTests : WithCouchbaseMocks
         
         _authServiceMock.Setup(a => a.GenerateSalt()).Returns("salt");
         _authServiceMock.Setup(a => a.HashPassword(It.IsAny<string>(), It.IsAny<string>())).Returns("hashedPassword");
-        CollectionMock.Setup(c => c.InsertAsync(submittedInfo.Email, It.IsAny<User>(), null))
+        UsersCollectionMock.Setup(c => c.InsertAsync(submittedInfo.Email, It.IsAny<User>(), null))
             .Throws<DocumentExistsException>();
         
         // act

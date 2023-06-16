@@ -3,6 +3,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Conduit.Web.Auth.Handlers;
 using Conduit.Web.Auth.Services;
+using Conduit.Web.Models;
 using Couchbase.Extensions.DependencyInjection;
 using FluentValidation;
 using Microsoft.OpenApi.Models;
@@ -89,6 +90,12 @@ namespace Conduit.Web
             builder.Services.AddTransient<IAuthService, AuthService>();
             builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<Program>());
             builder.Services.AddCouchbase(builder.Configuration.GetSection("Couchbase"));
+            builder.Services.AddCouchbaseBucket<IConduitBucketProvider>(builder.Configuration["Couchbase:BucketName"], b =>
+            {
+                b
+                    .AddScope(builder.Configuration["Couchbase:ScopeName"])
+                    .AddCollection<IConduitUsersCollectionProvider>(builder.Configuration["Couchbase:UsersCollectionName"]);
+            });
 
             // ****************************************************
 
