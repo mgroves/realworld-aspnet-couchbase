@@ -7,7 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="NoSqlMigrator" Version="0.0.1-alpha" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
+    <PackageReference Include="NoSqlMigrator" Version="0.0.2-alpha" />
   </ItemGroup>
 
 </Project>

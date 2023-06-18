@@ -1,22 +1,32 @@
-﻿using NoSqlMigrator.Infrastructure;
+﻿using Microsoft.Extensions.Configuration;
+using NoSqlMigrator.Infrastructure;
 
 namespace Conduit.Migrations;
 
 [Migration(2)]
-public class CreateIndexOnUsernameFieldInUsersCollection : Migrate
+public class CreateIndexOnUsernameFieldInUsersCollection : MigrateBase
 {
+    private readonly string? _collectionName;
+    private readonly string? _scopeName;
+
+    public CreateIndexOnUsernameFieldInUsersCollection()
+    {
+        _collectionName = _config["Couchbase:UsersCollectionName"];
+        _scopeName = _config["Couchbase:ScopeName"];
+    }
+
     public override void Up()
     {
         Create.Index("ix_users_username")
-            .OnDefaultScope()
-            .OnCollection("Users")
+            .OnScope(_scopeName)
+            .OnCollection(_collectionName)
             .OnField("username");
     }
 
     public override void Down()
     {
         Delete.Index("ix_users_username")
-            .FromScope("_default")
-            .FromCollection("Users");
+            .FromScope(_scopeName)
+            .FromCollection(_collectionName);
     }
 }
