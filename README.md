@@ -31,13 +31,14 @@ You'll need to understand at least a little bit:
 
   * *Models* folder - this is where data access objects are kept. These objects are used only for database interaction.
   * *Sliced* folders - these contain ASP.NET Core Controller(s), Mediatr request, response, and handler classes, viewmodels, and services for the functionality of the slice.
-    * Auth - Authorization/authentication, JWT, registration, and login.
+    * User - Authorization/authentication, JWT, registration, login, anything for Users
     * ...more on the way...
+  * *Extensions* folder - extension methods for ASP.NET functionality
 
 * *Conduit.Tests* - Automated tests for Conduit.Web.
   * *Fakes* folder - this contains Fakes that may be used by unit tests.
   * *Unit* folder - this is where unit tests live. The folder structure within mirrors the Conduit.Web folders as much as possible.
-  * *Integration* folder - this is where integration tests (will) live. The folder structure within mirrors the Conduit.Web folders as much as possible.
+  * *Integration* folder - this is where integration tests live. The folder structure within mirrors the Conduit.Web folders as much as possible.
 
 * *Conduit.Migrations* - Automated creation of database structures. This project uses NoSqlMigrator (see below).
 
