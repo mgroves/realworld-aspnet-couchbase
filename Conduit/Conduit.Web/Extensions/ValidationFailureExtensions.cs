@@ -1,5 +1,4 @@
-﻿using Conduit.Web.Auth.Handlers;
-using FluentValidation.Results;
+﻿using FluentValidation.Results;
 
 namespace Conduit.Web.Extensions;
 

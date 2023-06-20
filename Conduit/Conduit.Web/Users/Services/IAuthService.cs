@@ -1,4 +1,4 @@
-﻿namespace Conduit.Web.Auth.Services;
+﻿namespace Conduit.Web.Users.Services;
 
 public interface IAuthService
 {

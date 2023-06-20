@@ -1,19 +1,19 @@
-﻿using Conduit.Web.Auth.Handlers;
-using Conduit.Web.Auth.Services;
-using Conduit.Web.Auth.ViewModels;
-using Conduit.Web.Extensions;
+﻿using Conduit.Web.Extensions;
+using Conduit.Web.Users.Handlers;
+using Conduit.Web.Users.Services;
+using Conduit.Web.Users.ViewModels;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Conduit.Web.Auth.Controllers;
+namespace Conduit.Web.Users.Controllers;
 
-public class AuthController : Controller
+public class UsersController : Controller
 {
     private readonly IMediator _mediator;
     private readonly IAuthService _authService;
 
-    public AuthController(IMediator mediator, IAuthService authService)
+    public UsersController(IMediator mediator, IAuthService authService)
     {
         _mediator = mediator;
         _authService = authService;
@@ -54,6 +54,18 @@ public class AuthController : Controller
 
         if (result.IsInvalidToken)
             return UnprocessableEntity();
+
+        return Ok(result.UserView);
+    }
+
+    [Authorize]
+    [HttpPut("api/user")]
+    public async Task<IActionResult> UpdateUser([FromBody] UpdateUserSubmitModel updateUser)
+    {
+        var result = await _mediator.Send(new UpdateUserRequest(updateUser));
+
+        if (result.ValidationErrors?.Any() ?? false)
+            return UnprocessableEntity(result.ValidationErrors.ToCsv());
 
         return Ok(result.UserView);
     }

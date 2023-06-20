@@ -1,10 +1,10 @@
-﻿using Conduit.Web.Auth.Handlers;
-using Conduit.Web.Auth.Services;
-using Conduit.Web.Auth.ViewModels;
-using Conduit.Web.Models;
+﻿using Conduit.Web.Models;
 using Couchbase.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using Conduit.Web.Users.Handlers;
+using Conduit.Web.Users.Services;
+using Conduit.Web.Users.ViewModels;
 
 namespace Conduit.Tests.Integration.Auth.Handlers;
 

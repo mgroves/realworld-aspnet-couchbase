@@ -1,6 +1,6 @@
-﻿using Conduit.Web.Auth.ViewModels;
+﻿using Conduit.Web.Users.ViewModels;
 
-namespace Conduit.Web.Auth.Handlers;
+namespace Conduit.Web.Users.Handlers;
 
 public class GetUserResult
 {

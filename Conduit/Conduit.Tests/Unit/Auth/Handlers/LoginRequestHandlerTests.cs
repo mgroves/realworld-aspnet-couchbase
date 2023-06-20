@@ -1,8 +1,8 @@
 using Conduit.Tests.Fakes.Couchbase;
-using Conduit.Web.Auth.Handlers;
-using Conduit.Web.Auth.Services;
-using Conduit.Web.Auth.ViewModels;
 using Conduit.Web.Models;
+using Conduit.Web.Users.Handlers;
+using Conduit.Web.Users.Services;
+using Conduit.Web.Users.ViewModels;
 using Moq;
 
 namespace Conduit.Tests.Unit.Auth.Handlers;

@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using Conduit.Web.Auth.Handlers;
-using Conduit.Web.Auth.Services;
 using Conduit.Web.Models;
+using Conduit.Web.Users.Handlers;
+using Conduit.Web.Users.Services;
 using Couchbase.Extensions.DependencyInjection;
 using FluentValidation;
 using Microsoft.OpenApi.Models;
@@ -87,6 +87,7 @@ namespace Conduit.Web
                 });
 
             builder.Services.AddValidatorsFromAssemblyContaining<LoginRequestValidator>();
+            builder.Services.AddTransient(typeof(SharedUserValidator<>));
             builder.Services.AddTransient<IAuthService, AuthService>();
             builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<Program>());
             builder.Services.AddCouchbase(builder.Configuration.GetSection("Couchbase"));

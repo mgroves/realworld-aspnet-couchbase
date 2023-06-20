@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace Conduit.Web.Auth.Handlers;
+namespace Conduit.Web.Users.Handlers;
 
 public class LoginRequestValidator : AbstractValidator<LoginRequest>
 {

@@ -1,7 +1,7 @@
-﻿using Conduit.Web.Auth.Handlers;
-using Conduit.Web.Auth.Services;
-using Conduit.Web.Auth.ViewModels;
-using Conduit.Web.Models;
+﻿using Conduit.Web.Models;
+using Conduit.Web.Users.Handlers;
+using Conduit.Web.Users.Services;
+using Conduit.Web.Users.ViewModels;
 using Couchbase.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -34,7 +34,7 @@ public class RegistrationRequestHandlerTests : CouchbaseIntegrationTest
 
         // arrange the handler
         var authService = new AuthService();
-        var registrationRequestHandler = new RegistrationRequestHandler(usersCollectionProvider, authService, new RegistrationRequestValidator(usersCollectionProvider));
+        var registrationRequestHandler = new RegistrationRequestHandler(usersCollectionProvider, authService, new RegistrationRequestValidator(new SharedUserValidator<RegistrationUserSubmitModel>(), usersCollectionProvider));
 
         // arrange the request
         var submittedInfo = new RegistrationUserSubmitModel

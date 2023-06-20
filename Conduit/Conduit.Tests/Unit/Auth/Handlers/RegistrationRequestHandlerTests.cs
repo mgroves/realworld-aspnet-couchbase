@@ -1,8 +1,8 @@
 ﻿using Conduit.Tests.Fakes.Couchbase;
-using Conduit.Web.Auth.Handlers;
-using Conduit.Web.Auth.Services;
-using Conduit.Web.Auth.ViewModels;
 using Conduit.Web.Models;
+using Conduit.Web.Users.Handlers;
+using Conduit.Web.Users.Services;
+using Conduit.Web.Users.ViewModels;
 using Couchbase.Core.Exceptions.KeyValue;
 using Couchbase.Query;
 using Moq;
@@ -22,7 +22,7 @@ public class RegistrationRequestHandlerTests : WithCouchbaseMocks
             
         _authServiceMock = new Mock<IAuthService>();
 
-        _registrationHandler = new RegistrationRequestHandler(UsersCollectionProviderMock.Object, _authServiceMock.Object, new RegistrationRequestValidator(UsersCollectionProviderMock.Object));
+        _registrationHandler = new RegistrationRequestHandler(UsersCollectionProviderMock.Object, _authServiceMock.Object, new RegistrationRequestValidator(new SharedUserValidator<RegistrationUserSubmitModel>(), UsersCollectionProviderMock.Object));
 
         // by default, username is not a duplicate
         ClusterMock.Setup(x => x.QueryAsync<int>(It.IsAny<string>(), It.IsAny<QueryOptions>()))

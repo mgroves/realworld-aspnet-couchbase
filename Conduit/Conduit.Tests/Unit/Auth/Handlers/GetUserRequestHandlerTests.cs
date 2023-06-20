@@ -1,13 +1,13 @@
 ﻿using Conduit.Tests.Fakes.Couchbase;
-using Conduit.Web.Auth.Handlers;
-using Conduit.Web.Auth.Services;
 using Conduit.Web.Models;
+using Conduit.Web.Users.Handlers;
+using Conduit.Web.Users.Services;
 using Couchbase.Core.Exceptions.KeyValue;
 using Moq;
 
 namespace Conduit.Tests.Unit.Auth.Handlers;
 
-public class GetUserRequestHandlerTest : WithCouchbaseMocks
+public class GetUserRequestHandlerTests : WithCouchbaseMocks
 {
     [SetUp]
     public override void SetUp()

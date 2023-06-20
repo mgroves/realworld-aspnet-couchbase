@@ -1,4 +1,4 @@
-﻿namespace Conduit.Web.Auth.ViewModels;
+﻿namespace Conduit.Web.Users.ViewModels;
 
 public record LoginSubmitModel
 {

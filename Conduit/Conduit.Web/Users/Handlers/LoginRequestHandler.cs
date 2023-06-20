@@ -1,10 +1,10 @@
-﻿using Conduit.Web.Auth.Services;
-using Conduit.Web.Auth.ViewModels;
-using Conduit.Web.Models;
+﻿using Conduit.Web.Models;
+using Conduit.Web.Users.Services;
+using Conduit.Web.Users.ViewModels;
 using FluentValidation;
 using MediatR;
 
-namespace Conduit.Web.Auth.Handlers;
+namespace Conduit.Web.Users.Handlers;
 
 public class LoginRequestHandler : IRequestHandler<LoginRequest, LoginResult>
 {

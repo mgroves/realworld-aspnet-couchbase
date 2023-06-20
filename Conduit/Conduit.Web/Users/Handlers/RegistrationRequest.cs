@@ -1,11 +1,11 @@
-﻿using Conduit.Web.Auth.ViewModels;
+﻿using Conduit.Web.Users.ViewModels;
 using MediatR;
 
-namespace Conduit.Web.Auth.Handlers;
+namespace Conduit.Web.Users.Handlers;
 
 public class RegistrationRequest : IRequest<RegistrationResult>
 {
-    public readonly RegistrationSubmitModel Model;
+    public RegistrationSubmitModel Model { get; private set; }
 
     public RegistrationRequest(RegistrationSubmitModel model)
     {

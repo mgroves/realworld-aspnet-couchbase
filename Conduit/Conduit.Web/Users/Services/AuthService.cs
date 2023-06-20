@@ -3,7 +3,7 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Conduit.Web.Auth.Services;
+namespace Conduit.Web.Users.Services;
 
 public class AuthService : IAuthService
 {

@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace Conduit.Web.Auth.Handlers;
+namespace Conduit.Web.Users.Handlers;
 
 public class GetUserRequest : IRequest<GetUserResult>
 {
