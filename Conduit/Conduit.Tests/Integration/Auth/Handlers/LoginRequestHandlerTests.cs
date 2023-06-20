@@ -4,62 +4,39 @@ using Conduit.Web.Auth.ViewModels;
 using Conduit.Web.Models;
 using Couchbase.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
-using Testcontainers.Couchbase;
+using System;
 
 namespace Conduit.Tests.Integration.Auth.Handlers;
 
 [TestFixture]
-public class LoginRequestHandlerTests
+public class LoginRequestHandlerTests : CouchbaseIntegrationTest
 {
-    private CouchbaseContainer _container;
-    private IConduitUsersCollectionProvider _usersCollectionProvider;
+    private ServiceProvider _serviceProvider;
 
     [OneTimeSetUp]
-    public async Task Setup()
+    public override async Task Setup()
     {
-        _container = new CouchbaseBuilder()
-            .WithImage("couchbase/server:7.2.0")
-            .Build();
+        await base.Setup();
 
-        await _container.StartAsync();
-
-        // create a DI setup, in order to get Couchbase DI objects 
-        var services = new ServiceCollection();
-        services.AddLogging();
-        services.AddCouchbase(options =>
-            {
-                options.ConnectionString = _container.GetConnectionString();
-                options.UserName = "Administrator";
-                options.Password = "password";
-            });
-        var bucketName = _container.Buckets.First().Name;
-        services.AddCouchbaseBucket<IConduitBucketProvider>(bucketName, bucketBuilder =>
-        {   
-            bucketBuilder
+        ServiceCollection.AddCouchbaseBucket<IConduitBucketProvider>("Conduit", b =>
+        {
+            b
                 .AddScope("_default")
-                .AddCollection<IConduitUsersCollectionProvider>("_default");
+                .AddCollection<IConduitUsersCollectionProvider>("Users");
         });
-
-        // build DI setup
-        var builder = services.BuildServiceProvider();
-
-        // get cluster objects to that WaitUntilReadyAsync can be called
-        // just to make sure the cluster created in the testcontainers image is ready
-        var clusterProvider = builder.GetRequiredService<IClusterProvider>();
-        var cluster = await clusterProvider.GetClusterAsync();
-        await cluster.WaitUntilReadyAsync(TimeSpan.FromSeconds(30));
-
-        // need this Couchbase DI object for the test (consider moving into test)
-        _usersCollectionProvider = builder.GetRequiredService<IConduitUsersCollectionProvider>();
+        _serviceProvider = ServiceCollection.BuildServiceProvider();
     }
 
     [Test]
     public async Task LoginRequestHandler_Is_Successful()
     {
         // *** arrange
+        // arrange collections provider
+        var usersCollectionProvider = _serviceProvider.GetRequiredService<IConduitUsersCollectionProvider>();
+
         // arrange the handler
         var authService = new AuthService();
-        var loginRequestHandler = new LoginRequestHandler(_usersCollectionProvider, authService, new LoginRequestValidator());
+        var loginRequestHandler = new LoginRequestHandler(usersCollectionProvider, authService, new LoginRequestValidator());
 
         // arrange the request
         var userViewModel = new LoginUserViewModel
@@ -73,7 +50,7 @@ public class LoginRequestHandlerTests
         });
 
         // arrange for a user to already be in the database
-        var collection = await _usersCollectionProvider.GetCollectionAsync();
+        var collection = await usersCollectionProvider.GetCollectionAsync();
         var salt = authService.GenerateSalt();
         await collection.InsertAsync(userViewModel.Email, new User
         {
@@ -92,11 +69,5 @@ public class LoginRequestHandlerTests
         Assert.That(result.IsUnauthorized, Is.False);
         Assert.That(result.UserView, Is.Not.Null);
         Assert.That(result.UserView.Email, Is.EqualTo(userViewModel.Email));
-    }
-
-    [OneTimeTearDown]
-    public async Task Teardown()
-    {
-        await _container.StopAsync();
     }
 }

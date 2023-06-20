@@ -7,11 +7,11 @@ namespace Conduit.Web.Auth.Services;
 
 public class AuthService : IAuthService
 {
-    public string GenerateJwtToken(string username)
+    public string GenerateJwtToken(string email)
     {
         var claims = new[]
         {
-            new Claim(ClaimTypes.Name, username)
+            new Claim(ClaimTypes.Email, email)
         };
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("6B{DqP5aT,3b&!YRgk29m@j$L7uvnxE"));
@@ -41,5 +41,10 @@ public class AuthService : IAuthService
     public string GenerateSalt()
     {
         return BCrypt.Net.BCrypt.GenerateSalt();
+    }
+
+    public string GetTokenFromHeader(string bearerTokenHeader)
+    {
+        return bearerTokenHeader.Substring("Token ".Length).Trim();
     }
 }

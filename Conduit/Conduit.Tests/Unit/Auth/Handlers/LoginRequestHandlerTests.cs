@@ -58,7 +58,7 @@ public class Tests
                 .ReturnsAsync(new FakeGetResult(userInDatabase));
             _authServiceMock.Setup(a => a.DoesPasswordMatch(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
                 .Returns(true);
-            _authServiceMock.Setup(a => a.GenerateJwtToken(userInDatabase.Username))
+            _authServiceMock.Setup(a => a.GenerateJwtToken(userInDatabase.Email))
                 .Returns("token");
 
             // Act

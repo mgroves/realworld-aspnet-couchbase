@@ -13,6 +13,7 @@
         <PackageReference Include="Couchbase.Extensions.DependencyInjection" Version="3.4.8" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.5.0" />
         <PackageReference Include="Moq" Version="4.18.4" />
+        <PackageReference Include="NoSqlMigrator" Version="0.0.2-alpha" />
         <PackageReference Include="NUnit" Version="3.13.3" />
         <PackageReference Include="NUnit3TestAdapter" Version="4.4.2" />
         <PackageReference Include="NUnit.Analyzers" Version="3.6.1" />
@@ -21,11 +22,13 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Conduit.Migrations\Conduit.Migrations.csproj" />
       <ProjectReference Include="..\Conduit.Web\Conduit.Web.csproj" />
     </ItemGroup>
 
     <ItemGroup>
       <Folder Include="Integration\Auth\Handlers\" />
+      <Folder Include="Unit\Users\Handlers\" />
     </ItemGroup>
 
 </Project>

@@ -50,7 +50,7 @@ public class LoginRequestHandler : IRequestHandler<LoginRequest, LoginResult>
         var userView = new UserViewModel
         {
             Email = userDocumentKey,   // email is the document key
-            Token = _authService.GenerateJwtToken(userObj.Username),
+            Token = _authService.GenerateJwtToken(userDocumentKey),
             Username = userObj.Username,
             Bio = userObj.Bio,
             Image = userObj.Image
