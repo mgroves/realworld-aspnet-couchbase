@@ -4,7 +4,7 @@ using MediatR;
 
 namespace Conduit.Web.Auth.Handlers;
 
-public class LoginResult : IRequest
+public class LoginResult
 {
     public bool IsUnauthorized { get; set; }
     public UserViewModel UserView { get; set; }

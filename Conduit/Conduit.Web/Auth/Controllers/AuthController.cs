@@ -1,6 +1,7 @@
 ﻿using Conduit.Web.Auth.Handlers;
 using Conduit.Web.Auth.Services;
 using Conduit.Web.Auth.ViewModels;
+using Conduit.Web.Extensions;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -38,10 +39,7 @@ public class AuthController : Controller
             return Forbid("User already exists.");
 
         if (registrationResult.ValidationErrors?.Any() ?? false)
-        {
-            // TODO: turn all this string.join noise into an extension method
-            return UnprocessableEntity(string.Join(",",registrationResult.ValidationErrors.Select(e => e.ErrorMessage)));
-        }
+            return UnprocessableEntity(registrationResult.ValidationErrors.ToCsv());
         
         return Ok(new { user = registrationResult.UserView });
     }
