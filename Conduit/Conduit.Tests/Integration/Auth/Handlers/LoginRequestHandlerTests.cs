@@ -1,7 +1,6 @@
 ﻿using Conduit.Web.Models;
 using Couchbase.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
-using System;
 using Conduit.Web.Users.Handlers;
 using Conduit.Web.Users.Services;
 using Conduit.Web.Users.ViewModels;
@@ -11,8 +10,6 @@ namespace Conduit.Tests.Integration.Auth.Handlers;
 [TestFixture]
 public class LoginRequestHandlerTests : CouchbaseIntegrationTest
 {
-    private ServiceProvider _serviceProvider;
-
     [OneTimeSetUp]
     public override async Task Setup()
     {
@@ -24,7 +21,6 @@ public class LoginRequestHandlerTests : CouchbaseIntegrationTest
                 .AddScope("_default")
                 .AddCollection<IConduitUsersCollectionProvider>("Users");
         });
-        _serviceProvider = ServiceCollection.BuildServiceProvider();
     }
 
     [Test]
@@ -32,7 +28,7 @@ public class LoginRequestHandlerTests : CouchbaseIntegrationTest
     {
         // *** arrange
         // arrange collections provider
-        var usersCollectionProvider = _serviceProvider.GetRequiredService<IConduitUsersCollectionProvider>();
+        var usersCollectionProvider = ServiceProvider.GetRequiredService<IConduitUsersCollectionProvider>();
 
         // arrange the handler
         var authService = new AuthService();
