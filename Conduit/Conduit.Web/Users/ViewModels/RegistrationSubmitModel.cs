@@ -24,6 +24,7 @@ public record RegistrationUserSubmitModel : IHasUserPropertiesForValidation
     /// </summary>
     public string Email { get; set; }
     /// <summary>
+    /// Password is required.
     /// Password must be at least 10 characters long.
     /// Password must contain at least one digit.
     /// Password must contain at least one uppercase letter.

@@ -18,7 +18,15 @@ public class UsersController : Controller
         _mediator = mediator;
         _authService = authService;
     }
-
+    /// <summary>
+    /// Login a user, providing a JWT token
+    /// </summary>
+    /// <remarks>
+    /// <a href="https://realworld-docs.netlify.app/docs/specs/backend-specs/endpoints#authentication">Conduit Spec for login endpoint</a>
+    /// </remarks>
+    /// <param name="model"></param>
+    /// <response code="200">Succesfull login, returns the User that is logged in</response>
+    /// <response code="401">Unauthorized, likely because credentials are incorrect</response>
     [HttpPost("api/users/login")]
     public async Task<IActionResult> Login([FromBody] LoginSubmitModel model)
     {
