@@ -1,0 +1,17 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "AllowedHosts": "*",
+  "Couchbase": {
+    "ConnectionString": "couchbases://cb.<capella connection string>.cloud.couchbase.com",
+    "Username": "<put username here>",
+    "Password": "<put password here",
+    "BucketName": "ConduitIntegrationTests",
+    "ScopeName": "_default",
+    "UsersCollectionName": "Users"
+  }
+}

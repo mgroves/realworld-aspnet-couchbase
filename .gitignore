@@ -333,3 +333,4 @@ appsettings.Release.json
 appsettings.Development.json
 appsettings.Production.json
 /Conduit/migrateup.bat
+/Conduit/Conduit.Tests/integrationtestsettings.json
