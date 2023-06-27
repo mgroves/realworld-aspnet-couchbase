@@ -39,11 +39,13 @@ namespace Conduit.Web
                     Name = "Authorization",
                     Description = "JWT Authorization header using the Bearer scheme",
                     In = ParameterLocation.Header,
-                    Type = SecuritySchemeType.Http,
-                    Scheme = "Bearer",
+                    Type = SecuritySchemeType.ApiKey,   // using this instead of JWT because of Swashbuckle issue, see: https://stackoverflow.com/questions/76448339/changing-bearer-to-something-else-in-the-header-like-token-for-jwt
+                    Scheme = "Token",                   // This would normally be "Bearer"
                     BearerFormat = "JWT"
                 };
 
+                // These next two statements enable bearer token
+                // auth when using the SwaggerUI
                 c.AddSecurityDefinition("Token", securityScheme);
                 c.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {
@@ -76,6 +78,8 @@ namespace Conduit.Web
                     };
                     options.Events = new JwtBearerEvents()
                     {
+                        // this code strips out "Token" from the header
+                        // due to Conduit spec saying "Token" instead of "Bearer"
                         OnMessageReceived = ctx =>
                         {
                             if (ctx.Request.Headers.ContainsKey("Authorization"))
