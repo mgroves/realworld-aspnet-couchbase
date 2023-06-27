@@ -2,7 +2,7 @@
 
 namespace Conduit.Web.Users.Handlers;
 
-public class GetUserResult
+public class GetCurrentUserResult
 {
     public UserViewModel UserView { get; set; }
 

@@ -45,6 +45,9 @@ public class AuthService : IAuthService
 
     public string GetTokenFromHeader(string bearerTokenHeader)
     {
-        return bearerTokenHeader.Substring("Token ".Length).Trim();
+        var tokenPrefix = "Token ";
+        return bearerTokenHeader.StartsWith(tokenPrefix)
+            ? bearerTokenHeader.Substring(tokenPrefix.Length).Trim()
+            : bearerTokenHeader.Trim();
     }
 }

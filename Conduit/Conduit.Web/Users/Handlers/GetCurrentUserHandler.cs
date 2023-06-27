@@ -9,18 +9,18 @@ using MediatR;
 
 namespace Conduit.Web.Users.Handlers;
 
-public class GetUserRequestHandler : IRequestHandler<GetUserRequest, GetUserResult>
+public class GetCurrentUserHandler : IRequestHandler<GetCurrentUserRequest, GetCurrentUserResult>
 {
     private readonly IConduitUsersCollectionProvider _usersCollectionProvider;
     private readonly IAuthService _authService;
 
-    public GetUserRequestHandler(IConduitUsersCollectionProvider usersCollectionProvider, IAuthService authService)
+    public GetCurrentUserHandler(IConduitUsersCollectionProvider usersCollectionProvider, IAuthService authService)
     {
         _usersCollectionProvider = usersCollectionProvider;
         _authService = authService;
     }
 
-    public async Task<GetUserResult> Handle(GetUserRequest request, CancellationToken cancellationToken)
+    public async Task<GetCurrentUserResult> Handle(GetCurrentUserRequest request, CancellationToken cancellationToken)
     {
         string email;
         IGetResult userDoc;
@@ -38,12 +38,12 @@ public class GetUserRequestHandler : IRequestHandler<GetUserRequest, GetUserResu
         }
         catch (Exception ex) when (ex is ArgumentException or DocumentExistsException)
         {
-            return new GetUserResult { IsInvalidToken = true };
+            return new GetCurrentUserResult { IsInvalidToken = true };
         }
 
         var user = userDoc.ContentAs<User>();
 
-        return new GetUserResult
+        return new GetCurrentUserResult
         {
             UserView = new UserViewModel
             {

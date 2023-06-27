@@ -15,7 +15,7 @@ public class LoginRequestHandlerTests : CouchbaseIntegrationTest
     {
         await base.Setup();
 
-        ServiceCollection.AddCouchbaseBucket<IConduitBucketProvider>("Conduit", b =>
+        ServiceCollection.AddCouchbaseBucket<IConduitBucketProvider>("ConduitIntegrationTests", b =>
         {
             b
                 .AddScope("_default")

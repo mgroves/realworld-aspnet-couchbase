@@ -48,7 +48,7 @@
     <ItemGroup>
       <Folder Include="Integration\Auth\Handlers\" />
       <Folder Include="Extensions\" />
-      <Folder Include="Unit\Users\Handlers\" />
+      <Folder Include="Unit\Auth\Services\AuthService\" />
     </ItemGroup>
 
 </Project>

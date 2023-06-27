@@ -2,9 +2,9 @@
 
 namespace Conduit.Web.Users.Handlers;
 
-public class GetUserRequest : IRequest<GetUserResult>
+public class GetCurrentUserRequest : IRequest<GetCurrentUserResult>
 {
-    public GetUserRequest(string bearerToken)
+    public GetCurrentUserRequest(string bearerToken)
     {
         BearerToken = bearerToken;
     }

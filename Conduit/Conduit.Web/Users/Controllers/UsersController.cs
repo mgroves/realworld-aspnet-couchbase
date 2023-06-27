@@ -65,11 +65,13 @@ public class UsersController : Controller
 
     [HttpGet("api/user")]
     [Authorize]
-    public async Task<IActionResult> GetUser([FromHeader(Name = "Authorization")] string bearerTokenHeader)
+    public async Task<IActionResult> GetCurrentUser()
     {
-        var bearerToken = _authService.GetTokenFromHeader(bearerTokenHeader);
+        var authHeader = Request.Headers["Authorization"];
 
-        var result = await _mediator.Send(new GetUserRequest(bearerToken));
+        var bearerToken = _authService.GetTokenFromHeader(authHeader);
+
+        var result = await _mediator.Send(new GetCurrentUserRequest(bearerToken));
 
         if (result.IsInvalidToken)
             return UnprocessableEntity();

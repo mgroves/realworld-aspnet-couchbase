@@ -7,7 +7,7 @@ using Moq;
 
 namespace Conduit.Tests.Unit.Auth.Handlers;
 
-public class GetUserRequestHandlerTests : WithCouchbaseMocks
+public class GetCurrentUserRequestHandlerTests : WithCouchbaseMocks
 {
     [SetUp]
     public override void SetUp()
@@ -26,7 +26,7 @@ public class GetUserRequestHandlerTests : WithCouchbaseMocks
         // arrange request from API
         var email = "myfakeemail@example.net";
         var fakeToken = new AuthService().GenerateJwtToken(email);
-        var request = new GetUserRequest(fakeToken);
+        var request = new GetCurrentUserRequest(fakeToken);
 
         // arrange user that would be in db
         var userFromDatabase = new User
@@ -40,7 +40,7 @@ public class GetUserRequestHandlerTests : WithCouchbaseMocks
         };
 
         // arrange handler
-        var handler = new GetUserRequestHandler(UsersCollectionProviderMock.Object, _mockAuthService.Object);
+        var handler = new GetCurrentUserHandler(UsersCollectionProviderMock.Object, _mockAuthService.Object);
 
         // arrange mocks
         _mockAuthService.Setup(m => m.GenerateJwtToken(It.IsAny<string>()))
@@ -69,10 +69,10 @@ public class GetUserRequestHandlerTests : WithCouchbaseMocks
         // arrange
         // arrange request from API
         var email = "myfakeemail@example.net";
-        var request = new GetUserRequest(fakeToken);
+        var request = new GetCurrentUserRequest(fakeToken);
 
         // arrange handler
-        var handler = new GetUserRequestHandler(UsersCollectionProviderMock.Object, _mockAuthService.Object);
+        var handler = new GetCurrentUserHandler(UsersCollectionProviderMock.Object, _mockAuthService.Object);
 
         // act
         var result = await handler.Handle(request, CancellationToken.None);
@@ -88,10 +88,10 @@ public class GetUserRequestHandlerTests : WithCouchbaseMocks
         // arrange request from API
         var email = "myfakeemail@example.net";
         var fakeToken = new AuthService().GenerateJwtToken(email);
-        var request = new GetUserRequest(fakeToken);
+        var request = new GetCurrentUserRequest(fakeToken);
 
         // arrange handler
-        var handler = new GetUserRequestHandler(UsersCollectionProviderMock.Object, _mockAuthService.Object);
+        var handler = new GetCurrentUserHandler(UsersCollectionProviderMock.Object, _mockAuthService.Object);
 
         // arrange mocks
         _mockAuthService.Setup(m => m.GenerateJwtToken(It.IsAny<string>()))
