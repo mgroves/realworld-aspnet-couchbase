@@ -30,6 +30,17 @@ public class UsersController : Controller
         return Ok(new { user = loginResult.UserView });
     }
 
+    /// <summary>
+    /// Register a new user.
+    /// </summary>
+    /// <remarks>
+    /// <a href="https://realworld-docs.netlify.app/docs/specs/backend-specs/endpoints/#registration">Conduit Spec for registration endpoint</a>
+    /// </remarks>
+    /// <param name="model">Registration information</param>
+    /// <returns>User</returns>
+    /// <response code="200">Returns the newly registered User</response>
+    /// <response code="403">User with this email address already exists</response>
+    /// <response code="422">The registration information was not valid (e.g. invalid email, weak password, etc)</response>
     [HttpPost("api/users")]
     public async Task<IActionResult> Registration([FromBody] RegistrationSubmitModel model)
     {
