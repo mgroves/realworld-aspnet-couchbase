@@ -145,6 +145,10 @@ public class UpdateUserHandlerTests : WithCouchbaseMocks
         };
         var request = new UpdateUserRequest(submit);
 
+        // arrange username is NOT already taken
+        ClusterMock.Setup(x => x.QueryAsync<int>(It.IsAny<string>(), It.IsAny<QueryOptions>()))
+            .ReturnsAsync(new FakeQueryResult<int>(new List<int> { 0 }));
+
         // act
         var result = await _updateUserHandler.Handle(request, CancellationToken.None);
 
