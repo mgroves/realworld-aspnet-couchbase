@@ -33,7 +33,7 @@ public class GetCurrentUserRequestHandlerTests : CouchbaseIntegrationTest
         var getCurrentUserHandler = new GetCurrentUserHandler(usersCollectionProvider, authService);
 
         // arrange the request
-        var email = "valid@example.net";
+        var email = $"valid{Path.GetRandomFileName()}@example.net";
         var fakeToken = new AuthService().GenerateJwtToken(email);
         var request = new GetCurrentUserRequest(fakeToken);
 
@@ -43,7 +43,7 @@ public class GetCurrentUserRequestHandlerTests : CouchbaseIntegrationTest
         var salt = new AuthService().GenerateSalt();
         await collection.InsertAsync(email, new User
         {
-            Username = "validUsername",
+            Username = $"validUsername{Path.GetRandomFileName()}",
             Password = new AuthService().HashPassword(password, salt),
             PasswordSalt = salt,
             Bio = "lorem ipsum",
