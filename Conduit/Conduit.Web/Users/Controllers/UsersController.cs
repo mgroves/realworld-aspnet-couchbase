@@ -24,7 +24,8 @@ public class UsersController : Controller
     /// <remarks>
     /// <a href="https://realworld-docs.netlify.app/docs/specs/backend-specs/endpoints#authentication">Conduit Spec for login endpoint</a>
     /// </remarks>
-    /// <param name="model"></param>
+    /// <returns>User</returns>
+    /// <param name="model">Login credentials</param>
     /// <response code="200">Succesfull login, returns the User that is logged in</response>
     /// <response code="401">Unauthorized, likely because credentials are incorrect</response>
     [HttpPost("api/users/login")]
@@ -63,6 +64,16 @@ public class UsersController : Controller
         return Ok(new { user = registrationResult.UserView });
     }
 
+    /// <summary>
+    /// Get the current user (by JWT token)
+    /// </summary>
+    /// <remarks>
+    /// <a href="https://realworld-docs.netlify.app/docs/specs/backend-specs/endpoints#get-current-user">Conduit spec for Get Current User endpoint</a>
+    /// </remarks>
+    /// <returns>User</returns>
+    /// <response code="200">Returns the newly registered User</response>
+    /// <response code="401">Unauthorized</response>
+    /// <response code="422">The given token was not valid</response>
     [HttpGet("api/user")]
     [Authorize]
     public async Task<IActionResult> GetCurrentUser()
