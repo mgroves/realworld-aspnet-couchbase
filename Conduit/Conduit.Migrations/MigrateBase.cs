@@ -44,6 +44,7 @@ public abstract class MigrateBase : Migrate
 
         _config = builder
             .AddEnvironmentVariables()
+            .AddUserSecrets<MigrateBase>()
             .Build();
     }
 }
