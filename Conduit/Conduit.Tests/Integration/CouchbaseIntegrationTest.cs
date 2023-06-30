@@ -25,7 +25,7 @@ public abstract class CouchbaseIntegrationTest
     public virtual async Task Setup()
     {
         _config = new ConfigurationBuilder()
-            .AddJsonFile("integrationtestsettings.json", optional: false, reloadOnChange: true)
+            .AddUserSecrets<CouchbaseIntegrationTest>()
             .AddEnvironmentVariables()
             .Build();
 

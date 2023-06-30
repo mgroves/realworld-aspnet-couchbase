@@ -7,20 +7,15 @@
 
         <IsPackable>false</IsPackable>
         <IsTestProject>true</IsTestProject>
+        <UserSecretsId>cc320a2c-ff55-4508-a1bd-da27b78f2765</UserSecretsId>
     </PropertyGroup>
 
     <ItemGroup>
-      <None Remove="integrationtestsettings.json" />
-      <None Remove="integrationtestsettings.json.template" />
+      <None Remove="secrets.json.template" />
     </ItemGroup>
 
     <ItemGroup>
-      <Content Include="integrationtestsettings.json.template">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      </Content>
-      <Content Include="integrationtestsettings.json">
+      <Content Include="secrets.json.template">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
         <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
@@ -30,6 +25,7 @@
     <ItemGroup>
         <PackageReference Include="Couchbase.Extensions.DependencyInjection" Version="3.4.8" />
         <PackageReference Include="Docker.DotNet" Version="3.125.15" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.1" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.5.0" />
         <PackageReference Include="Moq" Version="4.18.4" />
         <PackageReference Include="NoSqlMigrator" Version="0.0.2-alpha" />
