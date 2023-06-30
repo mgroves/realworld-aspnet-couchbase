@@ -26,7 +26,7 @@ public class UsersController : Controller
     /// </remarks>
     /// <returns>User</returns>
     /// <param name="model">Login credentials</param>
-    /// <response code="200">Succesfull login, returns the User that is logged in</response>
+    /// <response code="200">Successful login, returns the User that is logged in</response>
     /// <response code="401">Unauthorized, likely because credentials are incorrect</response>
     [HttpPost("api/users/login")]
     public async Task<IActionResult> Login([FromBody] LoginSubmitModel model)
@@ -71,7 +71,7 @@ public class UsersController : Controller
     /// <a href="https://realworld-docs.netlify.app/docs/specs/backend-specs/endpoints#get-current-user">Conduit spec for Get Current User endpoint</a>
     /// </remarks>
     /// <returns>User</returns>
-    /// <response code="200">Returns the newly registered User</response>
+    /// <response code="200">Returns the currently logged in User</response>
     /// <response code="401">Unauthorized</response>
     /// <response code="422">The given token was not valid</response>
     [HttpGet("api/user")]
@@ -90,6 +90,17 @@ public class UsersController : Controller
         return Ok(result.UserView);
     }
 
+    /// <summary>
+    /// Make changes to one or more parts of a user's information
+    /// </summary>
+    /// <remarks>
+    /// <a href="https://realworld-docs.netlify.app/docs/specs/backend-specs/endpoints#update-user">Conduit spec for Update User</a>
+    /// </remarks>
+    /// <param name="updateUser"></param>
+    /// <returns>User</returns>
+    /// <response code="200">Return the user after update</response>
+    /// <response code="401">Unauthorized</response>
+    /// <response code="422">The update request was invalid</response>
     [Authorize]
     [HttpPut("api/user")]
     public async Task<IActionResult> UpdateUser([FromBody] UpdateUserSubmitModel updateUser)

@@ -5,14 +5,14 @@ VisualStudioVersion = 17.6.33723.286
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Conduit.Web", "Conduit.Web\Conduit.Web.csproj", "{6D32BCC1-B61F-4FAD-A458-B4102030877D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Conduit.Migrations", "Conduit.Migrations\Conduit.Migrations.csproj", "{6331F2D4-461D-4689-A03B-B19D1FEA2E8F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Conduit.Migrations", "Conduit.Migrations\Conduit.Migrations.csproj", "{6331F2D4-461D-4689-A03B-B19D1FEA2E8F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{CF58EDDC-C6EE-459E-A012-0532BB3EA676}"
 	ProjectSection(SolutionItems) = preProject
-		migrateup.bat = migrateup.bat
+		migrateup.Example.bat = migrateup.Example.bat
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Conduit.Tests", "Conduit.Tests\Conduit.Tests.csproj", "{C306F629-B191-4FD0-B9CA-07E380D6C78B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Conduit.Tests", "Conduit.Tests\Conduit.Tests.csproj", "{C306F629-B191-4FD0-B9CA-07E380D6C78B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
