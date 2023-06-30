@@ -31,7 +31,7 @@ You'll need to understand at least a little bit:
 
   * *Models* folder - this is where data access objects are kept. These objects are used only for database interaction.
   * *Sliced* folders - these contain ASP.NET Core Controller(s), Mediatr request, response, and handler classes, viewmodels, and services for the functionality of the slice.
-    * User - Authorization/authentication, JWT, registration, login, anything for Users
+    * Users - Authorization/authentication, JWT, registration, login, anything for Users
     * ...more on the way...
   * *Extensions* folder - extension methods for ASP.NET functionality
 
@@ -39,10 +39,11 @@ You'll need to understand at least a little bit:
   * *Fakes* folder - this contains Fakes that may be used by unit tests.
   * *Unit* folder - this is where unit tests live. The folder structure within mirrors the Conduit.Web folders as much as possible.
   * *Integration* folder - this is where integration tests live. The folder structure within mirrors the Conduit.Web folders as much as possible.
+  * *Extensions* folder - this is for tests of base level extensions in the Conduit.Web project
 
 * *Conduit.Migrations* - Automated creation of database structures. This project uses NoSqlMigrator (see below).
 
-This Conduit implementation is being being [live on Twitch](https://twitch.tv/matthewdgroves). You can follow along with the [recordings on YouTube](https://www.youtube.com/watch?v=HiRj5ntqiXk&list=PLZWwU1YVRehL0psJRk35x8evMeeGAFwBa).
+This Conduit implementation is being streamed [live on Twitch](https://twitch.tv/matthewdgroves). You can follow along with the [recordings on YouTube](https://www.youtube.com/watch?v=HiRj5ntqiXk&list=PLZWwU1YVRehL0psJRk35x8evMeeGAFwBa).
 
 # Getting started
 
@@ -60,7 +61,10 @@ This Conduit implementation is being being [live on Twitch](https://twitch.tv/ma
    4. (Alternative to above step) Run the migrations in the *Conduit.Migrations* project (see [NoSqlMigrator](https://github.com/mgroves/NoSqlMigrator)).
 3. Configure Conduit.Web
    1. In appsettings.json, add the Couchbase connection string, username, password, and bucket name
-4. Compile and run Conduit.Web
+4. Configure Conduit.Tests and Conduit.Migrations
+   1. Add User Secrets to Conduit.Tests and Conduit.Migrations, following secrets.json.template example for both
+   2. You should use a separate bucket for integration tests, since integration tests will run "down" migrations and destroy anything in the bucket.
+5. Compile and run Conduit.Web
    1. Standard compile/run from command line/VSCode/Visual Studio/Rider should work fine
-   2. For now, use Postman to exercise the endpoints. [RealWorld has a Postman collection available for your convenience](https://realworld-docs.netlify.app/docs/specs/backend-specs/postman) (which is currently checked into this repo, but beware--if you have issues, fall back to the official one).
-
+   2. You can use Postman to exercise the endpoints. [RealWorld has a Postman collection available for your convenience](https://realworld-docs.netlify.app/docs/specs/backend-specs/postman) (which is currently checked into this repo, but beware--if you have issues, fall back to the official one).
+   3. You can also use the generated SwaggerUI to exercise the endpoints.
