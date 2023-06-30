@@ -8,6 +8,8 @@ I've gone to great lengths to adhere to the ASP.NET and Couchbase community styl
 
 For more information on how to this works with other frontends/backends, head over to the [RealWorld](https://github.com/gothinkster/realworld) repo.
 
+[![CI build status]](https://github.com/mgroves/realworld-aspnet-couchbase/actions/workflows/ci.yml/badge.svg)](https://github.com/mgroves/realworld-aspnet-couchbase/actions/workflows/ci.yml)
+
 # How it works
 
 This is a Conduit backend implementation for the [RealWorld project](https://realworld-docs.netlify.app/docs/intro). It is meant to be a working reference implementation.
