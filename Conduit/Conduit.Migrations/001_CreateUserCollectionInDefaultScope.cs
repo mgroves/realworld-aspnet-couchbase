@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-using NoSqlMigrator.Infrastructure;
+﻿using NoSqlMigrator.Infrastructure;
 
 namespace Conduit.Migrations
 {
