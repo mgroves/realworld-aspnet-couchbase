@@ -11,6 +11,14 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    env:
+      Couchbase__ConnectionString: ${{ secrets.COUCHBASE__CONNECTIONSTRING }}
+      Couchbase__Username: ${{ secrets.COUCHBASE__USERNAME }}
+      Couchbase__Password: ${{ secrets.COUCHBASE__PASSWORD }}
+      Couchbase__BucketName: ${{ secrets.COUCHBASE__BUCKETNAME }}
+      Couchbase__ScopeName: ${{ secrets.COUCHBASE__SCOPENAME }}
+      Couchbase__UsersCollectionName: ${{ secrets.COUCHBASE__USERSCOLLECTIONNAME }}
+
     steps:
     - name: Checkout
       uses: actions/checkout@v2
