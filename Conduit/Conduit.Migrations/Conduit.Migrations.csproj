@@ -13,7 +13,7 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="7.0.0" />
-    <PackageReference Include="NoSqlMigrator" Version="0.0.2-alpha" />
+    <PackageReference Include="NoSqlMigrator" Version="0.0.3-alpha" />
   </ItemGroup>
 
 </Project>
