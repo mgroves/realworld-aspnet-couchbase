@@ -34,13 +34,13 @@ jobs:
     - name: Build
       run: dotnet build Conduit --no-restore
 
-    - name: Run tests
-      run: dotnet test Conduit --no-build --verbosity normal
+    - name: Run tests with coverage
+      run: dotnet test Conduit --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura
 
-    - name: Generate code coverage files
-      run: dotnet test Conduit /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura
-
-    - name: Upload coverage to codecov.io
-      uses: codecov/codecov-action@v3
-      env: 
-        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+    - name: Upload coverage to CodeCov
+      uses: codecov/codecov-action@v2
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        file: ./Conduit/**/coverage.cobertura.xml
+        name: codecov-conduit
+        fail_ci_if_error: true
