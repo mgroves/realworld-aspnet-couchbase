@@ -38,7 +38,7 @@ jobs:
       run: dotnet test Conduit --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura
 
     - name: Upload coverage to CodeCov
-      uses: codecov/codecov-action@v2
+      uses: codecov/codecov-action@v3
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         file: ./Conduit/**/coverage.cobertura.xml
