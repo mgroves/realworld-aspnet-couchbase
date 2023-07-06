@@ -37,6 +37,9 @@ jobs:
     - name: Run tests
       run: dotnet test Conduit --no-build --verbosity normal
 
+    - name: Generate code coverage files
+      run: dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura
+
     - name: Upload coverage to codecov.io
       uses: codecov/codecov-action@v3
       env: 
