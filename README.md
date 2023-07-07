@@ -70,3 +70,16 @@ This Conduit implementation is being streamed [live on Twitch](https://twitch.tv
    1. Standard compile/run from command line/VSCode/Visual Studio/Rider should work fine
    2. You can use Postman to exercise the endpoints. [RealWorld has a Postman collection available for your convenience](https://realworld-docs.netlify.app/docs/specs/backend-specs/postman) (which is currently checked into this repo, but beware--if you have issues, fall back to the official one).
    3. You can also use the generated SwaggerUI to exercise the endpoints.
+
+# Video Series
+
+The creation of this implementation of Conduit is being done (mostly) on a [live coding stream](https://twitch.tv/matthewdgroves). Here are all the recordings:
+
+
+| Date | Description | Full Stream | Edited Stream
+|--|---|-----|-----
+| 2023-06-06 | Starting the Conduit project - ASP.NET + Couchbase - Office Hours | https://www.youtube.com/watch?v=HiRj5ntqiXk | 
+| 2023-06-08 | JWT and Mediatr | https://www.youtube.com/watch?v=O5ZTnmM4RpQ |
+| 2022-06-13 | Can ChatGPT write unit tests? | https://www.youtube.com/watch?v=eK9Ab4mWU_s | 
+
+[YouTube Playlist](https://www.youtube.com/playlist?list=PLZWwU1YVRehL0psJRk35x8evMeeGAFwBa)
