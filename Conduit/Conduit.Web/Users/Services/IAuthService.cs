@@ -1,4 +1,6 @@
-﻿namespace Conduit.Web.Users.Services;
+﻿using System.Security.Claims;
+
+namespace Conduit.Web.Users.Services;
 
 public interface IAuthService
 {
@@ -7,4 +9,5 @@ public interface IAuthService
     string HashPassword(string password, string passwordSalt);
     string GenerateSalt();
     string GetTokenFromHeader(string bearerTokenHeader);
+    AuthService.ClaimResult GetEmailClaim(string bearerToken);
 }

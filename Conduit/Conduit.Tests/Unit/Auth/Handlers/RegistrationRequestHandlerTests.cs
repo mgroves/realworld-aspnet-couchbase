@@ -1,32 +1,29 @@
-﻿using Conduit.Tests.Fakes.Couchbase;
-using Conduit.Web.Models;
+﻿using Conduit.Web.Models;
 using Conduit.Web.Users.Handlers;
 using Conduit.Web.Users.Services;
 using Conduit.Web.Users.ViewModels;
-using Couchbase.Core.Exceptions.KeyValue;
-using Couchbase.Query;
 using Moq;
 
 namespace Conduit.Tests.Unit.Auth.Handlers;
 
 [TestFixture]
-public class RegistrationRequestHandlerTests : WithCouchbaseMocks
+public class RegistrationRequestHandlerTests
 {
     private Mock<IAuthService> _authServiceMock;
     private RegistrationRequestHandler _registrationHandler;
+    private Mock<IUserDataService> _userDataServiceMock;
 
     [SetUp]
-    public override void SetUp()
+    public void SetUp()
     {
-        base.SetUp();
-            
         _authServiceMock = new Mock<IAuthService>();
+        _userDataServiceMock = new Mock<IUserDataService>();
 
-        _registrationHandler = new RegistrationRequestHandler(UsersCollectionProviderMock.Object, _authServiceMock.Object, new RegistrationRequestValidator(new SharedUserValidator<RegistrationUserSubmitModel>(), UsersCollectionProviderMock.Object));
+        // by default, user with the requested username does not already exist
+        _userDataServiceMock.Setup(m => m.GetUserByUsername(It.IsAny<string>()))
+            .ReturnsAsync(new DataServiceResult<User>(null, DataResultStatus.NotFound));
 
-        // by default, username is not a duplicate
-        ClusterMock.Setup(x => x.QueryAsync<int>(It.IsAny<string>(), It.IsAny<QueryOptions>()))
-            .ReturnsAsync(new FakeQueryResult<int>(new List<int> { 0 }));
+        _registrationHandler = new RegistrationRequestHandler(_authServiceMock.Object, new RegistrationRequestValidator(new SharedUserValidator<RegistrationUserSubmitModel>(), _userDataServiceMock.Object), _userDataServiceMock.Object);
     }
 
     [Test]
@@ -45,11 +42,22 @@ public class RegistrationRequestHandlerTests : WithCouchbaseMocks
             User = submittedInfo
         });
 
+        // arrange user object expected to be returned by database
+        var newUser = new User
+        {
+            Bio = null,
+            Email = submittedInfo.Email,
+            Password = "dontcare",
+            PasswordSalt = "doesntmatter",
+            Username = submittedInfo.Username
+        };
+
         // setup database and auth service mocks
         _authServiceMock.Setup(a => a.GenerateSalt()).Returns("salt");
         _authServiceMock.Setup(a => a.HashPassword(It.IsAny<string>(), It.IsAny<string>())).Returns("hashedPassword");
         _authServiceMock.Setup(a => a.GenerateJwtToken(It.IsAny<string>())).Returns("jwttoken");
-        UsersCollectionMock.Setup(c => c.InsertAsync(submittedInfo.Email, It.IsAny<User>(), null));
+        _userDataServiceMock.Setup(m => m.RegisterNewUser(It.IsAny<User>()))
+            .ReturnsAsync(new DataServiceResult<User>(newUser, DataResultStatus.Ok));
         
         // act
         var result = await _registrationHandler.Handle(request, CancellationToken.None);
@@ -82,8 +90,8 @@ public class RegistrationRequestHandlerTests : WithCouchbaseMocks
         
         _authServiceMock.Setup(a => a.GenerateSalt()).Returns("salt");
         _authServiceMock.Setup(a => a.HashPassword(It.IsAny<string>(), It.IsAny<string>())).Returns("hashedPassword");
-        UsersCollectionMock.Setup(c => c.InsertAsync(submittedInfo.Email, It.IsAny<User>(), null))
-            .Throws<DocumentExistsException>();
+        _userDataServiceMock.Setup(m => m.RegisterNewUser(It.IsAny<User>()))
+            .ReturnsAsync(new DataServiceResult<User>(null, DataResultStatus.FailedToInsert));
         
         // act
         var result = await _registrationHandler.Handle(request, CancellationToken.None);
@@ -169,9 +177,9 @@ public class RegistrationRequestHandlerTests : WithCouchbaseMocks
             User = submittedInfo
         });
 
-        // setup database mock to return a count of 1 (or greater)
-        ClusterMock.Setup(x => x.QueryAsync<int>(It.IsAny<string>(), It.IsAny<QueryOptions>()))
-            .ReturnsAsync(new FakeQueryResult<int>(new List<int> { 1 }));
+        // setup database mock for user with same username already exists
+        _userDataServiceMock.Setup(m => m.GetUserByUsername(submittedInfo.Username))
+            .ReturnsAsync(new DataServiceResult<User>(new User(), DataResultStatus.Ok));
 
         // Act
         var result = await _registrationHandler.Handle(request, CancellationToken.None);

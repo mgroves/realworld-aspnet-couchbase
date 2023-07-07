@@ -31,9 +31,9 @@ public class UpdateUserHandlerTests : CouchbaseIntegrationTest
 
         // arrange handler
         var handler = new UpdateUserHandler(
-            new UpdateUserRequestValidator(usersCollectionProvider, new SharedUserValidator<UpdateUserViewModelUser>()),
-            usersCollectionProvider,
-            new AuthService());
+            new UpdateUserRequestValidator(new UserDataService(usersCollectionProvider, new AuthService()), new SharedUserValidator<UpdateUserViewModelUser>()),
+            new AuthService(),
+            new UserDataService(usersCollectionProvider, new AuthService()));
 
         // arrange existing user in database to update
         var collection = await usersCollectionProvider.GetCollectionAsync();

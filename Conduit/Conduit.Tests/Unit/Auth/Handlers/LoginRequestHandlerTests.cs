@@ -1,4 +1,3 @@
-using Conduit.Tests.Fakes.Couchbase;
 using Conduit.Web.Models;
 using Conduit.Web.Users.Handlers;
 using Conduit.Web.Users.Services;
@@ -10,19 +9,19 @@ namespace Conduit.Tests.Unit.Auth.Handlers;
 public class Tests
 {
     [TestFixture]
-    public class LoginRequestHandlerTests : WithCouchbaseMocks
+    public class LoginRequestHandlerTests
     {
         private Mock<IAuthService> _authServiceMock;
         private LoginRequestHandler _loginHandler;
+        private Mock<IUserDataService> _userDataServiceMock;
 
         [SetUp]
-        public override void SetUp()
+        public void SetUp()
         {
-            base.SetUp();
-            
             _authServiceMock = new Mock<IAuthService>();
+            _userDataServiceMock = new Mock<IUserDataService>();
 
-            _loginHandler = new LoginRequestHandler(UsersCollectionProviderMock.Object, _authServiceMock.Object, new LoginRequestValidator());
+            _loginHandler = new LoginRequestHandler(_authServiceMock.Object, new LoginRequestValidator(), _userDataServiceMock.Object);
         }
 
         [Test]
@@ -52,10 +51,8 @@ public class Tests
             var request = new LoginRequest(loginSubmitModel);
 
             // setup database and auth service mocks
-            UsersCollectionMock.Setup(c => c.ExistsAsync(request.Model.User.Email, null))
-                .ReturnsAsync(new FakeExistsResult(exists: true));
-            UsersCollectionMock.Setup(c => c.GetAsync(request.Model.User.Email, null))
-                .ReturnsAsync(new FakeGetResult(userInDatabase));
+            _userDataServiceMock.Setup(m => m.GetUserByEmail(request.Model.User.Email))
+                .ReturnsAsync(new DataServiceResult<User>(userInDatabase, DataResultStatus.Ok));
             _authServiceMock.Setup(a => a.DoesPasswordMatch(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
                 .Returns(true);
             _authServiceMock.Setup(a => a.GenerateJwtToken(userInDatabase.Email))
@@ -91,8 +88,8 @@ public class Tests
             var request = new LoginRequest(loginSubmitModel);
 
             // setup database and auth service mocks
-            UsersCollectionMock.Setup(c => c.ExistsAsync(request.Model.User.Email, null))
-                .ReturnsAsync(new FakeExistsResult(exists: false));
+            _userDataServiceMock.Setup(m => m.GetUserByEmail(request.Model.User.Email))
+                .ReturnsAsync(new DataServiceResult<User>(null, DataResultStatus.NotFound));
             
             // act
             var result = await _loginHandler.Handle(request, CancellationToken.None);
@@ -129,10 +126,8 @@ public class Tests
             var request = new LoginRequest(loginSubmitModel);
 
             // setup database and auth service mocks
-            UsersCollectionMock.Setup(c => c.ExistsAsync(request.Model.User.Email, null))
-                .ReturnsAsync(new FakeExistsResult(exists: true));
-            UsersCollectionMock.Setup(c => c.GetAsync(request.Model.User.Email, null))
-                .ReturnsAsync(new FakeGetResult(userInDatabase));
+            _userDataServiceMock.Setup(m => m.GetUserByEmail(request.Model.User.Email))
+                .ReturnsAsync(new DataServiceResult<User>(userInDatabase, DataResultStatus.Ok));
             _authServiceMock.Setup(a => a.DoesPasswordMatch(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
                 .Returns(false);
             

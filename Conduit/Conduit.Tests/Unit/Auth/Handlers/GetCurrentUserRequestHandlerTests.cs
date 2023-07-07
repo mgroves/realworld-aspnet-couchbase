@@ -1,23 +1,23 @@
-﻿using Conduit.Tests.Fakes.Couchbase;
-using Conduit.Web.Models;
+﻿using Conduit.Web.Models;
 using Conduit.Web.Users.Handlers;
 using Conduit.Web.Users.Services;
-using Couchbase.Core.Exceptions.KeyValue;
 using Moq;
 
 namespace Conduit.Tests.Unit.Auth.Handlers;
 
-public class GetCurrentUserRequestHandlerTests : WithCouchbaseMocks
+public class GetCurrentUserRequestHandlerTests
 {
+    private Mock<IUserDataService> _mockUserDataService;
+    private Mock<IAuthService> _mockAuthService;
+    private GetCurrentUserHandler _handler;
+
     [SetUp]
-    public override void SetUp()
+    public void SetUp()
     {
-        base.SetUp();
-
         _mockAuthService = new Mock<IAuthService>();
+        _mockUserDataService = new Mock<IUserDataService>();
+        _handler = new GetCurrentUserHandler(_mockAuthService.Object, _mockUserDataService.Object);
     }
-
-    private Mock<IAuthService> _mockAuthService { get; set; }
 
     [Test]
     public async Task ValidToken_is_Handled()
@@ -39,17 +39,16 @@ public class GetCurrentUserRequestHandlerTests : WithCouchbaseMocks
             PasswordSalt = "doesntmatterSalt"
         };
 
-        // arrange handler
-        var handler = new GetCurrentUserHandler(UsersCollectionProviderMock.Object, _mockAuthService.Object);
-
         // arrange mocks
+        _mockAuthService.Setup(m => m.GetEmailClaim(fakeToken))
+            .Returns(new AuthService.ClaimResult { IsNotFound = false, Value = email });
         _mockAuthService.Setup(m => m.GenerateJwtToken(It.IsAny<string>()))
             .Returns(fakeToken);
-        UsersCollectionMock.Setup(m => m.GetAsync(email, null))
-            .ReturnsAsync(new FakeGetResult(userFromDatabase));
+        _mockUserDataService.Setup(m => m.GetUserByEmail(email))
+            .ReturnsAsync(new DataServiceResult<User>(userFromDatabase, DataResultStatus.Ok));
 
         // act
-        var result = await handler.Handle(request, CancellationToken.None);
+        var result = await _handler.Handle(request, CancellationToken.None);
 
         // assert
         Assert.That(result, Is.Not.Null);
@@ -72,7 +71,10 @@ public class GetCurrentUserRequestHandlerTests : WithCouchbaseMocks
         var request = new GetCurrentUserRequest(fakeToken);
 
         // arrange handler
-        var handler = new GetCurrentUserHandler(UsersCollectionProviderMock.Object, _mockAuthService.Object);
+        var handler = new GetCurrentUserHandler(_mockAuthService.Object, _mockUserDataService.Object);
+        // arrange email claim
+        _mockAuthService.Setup(m => m.GetEmailClaim(It.IsAny<string>()))
+            .Returns(new AuthService.ClaimResult { IsNotFound = true});
 
         // act
         var result = await handler.Handle(request, CancellationToken.None);
@@ -90,20 +92,18 @@ public class GetCurrentUserRequestHandlerTests : WithCouchbaseMocks
         var fakeToken = new AuthService().GenerateJwtToken(email);
         var request = new GetCurrentUserRequest(fakeToken);
 
-        // arrange handler
-        var handler = new GetCurrentUserHandler(UsersCollectionProviderMock.Object, _mockAuthService.Object);
 
         // arrange mocks
-        _mockAuthService.Setup(m => m.GenerateJwtToken(It.IsAny<string>()))
-            .Returns(fakeToken);
-        UsersCollectionMock.Setup(m => m.GetAsync(email, null))
-            .Throws<DocumentExistsException>();
+        _mockAuthService.Setup(m => m.GetEmailClaim(fakeToken))
+            .Returns(new AuthService.ClaimResult { Value = email });
+        _mockUserDataService.Setup(m => m.GetUserByEmail(email))
+            .ReturnsAsync(new DataServiceResult<User>(null, DataResultStatus.NotFound));
 
         // act
-        var result = await handler.Handle(request, CancellationToken.None);
+        var result = await _handler.Handle(request, CancellationToken.None);
 
         // assert
         Assert.That(result, Is.Not.Null);
-        Assert.That(result.IsInvalidToken, Is.True);
+        Assert.That(result.UserNotFound, Is.True);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Conduit.Web.Models;
+using Conduit.Web.Users.Services;
 using Conduit.Web.Users.ViewModels;
 using Couchbase.Query;
 using FluentValidation;
@@ -7,11 +8,11 @@ namespace Conduit.Web.Users.Handlers;
 
 public class UpdateUserRequestValidator : AbstractValidator<UpdateUserRequest>
 {
-    private readonly IConduitUsersCollectionProvider _usersCollectionProvider;
+    private readonly IUserDataService _userDataService;
 
-    public UpdateUserRequestValidator(IConduitUsersCollectionProvider usersCollectionProvider, SharedUserValidator<UpdateUserViewModelUser> sharedUser)
+    public UpdateUserRequestValidator(IUserDataService userDataService, SharedUserValidator<UpdateUserViewModelUser> sharedUser)
     {
-        _usersCollectionProvider = usersCollectionProvider;
+        _userDataService = userDataService;
 
         RuleFor(x => x.Model.User)
             .SetValidator(sharedUser);
@@ -39,39 +40,14 @@ public class UpdateUserRequestValidator : AbstractValidator<UpdateUserRequest>
 
     private async Task<bool> NotMatchAnyOtherUsername(UpdateUserSubmitModel model, CancellationToken cancellationToken)
     {
-        var collection = await _usersCollectionProvider.GetCollectionAsync();
-        var scope = collection.Scope;
-        var bucket = scope.Bucket;
-        var cluster = bucket.Cluster;
-
-        // SQL++ query
-        // are there any usernames OTHER than the one currently in use by this email
-        // address that match the new username?
-        // TODO: extension method to build the fully qualified collection name?
-        var checkForClearUsername = $@"
-            SELECT RAW COUNT(*)
-            FROM `{bucket.Name}`.`{scope.Name}`.`{collection.Name}` u
-            WHERE u.username == $username
-            AND META(u).id != $email";
-
-        // Can potentially be switched to use NotBounded scan consistency
-        // for reduced latency, if the risk of two people trying to get the
-        // same username within a very small window of time is small
-        var queryOptions = new QueryOptions()
-            .Parameter("username", model.User.Username)
-            .Parameter("email", model.User.Email)
-            .ScanConsistency(QueryScanConsistency.RequestPlus);
-
-        var result = await cluster.QueryAsync<int>(checkForClearUsername, queryOptions);
-
-        var countResult = await result.ToListAsync(cancellationToken);
-
-        if (!countResult.Any())
+        // if no username was specified
+        // that means the username is not being updated
+        // so it's okay to skip this validation
+        if (string.IsNullOrEmpty(model.User.Username))
             return true;
 
-        var howManyMatches = countResult.First();
-
-        return howManyMatches < 1;
+        var doesADifferentUserExistWithTheGivenUsername = await _userDataService.DoesExistUserByEmailAndUsername(model.User.Email, model.User.Username);
+        return !doesADifferentUserExistWithTheGivenUsername;
     }
 
     private bool BeAValidImageUrl(string url)

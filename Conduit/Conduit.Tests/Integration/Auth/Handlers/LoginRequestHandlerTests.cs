@@ -32,7 +32,7 @@ public class LoginRequestHandlerTests : CouchbaseIntegrationTest
 
         // arrange the handler
         var authService = new AuthService();
-        var loginRequestHandler = new LoginRequestHandler(usersCollectionProvider, authService, new LoginRequestValidator());
+        var loginRequestHandler = new LoginRequestHandler(authService, new LoginRequestValidator(), new UserDataService(usersCollectionProvider, authService));
 
         // arrange the request
         var userViewModel = new LoginUserViewModel

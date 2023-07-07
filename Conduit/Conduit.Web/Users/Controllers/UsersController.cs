@@ -84,8 +84,11 @@ public class UsersController : Controller
 
         var result = await _mediator.Send(new GetCurrentUserRequest(bearerToken));
 
+        if (result.UserNotFound)
+            return UnprocessableEntity("User not found");
+
         if (result.IsInvalidToken)
-            return UnprocessableEntity();
+            return UnprocessableEntity("JWT not valid");
 
         return Ok(result.UserView);
     }

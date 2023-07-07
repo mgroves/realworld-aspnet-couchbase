@@ -55,4 +55,31 @@ public class AuthService : IAuthService
             ? bearerTokenHeader.Substring(tokenPrefix.Length).Trim()
             : bearerTokenHeader.Trim();
     }
+
+    public ClaimResult GetEmailClaim(string bearerToken)
+    {
+        try
+        {
+            var handler = new JwtSecurityTokenHandler();
+            var claims = handler.ReadJwtToken(bearerToken).Claims;
+            var email = claims.FirstOrDefault(claim => claim.Type == ClaimTypes.Email)?.Value;
+            return new ClaimResult
+            {
+                Value = email
+            };
+        }
+        catch (ArgumentException)
+        {
+            return new ClaimResult
+            {
+                IsNotFound = true
+            };
+        }
+    }
+
+    public class ClaimResult
+    {
+        public string Value { get; set; }
+        public bool IsNotFound { get; set; }
+    }
 }

@@ -14,6 +14,9 @@ namespace Conduit.Web
     {
         public static void Main(string[] args)
         {
+            // TODO: refactor this stuff into extension methods / other classes
+            // TODO: because it's a lot to sort through!
+
             var builder = WebApplication.CreateBuilder(args);
 
             builder.Configuration
@@ -97,6 +100,7 @@ namespace Conduit.Web
             builder.Services.AddValidatorsFromAssemblyContaining<LoginRequestValidator>();
             builder.Services.AddTransient(typeof(SharedUserValidator<>));
             builder.Services.AddTransient<IAuthService, AuthService>();
+            builder.Services.AddTransient<IUserDataService, UserDataService>();
             builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<Program>());
             builder.Services.AddCouchbase(builder.Configuration.GetSection("Couchbase"));
             builder.Services.AddCouchbaseBucket<IConduitBucketProvider>(builder.Configuration["Couchbase:BucketName"], b =>

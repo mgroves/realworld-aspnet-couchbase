@@ -32,7 +32,7 @@ public class RegistrationRequestHandlerTests : CouchbaseIntegrationTest
     
         // arrange the handler
         var authService = new AuthService();
-        var registrationRequestHandler = new RegistrationRequestHandler(usersCollectionProvider, authService, new RegistrationRequestValidator(new SharedUserValidator<RegistrationUserSubmitModel>(), usersCollectionProvider));
+        var registrationRequestHandler = new RegistrationRequestHandler(authService, new RegistrationRequestValidator(new SharedUserValidator<RegistrationUserSubmitModel>(), new UserDataService(usersCollectionProvider, authService)), new UserDataService(usersCollectionProvider, authService));
     
         // arrange the request
         var submittedInfo = new RegistrationUserSubmitModel

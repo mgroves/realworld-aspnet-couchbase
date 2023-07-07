@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Conduit.Tests.Integration.Auth.Handlers;
 
-public class GetCurrentUserRequestHandlerTests : CouchbaseIntegrationTest
+public class GetProfileHandlerTests : CouchbaseIntegrationTest
 {
     [OneTimeSetUp]
     public override async Task Setup()
@@ -30,32 +30,35 @@ public class GetCurrentUserRequestHandlerTests : CouchbaseIntegrationTest
 
         // arrange the handler
         var authService = new AuthService();
-        var getCurrentUserHandler = new GetCurrentUserHandler(authService, new UserDataService(usersCollectionProvider, authService));
+        var getCurrentUserHandler = new GetProfileHandler(new UserDataService(usersCollectionProvider, authService),
+            new GetProfileRequestValidator());
 
         // arrange the request
-        var email = $"valid{Path.GetRandomFileName()}@example.net";
-        var fakeToken = new AuthService().GenerateJwtToken(email);
-        var request = new GetCurrentUserRequest(fakeToken);
+        var username = $"user-{Path.GetRandomFileName()}";
+        var request = new GetProfileRequest(username, null);
 
-        // arrange the current user already in the database
+        // arrange the user already in the database
         var collection = await usersCollectionProvider.GetCollectionAsync();
-        var password = "ValidPassword1#";
-        var salt = new AuthService().GenerateSalt();
-        await collection.InsertAsync(email, new User
+        var userForDatabase = new User
         {
-            Username = $"validUsername{Path.GetRandomFileName()}",
-            Password = new AuthService().HashPassword(password, salt),
-            PasswordSalt = salt,
-            Bio = "lorem ipsum",
-            Image = "http://example.net/profile.jpg"
-        });
+            Username = username,
+            Password = "doesntmatter",
+            PasswordSalt = "doesntmatterhereeither",
+            Bio = $"lorem ipsum {Guid.NewGuid()}",
+            Image = $"http://example.net/profile-{Guid.NewGuid()}.jpg"
+        }
+        ;
+        await collection.InsertAsync("doesntmatter@example.net", userForDatabase);
 
         // *** act
         var result = await getCurrentUserHandler.Handle(request, CancellationToken.None);
 
         // *** assert
         Assert.That(result, Is.Not.Null);
-        Assert.That(result.IsInvalidToken, Is.False);
-        Assert.That(result.UserView.Email, Is.EqualTo(email));
+        Assert.That(result.ProfileView, Is.Not.Null);
+        Assert.That(result.ProfileView.Username, Is.EqualTo(username));
+        Assert.That(result.ProfileView.Bio, Is.EqualTo(userForDatabase.Bio));
+        Assert.That(result.ProfileView.Image, Is.EqualTo(userForDatabase.Image));
+        Assert.That(result.ProfileView.Following, Is.EqualTo(false));
     }
 }

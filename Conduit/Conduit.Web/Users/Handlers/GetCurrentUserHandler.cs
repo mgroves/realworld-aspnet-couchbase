@@ -1,47 +1,34 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using Conduit.Web.Models;
+﻿using Conduit.Web.Models;
 using Conduit.Web.Users.Services;
 using Conduit.Web.Users.ViewModels;
-using Couchbase.Core.Exceptions.KeyValue;
-using Couchbase.KeyValue;
 using MediatR;
 
 namespace Conduit.Web.Users.Handlers;
 
 public class GetCurrentUserHandler : IRequestHandler<GetCurrentUserRequest, GetCurrentUserResult>
 {
-    private readonly IConduitUsersCollectionProvider _usersCollectionProvider;
     private readonly IAuthService _authService;
+    private readonly IUserDataService _userDataService;
 
-    public GetCurrentUserHandler(IConduitUsersCollectionProvider usersCollectionProvider, IAuthService authService)
+    public GetCurrentUserHandler(IAuthService authService, IUserDataService userDataService)
     {
-        _usersCollectionProvider = usersCollectionProvider;
         _authService = authService;
+        _userDataService = userDataService;
     }
 
     public async Task<GetCurrentUserResult> Handle(GetCurrentUserRequest request, CancellationToken cancellationToken)
     {
-        string email;
-        IGetResult userDoc;
-        try
-        {
-            // JWT checking throws ArgumentException if token isn't valid
-            var handler = new JwtSecurityTokenHandler();
-            var claims = handler.ReadJwtToken(request.BearerToken).Claims;
-            email = claims.FirstOrDefault(claim => claim.Type == ClaimTypes.Email)?.Value;
-
-            // Couchbase throws DocumentExistsException if document doesn't exist
-            var collection = await _usersCollectionProvider.GetCollectionAsync();
-
-            userDoc = await collection.GetAsync(email);
-        }
-        catch (Exception ex) when (ex is ArgumentException or DocumentExistsException)
-        {
+        var emailClaim = _authService.GetEmailClaim(request.BearerToken);
+        if (emailClaim.IsNotFound)
             return new GetCurrentUserResult { IsInvalidToken = true };
-        }
 
-        var user = userDoc.ContentAs<User>();
+        var email = emailClaim.Value;
+
+        var userResult = await _userDataService.GetUserByEmail(email);
+        if (userResult.Status != DataResultStatus.Ok)
+            return new GetCurrentUserResult { UserNotFound = true };
+
+        var user = userResult.DataResult;
 
         return new GetCurrentUserResult
         {

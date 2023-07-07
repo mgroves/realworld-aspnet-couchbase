@@ -2,30 +2,29 @@
 using Conduit.Web.Users.Services;
 using Conduit.Web.Users.ViewModels;
 using Moq;
-using Couchbase.Query;
-using Conduit.Tests.Fakes.Couchbase;
+using Conduit.Web.Models;
 
 namespace Conduit.Tests.Unit.Auth.Handlers;
 
 [TestFixture]
-public class UpdateUserHandlerTests : WithCouchbaseMocks
+public class UpdateUserHandlerTests
 {
     private UpdateUserHandler _updateUserHandler;
     private Mock<IAuthService> _authServiceMock;
+    private Mock<IUserDataService> _userDataServiceMock;
 
     [SetUp]
     public async Task Setup()
     {
-        base.SetUp();
-
         _authServiceMock = new Mock<IAuthService>();
+        _userDataServiceMock = new Mock<IUserDataService>();
 
         _updateUserHandler =
-            new UpdateUserHandler(new UpdateUserRequestValidator(UsersCollectionProviderMock.Object, new SharedUserValidator<UpdateUserViewModelUser>()), UsersCollectionProviderMock.Object, _authServiceMock.Object);
-
-        // by default, username is already taken
-        ClusterMock.Setup(x => x.QueryAsync<int>(It.IsAny<string>(), It.IsAny<QueryOptions>()))
-            .ReturnsAsync(new FakeQueryResult<int>(new List<int> { 1 }));
+            new UpdateUserHandler(
+                new UpdateUserRequestValidator(_userDataServiceMock.Object,
+                    new SharedUserValidator<UpdateUserViewModelUser>()),
+                _authServiceMock.Object,
+                _userDataServiceMock.Object);
     }
 
     [Test]
@@ -47,8 +46,8 @@ public class UpdateUserHandlerTests : WithCouchbaseMocks
 
         // arrange mocks for database
         // so username is already taken
-        ClusterMock.Setup(m => m.QueryAsync<int>(It.IsAny<string>(), It.IsAny<QueryOptions>()))
-            .ReturnsAsync(new FakeQueryResult<int>(new List<int> { 1 }));
+        _userDataServiceMock.Setup(m => m.DoesExistUserByEmailAndUsername(submit.User.Email, submit.User.Username))
+            .ReturnsAsync(true);
 
         // act
         var result = await _updateUserHandler.Handle(request, CancellationToken.None);
@@ -79,8 +78,10 @@ public class UpdateUserHandlerTests : WithCouchbaseMocks
         var request = new UpdateUserRequest(submit);
 
         // arrange username not taken
-        ClusterMock.Setup(x => x.QueryAsync<int>(It.IsAny<string>(), It.IsAny<QueryOptions>()))
-            .ReturnsAsync(new FakeQueryResult<int>(new List<int> { 0 }));
+        _userDataServiceMock.Setup(m => m.DoesExistUserByEmailAndUsername(submit.User.Email, submit.User.Username))
+            .ReturnsAsync(false);
+        // ClusterMock.Setup(x => x.QueryAsync<int>(It.IsAny<string>(), It.IsAny<QueryOptions>()))
+        //     .ReturnsAsync(new FakeQueryResult<int>(new List<int> { 0 }));
 
         // act
         var result = await _updateUserHandler.Handle(request, CancellationToken.None);
@@ -114,8 +115,10 @@ public class UpdateUserHandlerTests : WithCouchbaseMocks
         var request = new UpdateUserRequest(submit);
 
         // arrange username not taken
-        ClusterMock.Setup(x => x.QueryAsync<int>(It.IsAny<string>(), It.IsAny<QueryOptions>()))
-            .ReturnsAsync(new FakeQueryResult<int>(new List<int> { 0 }));
+        _userDataServiceMock.Setup(m => m.DoesExistUserByEmailAndUsername(submit.User.Email, submit.User.Username))
+            .ReturnsAsync(false);
+        // ClusterMock.Setup(x => x.QueryAsync<int>(It.IsAny<string>(), It.IsAny<QueryOptions>()))
+        //     .ReturnsAsync(new FakeQueryResult<int>(new List<int> { 0 }));
 
 
         // act
@@ -146,8 +149,10 @@ public class UpdateUserHandlerTests : WithCouchbaseMocks
         var request = new UpdateUserRequest(submit);
 
         // arrange username is NOT already taken
-        ClusterMock.Setup(x => x.QueryAsync<int>(It.IsAny<string>(), It.IsAny<QueryOptions>()))
-            .ReturnsAsync(new FakeQueryResult<int>(new List<int> { 0 }));
+        _userDataServiceMock.Setup(m => m.DoesExistUserByEmailAndUsername(submit.User.Email, submit.User.Username))
+            .ReturnsAsync(false);
+        // ClusterMock.Setup(x => x.QueryAsync<int>(It.IsAny<string>(), It.IsAny<QueryOptions>()))
+        //     .ReturnsAsync(new FakeQueryResult<int>(new List<int> { 0 }));
 
         // act
         var result = await _updateUserHandler.Handle(request, CancellationToken.None);
@@ -180,8 +185,10 @@ public class UpdateUserHandlerTests : WithCouchbaseMocks
         var request = new UpdateUserRequest(submit);
 
         // arrange username not taken
-        ClusterMock.Setup(x => x.QueryAsync<int>(It.IsAny<string>(), It.IsAny<QueryOptions>()))
-            .ReturnsAsync(new FakeQueryResult<int>(new List<int> { 0 }));
+        _userDataServiceMock.Setup(m => m.DoesExistUserByEmailAndUsername(submit.User.Email, submit.User.Username))
+            .ReturnsAsync(false);
+        // ClusterMock.Setup(x => x.QueryAsync<int>(It.IsAny<string>(), It.IsAny<QueryOptions>()))
+        //     .ReturnsAsync(new FakeQueryResult<int>(new List<int> { 0 }));
 
         // act
         var result = await _updateUserHandler.Handle(request, CancellationToken.None);

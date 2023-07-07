@@ -1,4 +1,5 @@
 ﻿using Conduit.Web.Models;
+using Conduit.Web.Users.Services;
 using Conduit.Web.Users.ViewModels;
 using Couchbase.Query;
 using FluentValidation;
@@ -7,11 +8,11 @@ namespace Conduit.Web.Users.Handlers;
 
 public class RegistrationRequestValidator : AbstractValidator<RegistrationRequest>
 {
-    private readonly IConduitUsersCollectionProvider _usersCollectionProvider;
+    private readonly IUserDataService _userDataService;
 
-    public RegistrationRequestValidator(SharedUserValidator<RegistrationUserSubmitModel> sharedUser, IConduitUsersCollectionProvider usersCollectionProvider)
+    public RegistrationRequestValidator(SharedUserValidator<RegistrationUserSubmitModel> sharedUser, IUserDataService userDataService)
     {
-        _usersCollectionProvider = usersCollectionProvider;
+        _userDataService = userDataService;
 
         RuleFor(x => x.Model.User)
             .SetValidator(sharedUser);
@@ -31,34 +32,10 @@ public class RegistrationRequestValidator : AbstractValidator<RegistrationReques
 
     private async Task<bool> NotAlreadyExist(string username, CancellationToken cancellationToken)
     {
-        var collection = await _usersCollectionProvider.GetCollectionAsync();
+        var user = await _userDataService.GetUserByUsername(username);
 
-        // bringing scope/bucket/cluster in to avoid hardcoding in the SQL++ query
-        var scope = collection.Scope;
-        var bucket = scope.Bucket;
-        var cluster = bucket.Cluster;
+        var userAlreadyExists = user.Status == DataResultStatus.Ok;
 
-        var checkForExistingUsernameSql = @$"
-        SELECT RAW COUNT(*)
-        FROM `{bucket.Name}`.`{scope.Name}`.`{collection.Name}` u
-        WHERE u.username = $username";
-
-        // Can potentially be switched to use NotBounded scan consistency
-        // for reduced latency, if the risk of two people trying to get the
-        // same username within a very small window of time is small
-        var queryOptions = new QueryOptions()
-            .Parameter("username", username)
-            .ScanConsistency(QueryScanConsistency.RequestPlus);
-
-        var result = await cluster.QueryAsync<int>(checkForExistingUsernameSql, queryOptions);
-
-        var countResult = await result.ToListAsync(cancellationToken);
-
-        if (!countResult.Any())
-            return true;
-
-        var howManyMatches = countResult.First();
-
-        return howManyMatches < 1;
+        return !userAlreadyExists;
     }
 }

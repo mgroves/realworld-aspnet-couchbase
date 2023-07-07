@@ -1,22 +1,24 @@
-﻿using Conduit.Tests.Fakes.Couchbase;
-using Conduit.Web.Models;
+﻿using Conduit.Web.Models;
 using Conduit.Web.Users.Handlers;
 using Conduit.Web.Users.Services;
-using Couchbase.Query;
 using Moq;
 
 namespace Conduit.Tests.Unit.Auth.Handlers;
 
 [TestFixture]
-public class GetProfileHandlerTests : WithCouchbaseMocks
+public class GetProfileHandlerTests
 {
-    [SetUp]
-    public override void SetUp()
-    {
-        base.SetUp();
+    private Mock<IUserDataService> _userDataServiceMock;
 
-        //_mockAuthService = new Mock<IAuthService>();
+    [SetUp]
+    public void SetUp()
+    {
+        _userDataServiceMock = new Mock<IUserDataService>();
     }
+
+    // TODO: test when the user IS following
+
+    // TODO: test when the user IS NOT following
 
     [Test]
     public async Task Username_not_found()
@@ -27,12 +29,11 @@ public class GetProfileHandlerTests : WithCouchbaseMocks
         var request = new GetProfileRequest(username, null);
 
         // arrange handler
-        var handler = new GetProfileHandler(UsersCollectionProviderMock.Object, new GetProfileRequestValidator());
+        var handler = new GetProfileHandler(_userDataServiceMock.Object, new GetProfileRequestValidator());
 
         // arrange for user to be in mock database
-        var noUsersFoundResult = new FakeQueryResult<User>(new List<User> { });
-        ClusterMock.Setup(m => m.QueryAsync<User>(It.IsAny<string>(), It.IsAny<QueryOptions>()))
-            .ReturnsAsync(noUsersFoundResult);
+        _userDataServiceMock.Setup(m => m.GetProfileByUsername(username))
+            .ReturnsAsync(new DataServiceResult<User>(null, DataResultStatus.NotFound));
 
         // act
         var result = await handler.Handle(request, CancellationToken.None);
@@ -52,7 +53,7 @@ public class GetProfileHandlerTests : WithCouchbaseMocks
         var request = new GetProfileRequest(username, null);
 
         // arrange handler
-        var handler = new GetProfileHandler(UsersCollectionProviderMock.Object, new GetProfileRequestValidator());
+        var handler = new GetProfileHandler(_userDataServiceMock.Object, new GetProfileRequestValidator());
 
         // arrange for user to be in mock database
         var user = new User
@@ -64,9 +65,8 @@ public class GetProfileHandlerTests : WithCouchbaseMocks
             Password = "doesntmatter",
             PasswordSalt = "doesntmatter"
         };
-        var userInDatabase = new FakeQueryResult<User>(new List<User> { user });
-        ClusterMock.Setup(m => m.QueryAsync<User>(It.IsAny<string>(), It.IsAny<QueryOptions>()))
-            .ReturnsAsync(userInDatabase);
+        _userDataServiceMock.Setup(m => m.GetProfileByUsername(username))
+            .ReturnsAsync(new DataServiceResult<User>(user, DataResultStatus.Ok));
 
         // act
         var result = await handler.Handle(request, CancellationToken.None);

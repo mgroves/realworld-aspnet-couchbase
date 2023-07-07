@@ -7,4 +7,5 @@ public class GetCurrentUserResult
     public UserViewModel UserView { get; set; }
 
     public bool IsInvalidToken { get; set; }
+    public bool UserNotFound { get; set; }
 }

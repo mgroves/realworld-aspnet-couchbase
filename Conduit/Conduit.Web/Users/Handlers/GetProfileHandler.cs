@@ -1,19 +1,18 @@
-﻿using Conduit.Web.Models;
+﻿using Conduit.Web.Users.Services;
 using Conduit.Web.Users.ViewModels;
 using MediatR;
-using Couchbase.Query;
 using FluentValidation;
 
 namespace Conduit.Web.Users.Handlers;
 
 public class GetProfileHandler : IRequestHandler<GetProfileRequest, GetProfileResult>
 {
-    private readonly IConduitUsersCollectionProvider _usersCollectionProvider;
+    private readonly IUserDataService _userDataService;
     private readonly IValidator<GetProfileRequest> _validator;
 
-    public GetProfileHandler(IConduitUsersCollectionProvider usersCollectionProvider, IValidator<GetProfileRequest> validator)
+    public GetProfileHandler(IUserDataService userDataService, IValidator<GetProfileRequest> validator)
     {
-        _usersCollectionProvider = usersCollectionProvider;
+        _userDataService = userDataService;
         _validator = validator;
     }
 
@@ -29,32 +28,13 @@ public class GetProfileHandler : IRequestHandler<GetProfileRequest, GetProfileRe
             };
         }
 
-        // TODO: if JWT is specified, use that to determine if the logged-in user
-        // is following this profile
+        // TODO: if JWT is specified, use that to determine if the logged-in user is following this profile
 
-        // TODO: Refactor into a UserRepository/UserDal
-
-        var collection = await _usersCollectionProvider.GetCollectionAsync();
-        var scope = collection.Scope;
-        var bucket = scope.Bucket;
-        var cluster = bucket.Cluster;
-        var query = $@"
-            SELECT u.*
-            FROM `{bucket.Name}`.`{scope.Name}`.`{collection.Name}` u
-            WHERE u.username = $username";
-        var queryOptions = new QueryOptions()
-            .Parameter("username", request.Username)
-            .ScanConsistency(QueryScanConsistency.RequestPlus);
-        var results = await cluster.QueryAsync<User>(query, queryOptions);
-
-        var resultList = await results.ToListAsync(cancellationToken: cancellationToken);
-
-        // should only ever be one or zero results
-        var result = resultList.FirstOrDefault();
-
-        // if user not found:
-        if (result is null)
+        var profileResult = await _userDataService.GetProfileByUsername(request.Username);
+        if (profileResult.Status == DataResultStatus.NotFound)
             return new GetProfileResult { UserNotFound = true };
+
+        var result = profileResult.DataResult;
 
         return new GetProfileResult
         {
@@ -63,7 +43,7 @@ public class GetProfileHandler : IRequestHandler<GetProfileRequest, GetProfileRe
                 Username = result.Username,
                 Bio = result.Bio,
                 Image = result.Image,
-                Following = false       // TODO: determine following or not
+                Following = false       // TODO: determine following or not (this MIGHT be done in the data layer?)
             }
         };
     }
