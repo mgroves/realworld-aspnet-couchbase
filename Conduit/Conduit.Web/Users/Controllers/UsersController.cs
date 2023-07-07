@@ -112,4 +112,33 @@ public class UsersController : Controller
 
         return Ok(result.UserView);
     }
+
+    /// <summary>
+    /// Get the public profile for a given user.
+    /// If a JWT token is in the headers, the "following" status will also be returned
+    /// </summary>
+    /// <remarks>
+    /// <a href="https://realworld-docs.netlify.app/docs/specs/backend-specs/endpoints/#get-profile">Conduit spec for Get Profile</a>
+    /// </remarks>
+    /// <param name="username">Username (required)</param>
+    /// <returns>Profile</returns>
+    /// <response code="200">Return the public profile</response>
+    /// <response code="422">The update request was invalid</response>
+    [HttpGet("api/profiles/{username}")]
+    public async Task<IActionResult> GetProfile(string username)
+    {
+        var authHeader = Request.Headers["Authorization"];
+
+        var bearerToken = _authService.GetTokenFromHeader(authHeader);
+
+        var result = await _mediator.Send(new GetProfileRequest(username, bearerToken));
+
+        if (result.UserNotFound)
+            return UnprocessableEntity("Username not found.");
+
+        if (result.ValidationErrors?.Any() ?? false)
+            return UnprocessableEntity(result.ValidationErrors.ToCsv());
+
+        return Ok(result.ProfileView);
+    }
 }

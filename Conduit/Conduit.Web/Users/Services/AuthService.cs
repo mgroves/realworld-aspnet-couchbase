@@ -9,6 +9,8 @@ public class AuthService : IAuthService
 {
     public string GenerateJwtToken(string email)
     {
+        // TODO: put username in claim too?
+
         var claims = new[]
         {
             new Claim(ClaimTypes.Email, email)
@@ -45,6 +47,9 @@ public class AuthService : IAuthService
 
     public string GetTokenFromHeader(string bearerTokenHeader)
     {
+        if (string.IsNullOrEmpty(bearerTokenHeader))
+            return null;
+
         var tokenPrefix = "Token ";
         return bearerTokenHeader.StartsWith(tokenPrefix)
             ? bearerTokenHeader.Substring(tokenPrefix.Length).Trim()
