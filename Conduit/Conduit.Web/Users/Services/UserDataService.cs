@@ -3,8 +3,6 @@ using Couchbase.Core.Exceptions.KeyValue;
 using Couchbase.KeyValue;
 using Couchbase.Query;
 using Conduit.Web.Users.ViewModels;
-using Conduit.Web.Users.Handlers;
-using System.Threading;
 
 namespace Conduit.Web.Users.Services;
 
