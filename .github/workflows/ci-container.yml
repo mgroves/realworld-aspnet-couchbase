@@ -1,0 +1,123 @@
+name: Conduit Integration Tests (Container)
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+env:
+  COUCHBASE_VERSION: 7.2.0
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    env:
+      Couchbase__ConnectionString: "couchbase://localhost"
+      Couchbase__Username: "Administrator"
+      Couchbase__Password: "password"
+      Couchbase__BucketName: ${{ secrets.COUCHBASE__BUCKETNAME }}
+      Couchbase__ScopeName: ${{ secrets.COUCHBASE__SCOPENAME }}
+      Couchbase__UsersCollectionName: ${{ secrets.COUCHBASE__USERSCOLLECTIONNAME }}
+
+    services:
+      couchbase:
+        image: couchbase:enterprise-7.2.0
+        options: >-
+          --health-cmd "wget -q -O - localhost:8091"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+        ports:
+          - 8091:8091
+          - 8092:8092
+          - 8093:8093
+          - 8094:8094
+          - 8095:8095
+          - 8096:8096
+          - 9140:9140
+          - 11210:11210
+          - 11211:11211
+          - 11207:11207
+          - 18091:18091
+          - 18092:18092
+          - 18093:18093
+          - 18094:18094
+          - 18095:18095
+          - 18096:18096
+
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v2
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '7.0.x'
+    - name: Setup couchbase
+      run: |
+        apt install -y iputils-ping || echo "apt-install failed"
+        ping -c 1 couchbase && (
+          apt install -y socat
+          socat TCP-LISTEN:8091,fork TCP:couchbase:8091 &
+          socat TCP-LISTEN:8092,fork TCP:couchbase:8092 &
+          socat TCP-LISTEN:8093,fork TCP:couchbase:8093 &
+          socat TCP-LISTEN:8094,fork TCP:couchbase:8094 &
+          socat TCP-LISTEN:8095,fork TCP:couchbase:8095 &
+          socat TCP-LISTEN:8096,fork TCP:couchbase:8096 &
+          socat TCP-LISTEN:9140,fork TCP:couchbase:9140 &
+          socat TCP-LISTEN:11210,fork TCP:couchbase:11210 &
+          socat TCP-LISTEN:11211,fork TCP:couchbase:11211 &
+          socat TCP-LISTEN:11207,fork TCP:couchbase:11207 &
+          socat TCP-LISTEN:18091,fork TCP:couchbase:18091 &
+          socat TCP-LISTEN:18092,fork TCP:couchbase:18092 &
+          socat TCP-LISTEN:18093,fork TCP:couchbase:18093 &
+          socat TCP-LISTEN:18094,fork TCP:couchbase:18094 &
+          socat TCP-LISTEN:18095,fork TCP:couchbase:18095 &
+          socat TCP-LISTEN:18096,fork TCP:couchbase:18096 &
+        ) && echo "Initialized couchbase port forwarding" || echo "ping couchbase failed, not forwarding ports"
+        printf "Waiting for CB startup..."
+        wget -O /dev/null  http://localhost:8091/ && echo "DONE" || (echo "FAIL" && panic)
+
+        echo "**Setting up CB Services**"
+        curl  -v -X POST http://localhost:8091/node/controller/setupServices -d 'services=kv%2Cn1ql%2Cindex'
+        curl  -v -X POST http://localhost:8091/pools/default -d 'memoryQuota=1024' -d 'indexMemoryQuota=512'
+        curl  -u Administrator:password -v -X POST http://localhost:8091/settings/web -d 'password=password&username=Administrator&port=SAME'
+
+        echo "**Creating Bucket testmigrator**"
+         curl -v -X POST http://localhost:8091/pools/default/buckets \
+          -u Administrator:password \
+          -d name=${{ secrets.COUCHBASE__USERSCOLLECTIONNAME }} \
+          -d ramQuotaMB=512 \
+
+        echo "**Creating Indexes**" 
+        curl  -v -X POST http://localhost:8091/settings/indexes \
+        -u Administrator:password \
+        -d 'storageMode=memory_optimized'
+
+        sleep 5
+        curl -v http://localhost:8093/query/service \
+        -u Administrator:password \
+        -d "statement=CREATE PRIMARY INDEX default_profile_index ON user_profile._default.profile" 
+
+        echo "**Creating CB Server Info**" 
+        curl  -u Administrator:password -v -X GET http://localhost:8091/pools/default | jq '.' | grep hostname
+        
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '7.0.x'
+
+    - name: Restore dependencies
+      run: dotnet restore Conduit
+
+    - name: Build
+      run: dotnet build Conduit --no-restore
+
+    - name: Run tests
+      run: dotnet test Conduit --no-build --verbosity normal

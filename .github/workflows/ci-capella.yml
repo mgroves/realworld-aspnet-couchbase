@@ -1,4 +1,4 @@
-name: Conduit Integration Tests
+name: Conduit Integration Tests (Couchbase Capella)
 
 on:
   push:
