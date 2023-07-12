@@ -24,8 +24,7 @@ public class SharedUserValidator<T> : AbstractValidator<T> where T : IHasUserPro
     {
         RuleFor(x => x.Email)
             .Cascade(CascadeMode.Stop)
-            .NotEmpty().WithMessage("Email address must not be empty.")
-            .Must(BeAValidEmailAddress).WithMessage("Email address must be valid.");
+            .Must(BeAValidEmailAddress).When(r => !string.IsNullOrEmpty(r.Email)).WithMessage("Email address must be valid.");
 
         RuleFor(x => x.Password)
             .Cascade(CascadeMode.Stop)
@@ -37,16 +36,17 @@ public class SharedUserValidator<T> : AbstractValidator<T> where T : IHasUserPro
 
         RuleFor(x => x.Username)
             .Cascade(CascadeMode.Stop)
-            .MaximumLength(100).When(r => !string.IsNullOrEmpty(r.Username)).WithMessage("Username must be at most 100 characters long.");
+            .MaximumLength(100).When(r => !string.IsNullOrEmpty(r.Username)).WithMessage("Username must be at most 100 characters long.")
+            .NotEmpty().WithMessage("Username is required.");
     }
 
-    private bool BeAValidEmailAddress(string password)
+    private bool BeAValidEmailAddress(string email)
     {
         // using EmailValidation library because I find the EmailAddress for FluentValidation to be too naive
         // wanted something a little stronger to catch typos
         // YES tld email addresses exist, but I assert that it's more likely to be a typo than
         // it is for someone to actually have a tld email address
-        return EmailValidator.Validate(password, false, true);
+        return EmailValidator.Validate(email, false, true);
     }
 
     private bool ContainDigit(string password)

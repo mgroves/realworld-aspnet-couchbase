@@ -56,7 +56,7 @@ public class RegistrationRequestHandler : IRequestHandler<RegistrationRequest, R
             Username = request.Model.User.Username,
             Image = null,
             Bio = null,
-            Token = _authService.GenerateJwtToken(request.Model.User.Email)
+            Token = _authService.GenerateJwtToken(request.Model.User.Email, request.Model.User.Username)
         };
         return new RegistrationResult
         {

@@ -3,6 +3,7 @@ using Couchbase.Core.Exceptions.KeyValue;
 using Couchbase.KeyValue;
 using Couchbase.Query;
 using Conduit.Web.Users.ViewModels;
+using Microsoft.AspNetCore.Mvc.Formatters;
 
 namespace Conduit.Web.Users.Services;
 
@@ -31,15 +32,37 @@ public class UserDataService : IUserDataService
     {
         var collection = await _usersCollectionProvider.GetCollectionAsync();
 
-        var userResult = await collection.TryGetAsync(email);
+        // bringing scope/bucket/cluster in to avoid hardcoding in the SQL++ query
+        var scope = collection.Scope;
+        var bucket = scope.Bucket;
+        var cluster = bucket.Cluster;
 
-        var doesUserExist = userResult.Exists;
-        if (!doesUserExist)
+        // TODO: consider revisiting this, and spinning out a separate DoesUserExist method on this data service (for performance/scale reasons)
+        var getUserByUsernameSql = @$"
+        SELECT u AS Document, META(u).id
+        FROM `{bucket.Name}`.`{scope.Name}`.`{collection.Name}` u
+        WHERE u.email = $email";
+
+        // Can potentially be switched to use NotBounded scan consistency
+        // for reduced latency, if the risk of two people trying to get the
+        // same username within a very small window of time is small
+        var queryOptions = new QueryOptions()
+            .Parameter("email", email)
+            .ScanConsistency(QueryScanConsistency.RequestPlus);
+
+        // TODO: use KeyWrapper<User> here instead of User directly (need to change the SQL++ too)
+        // but still return DataServiceResult<User>, and just map the ID in code
+        // this is a workaround for [JsonIgnore] being honored by QueryAsync
+        var queryResult = await cluster.QueryAsync<KeyWrapper<User>>(getUserByUsernameSql, queryOptions);
+        var result = await queryResult.ToListAsync();
+
+        if (!result.Any())
             return new DataServiceResult<User>(null, DataResultStatus.NotFound);
 
-        var user = userResult.ContentAs<User>();
+        var userToReturn = result.First();
+        userToReturn.Document.Username = userToReturn.Id;
 
-        return new DataServiceResult<User>(user, DataResultStatus.Ok);
+        return new DataServiceResult<User>(userToReturn.Document, DataResultStatus.Ok);
     }
 
     public async Task<DataServiceResult<User>> RegisterNewUser(User userToInsert)
@@ -48,12 +71,12 @@ public class UserDataService : IUserDataService
 
         try
         {
-            await collection.InsertAsync(userToInsert.Email, userToInsert);
+            await collection.InsertAsync(userToInsert.Username, userToInsert);
         }
         catch (DocumentExistsException)
         {
             // couchbase keys must be unique
-            // registration shouldn't work if the email address is already in use
+            // registration shouldn't work if the username is already in use
             return new DataServiceResult<User>(null, DataResultStatus.FailedToInsert);
         }
 
@@ -63,33 +86,16 @@ public class UserDataService : IUserDataService
     public async Task<DataServiceResult<User>> GetUserByUsername(string username)
     {
         var collection = await _usersCollectionProvider.GetCollectionAsync();
-
-        // bringing scope/bucket/cluster in to avoid hardcoding in the SQL++ query
-        var scope = collection.Scope;
-        var bucket = scope.Bucket;
-        var cluster = bucket.Cluster;
-
-        // TODO: consider revisiting this, and spinning out a separate DoesUserExist method on this data service (for performance/scale reasons)
-        var getUserByUsernameSql = @$"
-        SELECT u.*
-        FROM `{bucket.Name}`.`{scope.Name}`.`{collection.Name}` u
-        WHERE u.username = $username";
-
-        // Can potentially be switched to use NotBounded scan consistency
-        // for reduced latency, if the risk of two people trying to get the
-        // same username within a very small window of time is small
-        var queryOptions = new QueryOptions()
-            .Parameter("username", username)
-            .ScanConsistency(QueryScanConsistency.RequestPlus);
-
-        var queryResult = await cluster.QueryAsync<User>(getUserByUsernameSql, queryOptions);
-        var result = await queryResult.ToListAsync();
-
-        if (!result.Any())
+        
+        var userResult = await collection.TryGetAsync(username);
+        
+        var doesUserExist = userResult.Exists;
+        if (!doesUserExist)
             return new DataServiceResult<User>(null, DataResultStatus.NotFound);
-
-        return new DataServiceResult<User>(result.First(), DataResultStatus.Ok);
-
+        
+        var user = userResult.ContentAs<User>();
+        
+        return new DataServiceResult<User>(user, DataResultStatus.Ok);
     }
 
     /// <summary>
@@ -102,12 +108,12 @@ public class UserDataService : IUserDataService
         // update ONLY the fields that are not empty
         // leave the other fields alone
         var collection = await _usersCollectionProvider.GetCollectionAsync();
-        await collection.MutateInAsync(fieldsToUpdate.Email, specs =>
+        await collection.MutateInAsync(fieldsToUpdate.Username, specs =>
         {
             // TODO: create UpsertIfNotEmpty extension method to make this less verbose?
             // TODO: and possibly avoid hardcoding field names?
-            if (!string.IsNullOrEmpty(fieldsToUpdate.Username))
-                specs.Upsert("username", fieldsToUpdate.Username);
+            if (!string.IsNullOrEmpty(fieldsToUpdate.Email))
+                specs.Upsert("email", fieldsToUpdate.Email);
             if (!string.IsNullOrEmpty(fieldsToUpdate.Bio))
                 specs.Upsert("bio", fieldsToUpdate.Bio);
             if (!string.IsNullOrEmpty(fieldsToUpdate.Image))
@@ -135,8 +141,8 @@ public class UserDataService : IUserDataService
         var checkForClearUsername = $@"
             SELECT u.*
             FROM `{bucket.Name}`.`{scope.Name}`.`{collection.Name}` u
-            WHERE u.username == $username
-            AND META(u).id != $email";
+            WHERE u.email == $email
+            AND META(u).id != $username";
 
         // Can potentially be switched to use NotBounded scan consistency
         // for reduced latency, if the risk of two people trying to get the
@@ -150,9 +156,11 @@ public class UserDataService : IUserDataService
 
         var countResult = await result.ToListAsync();
 
+        // if no results at all, then it's okay
         if (!countResult.Any())
-            return true;
+            return false;
 
+        // if there's a result, but it's less than 1, then it's okay
         var howManyMatches = countResult.First();
 
         return howManyMatches < 1;
@@ -161,27 +169,15 @@ public class UserDataService : IUserDataService
     public async Task<DataServiceResult<User>> GetProfileByUsername(string username)
     {
         var collection = await _usersCollectionProvider.GetCollectionAsync();
-        var scope = collection.Scope;
-        var bucket = scope.Bucket;
-        var cluster = bucket.Cluster;
-        var query = $@"
-            SELECT u.username, u.bio, u.image
-            FROM `{bucket.Name}`.`{scope.Name}`.`{collection.Name}` u
-            WHERE u.username = $username";
-        var queryOptions = new QueryOptions()
-            .Parameter("username", username)
-            .ScanConsistency(QueryScanConsistency.RequestPlus);
-        var results = await cluster.QueryAsync<User>(query, queryOptions);
 
-        var resultList = await results.ToListAsync();
+        var userResult = await collection.GetAsync(username);
+        var user = userResult.ContentAs<User>();
 
-        // should only ever be one or zero results
-        var result = resultList.FirstOrDefault();
-
-        // if user not found
-        if (result is null)
-            return new DataServiceResult<User>(null, DataResultStatus.NotFound);
-
-        return new DataServiceResult<User>(result, DataResultStatus.Ok);
+        return new DataServiceResult<User>(new User
+        {
+            Bio = user.Bio,
+            Image = user.Image,
+            Username = user.Username
+        }, DataResultStatus.Ok);
     }
 }

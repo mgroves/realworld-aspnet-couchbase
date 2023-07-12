@@ -34,7 +34,7 @@ public class UpdateUserHandler : IRequestHandler<UpdateUserRequest, UpdateUserRe
         await _userDataService.UpdateUserFields(request.Model.User);
 
         // get the user back out (post-update)
-        var userResult = await _userDataService.GetUserByEmail(request.Model.User.Email);
+        var userResult = await _userDataService.GetUserByUsername(request.Model.User.Username);
         var user = userResult.DataResult;
 
         // return view
@@ -45,7 +45,7 @@ public class UpdateUserHandler : IRequestHandler<UpdateUserRequest, UpdateUserRe
                 Bio = user.Bio,
                 Email = request.Model.User.Email,
                 Image = user.Image,
-                Token = _authService.GenerateJwtToken(request.Model.User.Email),
+                Token = _authService.GenerateJwtToken(user.Email, request.Model.User.Username),
                 Username = user.Username
             }
         };

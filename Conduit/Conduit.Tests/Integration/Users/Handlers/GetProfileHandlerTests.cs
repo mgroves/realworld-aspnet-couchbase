@@ -4,7 +4,7 @@ using Conduit.Web.Users.Services;
 using Couchbase.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Conduit.Tests.Integration.Auth.Handlers;
+namespace Conduit.Tests.Integration.Users.Handlers;
 
 public class GetProfileHandlerTests : CouchbaseIntegrationTest
 {
@@ -41,14 +41,14 @@ public class GetProfileHandlerTests : CouchbaseIntegrationTest
         var collection = await usersCollectionProvider.GetCollectionAsync();
         var userForDatabase = new User
         {
-            Username = username,
+            Email = "doesntmatter@example.net",
             Password = "doesntmatter",
             PasswordSalt = "doesntmatterhereeither",
             Bio = $"lorem ipsum {Guid.NewGuid()}",
             Image = $"http://example.net/profile-{Guid.NewGuid()}.jpg"
         }
         ;
-        await collection.InsertAsync("doesntmatter@example.net", userForDatabase);
+        await collection.InsertAsync(username, userForDatabase);
 
         // *** act
         var result = await getCurrentUserHandler.Handle(request, CancellationToken.None);

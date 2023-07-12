@@ -1,4 +1,5 @@
-﻿using Conduit.Web.Users.Services;
+﻿using Conduit.Web.Models;
+using Conduit.Web.Users.Services;
 using Conduit.Web.Users.ViewModels;
 using FluentValidation;
 using MediatR;
@@ -46,7 +47,7 @@ public class LoginRequestHandler : IRequestHandler<LoginRequest, LoginResult>
         var userView = new UserViewModel
         {
             Email = request.Model.User.Email,   // email is the document key
-            Token = _authService.GenerateJwtToken(request.Model.User.Email),
+            Token = _authService.GenerateJwtToken(request.Model.User.Email, userObj.Username),
             Username = userObj.Username,
             Bio = userObj.Bio,
             Image = userObj.Image

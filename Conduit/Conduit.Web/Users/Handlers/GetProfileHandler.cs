@@ -2,6 +2,7 @@
 using Conduit.Web.Users.ViewModels;
 using MediatR;
 using FluentValidation;
+using Conduit.Web.Models;
 
 namespace Conduit.Web.Users.Handlers;
 
@@ -40,7 +41,7 @@ public class GetProfileHandler : IRequestHandler<GetProfileRequest, GetProfileRe
         {
             ProfileView = new ProfileViewModel
             {
-                Username = result.Username,
+                Username = request.Username,
                 Bio = result.Bio,
                 Image = result.Image,
                 Following = false       // TODO: determine following or not (this MIGHT be done in the data layer?)

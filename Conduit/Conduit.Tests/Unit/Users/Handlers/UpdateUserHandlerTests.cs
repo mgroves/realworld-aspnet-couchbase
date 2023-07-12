@@ -2,9 +2,8 @@
 using Conduit.Web.Users.Services;
 using Conduit.Web.Users.ViewModels;
 using Moq;
-using Conduit.Web.Models;
 
-namespace Conduit.Tests.Unit.Auth.Handlers;
+namespace Conduit.Tests.Unit.Users.Handlers;
 
 [TestFixture]
 public class UpdateUserHandlerTests
@@ -55,22 +54,22 @@ public class UpdateUserHandlerTests
         // assert
         Assert.That(result, Is.Not.Null);
         Assert.That(result.ValidationErrors.Count, Is.EqualTo(1));
-        Assert.That(result.ValidationErrors.First().ErrorMessage, Is.EqualTo("That username is already taken."));
+        Assert.That(result.ValidationErrors.First().ErrorMessage, Is.EqualTo("That email is already in use."));
     }
 
-    [TestCase("", "Email address must not be empty.")]
-    [TestCase(null, "Email address must not be empty.")]
-    [TestCase("invalid_email_address", "Email address must be valid.")]
-    public async Task Valid_email_must_be_specified(string givenEmailAddress, string message)
+    [TestCase("", "Username is required.")]
+    [TestCase(null, "Username is required.")]
+    [TestCase("really_long_username_really_long_username_really_long_username_really_long_username_really_long_username_really_long_username", "Username must be at most 100 characters long.")]
+    public async Task Valid_username_must_be_specified(string username, string message)
     {
         // arrange
         var submit = new UpdateUserSubmitModel
         {
             User = new UpdateUserViewModelUser
             {
-                Email = null,
+                Email = "valid@example.net",
                 Password = "Valid00Password!",
-                Username = "valid_username",
+                Username = username,
                 Image = "https://example.net/valid.jpg",
                 Bio = "Valid bio lorem ipsum"
             }
@@ -80,8 +79,6 @@ public class UpdateUserHandlerTests
         // arrange username not taken
         _userDataServiceMock.Setup(m => m.DoesExistUserByEmailAndUsername(submit.User.Email, submit.User.Username))
             .ReturnsAsync(false);
-        // ClusterMock.Setup(x => x.QueryAsync<int>(It.IsAny<string>(), It.IsAny<QueryOptions>()))
-        //     .ReturnsAsync(new FakeQueryResult<int>(new List<int> { 0 }));
 
         // act
         var result = await _updateUserHandler.Handle(request, CancellationToken.None);
@@ -89,7 +86,7 @@ public class UpdateUserHandlerTests
         // assert
         Assert.That(result, Is.Not.Null);
         Assert.That(result.ValidationErrors.Count, Is.EqualTo(1));
-        Assert.That(result.ValidationErrors.First().ErrorMessage, Is.EqualTo("Email address must not be empty."));
+        Assert.That(result.ValidationErrors.First().ErrorMessage, Is.EqualTo(message));
     }
 
     [TestCase("", "", "", "", "You must specify a value for at least one of: username, password, image, bio.")]
@@ -97,7 +94,7 @@ public class UpdateUserHandlerTests
     [TestCase("", "", null, "", "You must specify a value for at least one of: username, password, image, bio.")]
     [TestCase("", "", "", null, "You must specify a value for at least one of: username, password, image, bio.")]
     [TestCase(null, null, null, null, "You must specify a value for at least one of: username, password, image, bio.")]
-    public async Task At_least_one_field_must_be_specified_to_update(string username, string password, string image,
+    public async Task At_least_one_field_must_be_specified_to_update(string email, string password, string image,
         string bio, string errorMessage)
     {
         // arrange
@@ -105,9 +102,9 @@ public class UpdateUserHandlerTests
         {
             User = new UpdateUserViewModelUser
             {
-                Email = "valid_email@example.net",
+                Email = email,
                 Password = password,
-                Username = username,
+                Username = "valid_username",
                 Image = image,
                 Bio = bio
             }
@@ -117,9 +114,6 @@ public class UpdateUserHandlerTests
         // arrange username not taken
         _userDataServiceMock.Setup(m => m.DoesExistUserByEmailAndUsername(submit.User.Email, submit.User.Username))
             .ReturnsAsync(false);
-        // ClusterMock.Setup(x => x.QueryAsync<int>(It.IsAny<string>(), It.IsAny<QueryOptions>()))
-        //     .ReturnsAsync(new FakeQueryResult<int>(new List<int> { 0 }));
-
 
         // act
         var result = await _updateUserHandler.Handle(request, CancellationToken.None);
@@ -128,7 +122,7 @@ public class UpdateUserHandlerTests
         Assert.That(result, Is.Not.Null);
         Assert.That(result.ValidationErrors.Count, Is.EqualTo(1));
         Assert.That(result.ValidationErrors.First().ErrorMessage,
-            Is.EqualTo("You must specify a value for at least one of: username, password, image, bio."));
+            Is.EqualTo("You must specify a value for at least one of: email, password, image, bio."));
     }
 
     [Test]

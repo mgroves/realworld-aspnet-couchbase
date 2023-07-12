@@ -3,7 +3,7 @@ using Conduit.Web.Users.Handlers;
 using Conduit.Web.Users.Services;
 using Moq;
 
-namespace Conduit.Tests.Unit.Auth.Handlers;
+namespace Conduit.Tests.Unit.Users.Handlers;
 
 public class GetCurrentUserRequestHandlerTests
 {
@@ -25,14 +25,15 @@ public class GetCurrentUserRequestHandlerTests
         // arrange
         // arrange request from API
         var email = "myfakeemail@example.net";
-        var fakeToken = new AuthService().GenerateJwtToken(email);
+        var username = "doesntmatter";
+        var fakeToken = new AuthService().GenerateJwtToken(email, username);
         var request = new GetCurrentUserRequest(fakeToken);
 
         // arrange user that would be in db
         var userFromDatabase = new User
         {
             Email = email,
-            Username = "doesntmatter",
+            Username = username,
             Bio = "lorem ipsum",
             Image = "https://example.com/profile.jpg",
             Password = "doesntmatterPassword",
@@ -40,11 +41,11 @@ public class GetCurrentUserRequestHandlerTests
         };
 
         // arrange mocks
-        _mockAuthService.Setup(m => m.GetEmailClaim(fakeToken))
-            .Returns(new AuthService.ClaimResult { IsNotFound = false, Value = email });
-        _mockAuthService.Setup(m => m.GenerateJwtToken(It.IsAny<string>()))
+        _mockAuthService.Setup(m => m.GetUsernameClaim(fakeToken))
+            .Returns(new AuthService.ClaimResult { IsNotFound = false, Value = username });
+        _mockAuthService.Setup(m => m.GenerateJwtToken(It.IsAny<string>(), It.IsAny<string>()))
             .Returns(fakeToken);
-        _mockUserDataService.Setup(m => m.GetUserByEmail(email))
+        _mockUserDataService.Setup(m => m.GetUserByUsername(username))
             .ReturnsAsync(new DataServiceResult<User>(userFromDatabase, DataResultStatus.Ok));
 
         // act
@@ -73,7 +74,7 @@ public class GetCurrentUserRequestHandlerTests
         // arrange handler
         var handler = new GetCurrentUserHandler(_mockAuthService.Object, _mockUserDataService.Object);
         // arrange email claim
-        _mockAuthService.Setup(m => m.GetEmailClaim(It.IsAny<string>()))
+        _mockAuthService.Setup(m => m.GetUsernameClaim(It.IsAny<string>()))
             .Returns(new AuthService.ClaimResult { IsNotFound = true});
 
         // act
@@ -89,14 +90,14 @@ public class GetCurrentUserRequestHandlerTests
         // arrange
         // arrange request from API
         var email = "myfakeemail@example.net";
-        var fakeToken = new AuthService().GenerateJwtToken(email);
+        var fakeToken = new AuthService().GenerateJwtToken(email, "doesntmatter");
         var request = new GetCurrentUserRequest(fakeToken);
 
 
         // arrange mocks
-        _mockAuthService.Setup(m => m.GetEmailClaim(fakeToken))
+        _mockAuthService.Setup(m => m.GetUsernameClaim(fakeToken))
             .Returns(new AuthService.ClaimResult { Value = email });
-        _mockUserDataService.Setup(m => m.GetUserByEmail(email))
+        _mockUserDataService.Setup(m => m.GetUserByUsername(email))
             .ReturnsAsync(new DataServiceResult<User>(null, DataResultStatus.NotFound));
 
         // act

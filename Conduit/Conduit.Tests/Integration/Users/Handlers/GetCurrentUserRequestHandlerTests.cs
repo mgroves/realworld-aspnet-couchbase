@@ -4,7 +4,7 @@ using Conduit.Web.Users.Services;
 using Couchbase.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Conduit.Tests.Integration.Auth.Handlers;
+namespace Conduit.Tests.Integration.Users.Handlers;
 
 public class GetCurrentUserRequestHandlerTests : CouchbaseIntegrationTest
 {
@@ -34,16 +34,17 @@ public class GetCurrentUserRequestHandlerTests : CouchbaseIntegrationTest
 
         // arrange the request
         var email = $"valid{Path.GetRandomFileName()}@example.net";
-        var fakeToken = new AuthService().GenerateJwtToken(email);
+        var username = $"valid{Path.GetRandomFileName()}";
+        var fakeToken = new AuthService().GenerateJwtToken(email, username);
         var request = new GetCurrentUserRequest(fakeToken);
 
         // arrange the current user already in the database
         var collection = await usersCollectionProvider.GetCollectionAsync();
         var password = "ValidPassword1#";
         var salt = new AuthService().GenerateSalt();
-        await collection.InsertAsync(email, new User
+        await collection.InsertAsync(username, new User
         {
-            Username = $"validUsername{Path.GetRandomFileName()}",
+            Email = email,
             Password = new AuthService().HashPassword(password, salt),
             PasswordSalt = salt,
             Bio = "lorem ipsum",

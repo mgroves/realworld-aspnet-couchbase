@@ -1,11 +1,11 @@
 ﻿using Conduit.Web.Models;
-using Couchbase.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection;
 using Conduit.Web.Users.Handlers;
 using Conduit.Web.Users.Services;
 using Conduit.Web.Users.ViewModels;
+using Couchbase.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace Conduit.Tests.Integration.Auth.Handlers;
+namespace Conduit.Tests.Integration.Users.Handlers;
 
 [TestFixture]
 public class LoginRequestHandlerTests : CouchbaseIntegrationTest
@@ -48,9 +48,9 @@ public class LoginRequestHandlerTests : CouchbaseIntegrationTest
         // arrange for a user to already be in the database
         var collection = await usersCollectionProvider.GetCollectionAsync();
         var salt = authService.GenerateSalt();
-        await collection.InsertAsync(userViewModel.Email, new User
+        await collection.InsertAsync("doesntmatter", new User
         {
-            Username = "doesntmatter",
+            Email = userViewModel.Email,
             Bio = "Lorem ipsum",
             Image = "http://google.com/image.jpg",
             Password = authService.HashPassword(userViewModel.Password, salt),

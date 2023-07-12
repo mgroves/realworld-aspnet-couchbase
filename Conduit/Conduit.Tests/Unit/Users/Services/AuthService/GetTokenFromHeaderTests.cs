@@ -1,4 +1,4 @@
-﻿namespace Conduit.Tests.Unit.Auth.Services.AuthService;
+﻿namespace Conduit.Tests.Unit.Users.Services.AuthService;
 
 [TestFixture]
 public class GetTokenFromHeaderTests

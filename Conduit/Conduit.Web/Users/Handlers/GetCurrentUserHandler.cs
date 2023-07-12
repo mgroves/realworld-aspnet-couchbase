@@ -18,13 +18,13 @@ public class GetCurrentUserHandler : IRequestHandler<GetCurrentUserRequest, GetC
 
     public async Task<GetCurrentUserResult> Handle(GetCurrentUserRequest request, CancellationToken cancellationToken)
     {
-        var emailClaim = _authService.GetEmailClaim(request.BearerToken);
-        if (emailClaim.IsNotFound)
+        var usernameClaim = _authService.GetUsernameClaim(request.BearerToken);
+        if (usernameClaim.IsNotFound)
             return new GetCurrentUserResult { IsInvalidToken = true };
 
-        var email = emailClaim.Value;
+        var username = usernameClaim.Value;
 
-        var userResult = await _userDataService.GetUserByEmail(email);
+        var userResult = await _userDataService.GetUserByUsername(username);
         if (userResult.Status != DataResultStatus.Ok)
             return new GetCurrentUserResult { UserNotFound = true };
 
@@ -34,9 +34,9 @@ public class GetCurrentUserHandler : IRequestHandler<GetCurrentUserRequest, GetC
         {
             UserView = new UserViewModel
             {
-                Email = email,
-                Token = _authService.GenerateJwtToken(email),
-                Username = user.Username,
+                Email = user.Email,
+                Token = _authService.GenerateJwtToken(user.Email, username),
+                Username = username,
                 Bio = user.Bio,
                 Image = user.Image
             }

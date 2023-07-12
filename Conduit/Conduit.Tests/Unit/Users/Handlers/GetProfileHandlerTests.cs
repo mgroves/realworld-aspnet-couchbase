@@ -3,7 +3,7 @@ using Conduit.Web.Users.Handlers;
 using Conduit.Web.Users.Services;
 using Moq;
 
-namespace Conduit.Tests.Unit.Auth.Handlers;
+namespace Conduit.Tests.Unit.Users.Handlers;
 
 [TestFixture]
 public class GetProfileHandlerTests

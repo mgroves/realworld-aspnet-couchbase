@@ -108,6 +108,14 @@ public class UsersController : Controller
     [HttpPut("api/user")]
     public async Task<IActionResult> UpdateUser([FromBody] UpdateUserSubmitModel updateUser)
     {
+        var authHeader = Request.Headers["Authorization"];
+        var bearerToken = _authService.GetTokenFromHeader(authHeader);
+        var username = _authService.GetUsernameClaim(bearerToken);
+        if (username.IsNotFound)
+            return UnprocessableEntity("User not found.");
+
+        updateUser.User.Username = username.Value;
+
         var result = await _mediator.Send(new UpdateUserRequest(updateUser));
 
         if (result.ValidationErrors?.Any() ?? false)

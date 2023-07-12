@@ -5,7 +5,7 @@ using Conduit.Web.Users.ViewModels;
 using Couchbase.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Conduit.Tests.Integration.Auth.Handlers;
+namespace Conduit.Tests.Integration.Users.Handlers;
 
 [TestFixture]
 public class RegistrationRequestHandlerTests : CouchbaseIntegrationTest
@@ -56,8 +56,8 @@ public class RegistrationRequestHandlerTests : CouchbaseIntegrationTest
         Assert.That(result.UserView.Username, Is.EqualTo(submittedInfo.Username));
         // assert that the data made it into the database
         var collection = await usersCollectionProvider.GetCollectionAsync();
-        var userInDatabaseResult = await collection.GetAsync(submittedInfo.Email);
+        var userInDatabaseResult = await collection.GetAsync(submittedInfo.Username);
         var userInDatabaseObj = userInDatabaseResult.ContentAs<User>();
-        Assert.That(userInDatabaseObj.Username, Is.EqualTo(submittedInfo.Username));
+        Assert.That(userInDatabaseObj.Email, Is.EqualTo(submittedInfo.Email));
     }
 }

@@ -7,13 +7,16 @@ namespace Conduit.Web.Users.Services;
 
 public class AuthService : IAuthService
 {
-    public string GenerateJwtToken(string email)
+    private const string CLAIMTYPE_USERNAME = "Username";
+
+    public string GenerateJwtToken(string email, string username)
     {
         // TODO: put username in claim too?
 
         var claims = new[]
         {
-            new Claim(ClaimTypes.Email, email)
+            new Claim(ClaimTypes.Email, email),
+            new Claim(CLAIMTYPE_USERNAME, username)
         };
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("6B{DqP5aT,3b&!YRgk29m@j$L7uvnxE"));
@@ -63,6 +66,27 @@ public class AuthService : IAuthService
             var handler = new JwtSecurityTokenHandler();
             var claims = handler.ReadJwtToken(bearerToken).Claims;
             var email = claims.FirstOrDefault(claim => claim.Type == ClaimTypes.Email)?.Value;
+            return new ClaimResult
+            {
+                Value = email
+            };
+        }
+        catch (ArgumentException)
+        {
+            return new ClaimResult
+            {
+                IsNotFound = true
+            };
+        }
+    }
+    
+    public ClaimResult GetUsernameClaim(string bearerToken)
+    {
+        try
+        {
+            var handler = new JwtSecurityTokenHandler();
+            var claims = handler.ReadJwtToken(bearerToken).Claims;
+            var email = claims.FirstOrDefault(claim => claim.Type == CLAIMTYPE_USERNAME)?.Value;
             return new ClaimResult
             {
                 Value = email

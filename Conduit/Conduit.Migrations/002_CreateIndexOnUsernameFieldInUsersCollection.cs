@@ -3,12 +3,12 @@
 namespace Conduit.Migrations;
 
 [Migration(2)]
-public class CreateIndexOnUsernameFieldInUsersCollection : MigrateBase
+public class CreateIndexOnEmailFieldInUsersCollection : MigrateBase
 {
     private readonly string? _collectionName;
     private readonly string? _scopeName;
 
-    public CreateIndexOnUsernameFieldInUsersCollection()
+    public CreateIndexOnEmailFieldInUsersCollection()
     {
         _collectionName = _config["Couchbase:UsersCollectionName"];
         _scopeName = _config["Couchbase:ScopeName"];
@@ -16,15 +16,15 @@ public class CreateIndexOnUsernameFieldInUsersCollection : MigrateBase
 
     public override void Up()
     {
-        Create.Index("ix_users_username")
+        Create.Index("ix_users_email")
             .OnScope(_scopeName)
             .OnCollection(_collectionName)
-            .OnField("username");
+            .OnField("email");
     }
 
     public override void Down()
     {
-        Delete.Index("ix_users_username")
+        Delete.Index("ix_users_email")
             .FromScope(_scopeName)
             .FromCollection(_collectionName);
     }

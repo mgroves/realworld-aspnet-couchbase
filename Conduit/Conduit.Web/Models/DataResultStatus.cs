@@ -1,4 +1,4 @@
-﻿namespace Conduit.Web.Users.Services;
+﻿namespace Conduit.Web.Models;
 
 // TODO: move this out of Users slice, since it's likely to be used
 // by multiple slices

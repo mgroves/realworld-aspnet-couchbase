@@ -40,9 +40,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Integration\Auth\Handlers\" />
       <Folder Include="Extensions\" />
-      <Folder Include="Unit\Auth\Services\AuthService\" />
+      <Folder Include="Integration\Users\Services\UserDataServiceTests\" />
     </ItemGroup>
 
 </Project>

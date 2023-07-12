@@ -4,7 +4,7 @@ using Conduit.Web.Users.Services;
 using Conduit.Web.Users.ViewModels;
 using Moq;
 
-namespace Conduit.Tests.Unit.Auth.Handlers;
+namespace Conduit.Tests.Unit.Users.Handlers;
 
 [TestFixture]
 public class RegistrationRequestHandlerTests
@@ -55,7 +55,7 @@ public class RegistrationRequestHandlerTests
         // setup database and auth service mocks
         _authServiceMock.Setup(a => a.GenerateSalt()).Returns("salt");
         _authServiceMock.Setup(a => a.HashPassword(It.IsAny<string>(), It.IsAny<string>())).Returns("hashedPassword");
-        _authServiceMock.Setup(a => a.GenerateJwtToken(It.IsAny<string>())).Returns("jwttoken");
+        _authServiceMock.Setup(a => a.GenerateJwtToken(It.IsAny<string>(), It.IsAny<string>())).Returns("jwttoken");
         _userDataServiceMock.Setup(m => m.RegisterNewUser(It.IsAny<User>()))
             .ReturnsAsync(new DataServiceResult<User>(newUser, DataResultStatus.Ok));
         
@@ -133,8 +133,8 @@ public class RegistrationRequestHandlerTests
         Assert.That(result.ValidationErrors.First().ErrorMessage, Is.EqualTo(errorMessage));
     }
 
-    [TestCase("", "Username must not be empty.")]
-    [TestCase(null, "Username must not be empty.")]
+    [TestCase("", "Username is required.")]
+    [TestCase(null, "Username is required.")]
     [TestCase("usernametoolongusernametoolongusernametoolongusernametoolongusernametoolongusernametoolongusernametoolong", "Username must be at most 100 characters long.")]
     public async Task Handle_InvalidUsername_ReturnsError(string username, string errorMessage)
     {

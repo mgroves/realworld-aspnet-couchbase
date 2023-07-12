@@ -20,12 +20,12 @@ public class UpdateUserRequestValidator : AbstractValidator<UpdateUserRequest>
         RuleFor(u => u)
             .Cascade(CascadeMode.Stop)
             .Must(HaveAtLeastOneChange)
-                .WithMessage("You must specify a value for at least one of: username, password, image, bio.");
+                .WithMessage("You must specify a value for at least one of: email, password, image, bio.");
 
         RuleFor(u => u.Model)
             .Cascade(CascadeMode.Stop)
-            .MustAsync(NotMatchAnyOtherUsername)
-            .WithMessage("That username is already taken.");
+            .MustAsync(NotMatchAnyOtherEmail).When(x => !string.IsNullOrEmpty(x.Model.User.Username))
+            .WithMessage("That email is already in use.");
 
         RuleFor(u => u.Model.User.Bio)
             .Cascade(CascadeMode.Stop)
@@ -38,16 +38,10 @@ public class UpdateUserRequestValidator : AbstractValidator<UpdateUserRequest>
             .Must(BeAValidImageUrl).When(r => !string.IsNullOrEmpty(r.Model.User.Image)).WithMessage("Image URL must be JPG, JPEG, or PNG.");
     }
 
-    private async Task<bool> NotMatchAnyOtherUsername(UpdateUserSubmitModel model, CancellationToken cancellationToken)
+    private async Task<bool> NotMatchAnyOtherEmail(UpdateUserSubmitModel model, CancellationToken cancellationToken)
     {
-        // if no username was specified
-        // that means the username is not being updated
-        // so it's okay to skip this validation
-        if (string.IsNullOrEmpty(model.User.Username))
-            return true;
-
-        var doesADifferentUserExistWithTheGivenUsername = await _userDataService.DoesExistUserByEmailAndUsername(model.User.Email, model.User.Username);
-        return !doesADifferentUserExistWithTheGivenUsername;
+        var doesADifferentUserExistWithTheGivenEmail = await _userDataService.DoesExistUserByEmailAndUsername(model.User.Email, model.User.Username);
+        return !doesADifferentUserExistWithTheGivenEmail;
     }
 
     private bool BeAValidImageUrl(string url)
@@ -73,7 +67,7 @@ public class UpdateUserRequestValidator : AbstractValidator<UpdateUserRequest>
             return true;
         if (!string.IsNullOrEmpty(model.Model.User.Image))
             return true;
-        if (!string.IsNullOrEmpty(model.Model.User.Username))
+        if (!string.IsNullOrEmpty(model.Model.User.Email))
             return true;
         return false;
     }

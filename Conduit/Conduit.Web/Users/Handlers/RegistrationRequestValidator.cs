@@ -14,12 +14,15 @@ public class RegistrationRequestValidator : AbstractValidator<RegistrationReques
     {
         _userDataService = userDataService;
 
+        RuleFor(x => x.Model.User.Email)
+            .Cascade(CascadeMode.Stop)
+            .NotEmpty().WithMessage("Email address must not be empty.");
+
         RuleFor(x => x.Model.User)
             .SetValidator(sharedUser);
 
         RuleFor(x => x.Model.User.Username)
             .Cascade(CascadeMode.Stop)
-            .NotEmpty().WithMessage("Username must not be empty.")
             .MustAsync(async (username, cancellation) => await NotAlreadyExist(username, cancellation))
             .WithMessage("That username is already in use.");
 

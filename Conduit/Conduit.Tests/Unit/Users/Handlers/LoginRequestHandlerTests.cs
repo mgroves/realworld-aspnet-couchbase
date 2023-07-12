@@ -4,7 +4,7 @@ using Conduit.Web.Users.Services;
 using Conduit.Web.Users.ViewModels;
 using Moq;
 
-namespace Conduit.Tests.Unit.Auth.Handlers;
+namespace Conduit.Tests.Unit.Users.Handlers;
 
 public class Tests
 {
@@ -55,7 +55,7 @@ public class Tests
                 .ReturnsAsync(new DataServiceResult<User>(userInDatabase, DataResultStatus.Ok));
             _authServiceMock.Setup(a => a.DoesPasswordMatch(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
                 .Returns(true);
-            _authServiceMock.Setup(a => a.GenerateJwtToken(userInDatabase.Email))
+            _authServiceMock.Setup(a => a.GenerateJwtToken(userInDatabase.Email, userInDatabase.Username))
                 .Returns("token");
 
             // Act
