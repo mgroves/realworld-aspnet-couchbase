@@ -89,7 +89,7 @@ jobs:
         echo "**Creating Bucket testmigrator**"
          curl -v -X POST http://localhost:8091/pools/default/buckets \
           -u Administrator:password \
-          -d name=${{ secrets.COUCHBASE__USERSCOLLECTIONNAME }} \
+          -d name=${{ secrets.COUCHBASE__BUCKETNAME }} \
           -d ramQuotaMB=512 \
 
         echo "**Creating Indexes**" 
