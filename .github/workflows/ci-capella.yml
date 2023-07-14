@@ -18,6 +18,7 @@ jobs:
       Couchbase__BucketName: ${{ secrets.COUCHBASE__BUCKETNAME }}
       Couchbase__ScopeName: ${{ secrets.COUCHBASE__SCOPENAME }}
       Couchbase__UsersCollectionName: ${{ secrets.COUCHBASE__USERSCOLLECTIONNAME }}
+      Couchbase__FollowsCollectionName: ${{ secrets.COUCHBASE__FOLLOWSCOLLECTIONNAME }}
 
     steps:
     - name: Checkout
