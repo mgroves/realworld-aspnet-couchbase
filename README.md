@@ -79,6 +79,12 @@ The creation of this implementation of Conduit is being done (mostly) on a [live
 |--|---|-----|-----
 | 2023-06-06 | Starting the Conduit project - ASP.NET + Couchbase - Office Hours | https://www.youtube.com/watch?v=HiRj5ntqiXk | 
 | 2023-06-08 | JWT and Mediatr | https://www.youtube.com/watch?v=O5ZTnmM4RpQ |
-| 2022-06-13 | Can ChatGPT write unit tests? | https://www.youtube.com/watch?v=eK9Ab4mWU_s | 
+| 2023-06-13 | Can ChatGPT write unit tests? | https://www.youtube.com/watch?v=eK9Ab4mWU_s | 
+| 2023-06-16 | Validation / Integration tests | https://www.youtube.com/watch?v=3vv37DP-iLM |
+| 2023-06-20 | Get User / Update User endpoints | https://www.youtube.com/watch?v=Jgen3uyNHBQ |
+| 2023-06-27 | Integration tests | https://www.youtube.com/watch?v=04WWcvSwtQg
+| 2023-06-30 | Recap, Update User, Get Profile | https://www.youtube.com/watch?v=kmYFII2MKMo |
+| 2023-07-07 | Get Profile, refactoring, the trouble with async | https://www.youtube.com/watch?v=CJ362YSQKSs |
+| 2023-07-11 | Data Modeling / Data Access patterns | https://www.youtube.com/watch?v=dGGpmWonPWs |
 
 [YouTube Playlist](https://www.youtube.com/playlist?list=PLZWwU1YVRehL0psJRk35x8evMeeGAFwBa)

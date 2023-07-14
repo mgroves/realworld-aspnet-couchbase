@@ -46,8 +46,7 @@ public class GetProfileHandlerTests : CouchbaseIntegrationTest
             PasswordSalt = "doesntmatterhereeither",
             Bio = $"lorem ipsum {Guid.NewGuid()}",
             Image = $"http://example.net/profile-{Guid.NewGuid()}.jpg"
-        }
-        ;
+        };
         await collection.InsertAsync(username, userForDatabase);
 
         // *** act

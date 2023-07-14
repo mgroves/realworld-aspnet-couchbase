@@ -41,7 +41,9 @@
 
     <ItemGroup>
       <Folder Include="Extensions\" />
+      <Folder Include="Integration\Follows\Handlers\" />
       <Folder Include="Integration\Users\Services\UserDataServiceTests\" />
+      <Folder Include="Unit\Follows\Handlers\" />
     </ItemGroup>
 
 </Project>

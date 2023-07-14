@@ -1,6 +1,8 @@
+using System.Reflection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Conduit.Web.Follows.Services;
 using Conduit.Web.Models;
 using Conduit.Web.Users.Handlers;
 using Conduit.Web.Users.Services;
@@ -19,6 +21,7 @@ namespace Conduit.Web
             builder.Configuration
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
+                .AddUserSecrets<Program>()
                 .AddEnvironmentVariables();
 
             builder.Services.AddControllers();
@@ -69,6 +72,7 @@ namespace Conduit.Web
             @this.AddValidatorsFromAssemblyContaining<LoginRequestValidator>();
             @this.AddTransient(typeof(SharedUserValidator<>));
             @this.AddTransient<IAuthService, AuthService>();
+            @this.AddTransient<IFollowDataService, FollowsDataService>();
             @this.AddTransient<IUserDataService, UserDataService>();
             @this.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<Program>());
             @this.AddCouchbase(configManager.GetSection("Couchbase"));
@@ -77,6 +81,9 @@ namespace Conduit.Web
                 b
                     .AddScope(configManager["Couchbase:ScopeName"])
                     .AddCollection<IConduitUsersCollectionProvider>(configManager["Couchbase:UsersCollectionName"]);
+                b
+                    .AddScope(configManager["Couchbase:ScopeName"])
+                    .AddCollection<IConduitFollowsCollectionProvider>(configManager["Couchbase:FollowsCollectionName"]);
             });
         }
     }

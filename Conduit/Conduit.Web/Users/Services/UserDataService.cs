@@ -50,7 +50,7 @@ public class UserDataService : IUserDataService
             .Parameter("email", email)
             .ScanConsistency(QueryScanConsistency.RequestPlus);
 
-        // TODO: use KeyWrapper<User> here instead of User directly (need to change the SQL++ too)
+        // use KeyWrapper<User> here instead of User directly
         // but still return DataServiceResult<User>, and just map the ID in code
         // this is a workaround for [JsonIgnore] being honored by QueryAsync
         var queryResult = await cluster.QueryAsync<KeyWrapper<User>>(getUserByUsernameSql, queryOptions);
