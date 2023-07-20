@@ -56,10 +56,8 @@ This Conduit implementation is being streamed [live on Twitch](https://twitch.tv
    2. Enable database access
       1. Capella: Create Database Access with read/write permission to all collections in the Conduit bucket
       2. Couchbase Server: Create a user with read/write permission (key-value, query) to all collections in the Conduit bucket. (Or if you aren't in production, use the admin credentials)
-   3. Create the following collections, indexes, documents:
-      1. *Users* collection in the *_default* scope.
-      2. ... more to come ...
-   4. (Alternative to above step) Run the migrations in the *Conduit.Migrations* project (see [NoSqlMigrator](https://github.com/mgroves/NoSqlMigrator)).
+   3. Run the migrations in the *Conduit.Migrations* project (see [NoSqlMigrator](https://github.com/mgroves/NoSqlMigrator)).
+   4. (Manual alternative to step 3) Create the database objects collections, indexes, documents, indexes as described in the *comments* of the classes of the *Conduit.Migrations* project.
 3. Configure Conduit.Web
    1. In appsettings.json, add the Couchbase connection string, username, password, and bucket name
 4. Configure Conduit.Tests and Conduit.Migrations

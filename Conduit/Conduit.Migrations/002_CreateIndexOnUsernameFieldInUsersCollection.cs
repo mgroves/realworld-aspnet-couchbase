@@ -2,6 +2,7 @@
 
 namespace Conduit.Migrations;
 
+// Manual alternative: CREATE INDEX ix_users_email ON <bucketname>._default.Users (email)
 [Migration(2)]
 public class CreateIndexOnEmailFieldInUsersCollection : MigrateBase
 {

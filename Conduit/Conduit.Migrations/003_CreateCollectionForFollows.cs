@@ -2,6 +2,7 @@
 
 namespace Conduit.Migrations;
 
+// Manual alternative: create a Follows collection in _default scope
 [Migration(3)]
 public class CreateCollectionForFollows : MigrateBase
 {
