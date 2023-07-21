@@ -1,4 +1,6 @@
-﻿using Conduit.Web.Models;
+﻿using Conduit.Tests.TestHelpers.Data;
+using Conduit.Tests.TestHelpers.Dto;
+using Conduit.Web.Models;
 using Conduit.Web.Users.Handlers;
 using Conduit.Web.Users.Services;
 using Conduit.Web.Users.ViewModels;
@@ -9,6 +11,9 @@ namespace Conduit.Tests.Integration.Users.Handlers;
 
 public class UpdateUserHandlerTests : CouchbaseIntegrationTest
 {
+    private IConduitUsersCollectionProvider _usersCollectionProvider;
+    private UpdateUserHandler _handler;
+
     [OneTimeSetUp]
     public override async Task Setup()
     {
@@ -20,58 +25,38 @@ public class UpdateUserHandlerTests : CouchbaseIntegrationTest
                 .AddScope("_default")
                 .AddCollection<IConduitUsersCollectionProvider>("Users");
         });
+
+        _usersCollectionProvider = ServiceProvider.GetRequiredService<IConduitUsersCollectionProvider>();
+
+        // arrange handler and dependencies
+        _handler = new UpdateUserHandler(
+            new UpdateUserRequestValidator(new UserDataService(_usersCollectionProvider, new AuthService()), new SharedUserValidator<UpdateUserViewModelUser>()),
+            new AuthService(),
+            new UserDataService(_usersCollectionProvider, new AuthService()));
     }
 
     [Test]
     public async Task UpdateUserHandler_Is_Successful()
     {
         // *** arrange
-        // arrange collection provider
-        var usersCollectionProvider = ServiceProvider.GetRequiredService<IConduitUsersCollectionProvider>();
-
-        // arrange handler
-        var handler = new UpdateUserHandler(
-            new UpdateUserRequestValidator(new UserDataService(usersCollectionProvider, new AuthService()), new SharedUserValidator<UpdateUserViewModelUser>()),
-            new AuthService(),
-            new UserDataService(usersCollectionProvider, new AuthService()));
-
         // arrange existing user in database to update
-        var collection = await usersCollectionProvider.GetCollectionAsync();
-        var salt = new AuthService().GenerateSalt();
-        var username = $"validUsername{Path.GetRandomFileName()}";
-        var existingUser = new User
-        {
-            Email = $"oldemail-{Path.GetRandomFileName()}@example.net",
-            Password = new AuthService().HashPassword("ValidPassword1#", salt),
-            PasswordSalt = salt,
-            Bio = "lorem ipsum",
-            Image = "http://example.net/profile.jpg"
-        };
-        await collection.InsertAsync(username, existingUser);
+        var user = await _usersCollectionProvider.CreateUserInDatabase();
 
-        // arrange request to change ONLY bio
-        var request = new UpdateUserRequest(new UpdateUserSubmitModel
-        {
-            User = new UpdateUserViewModelUser
-            {
-                Username = username,
-                Email = $"newemail-{Path.GetRandomFileName()}@example.net",     // new email
-                Bio = "New bio " + Guid.NewGuid()                           // new bio
-                                                                            // image is not specified, so it's unchanged
-            }
-        });
+        // arrange request to change bio and email (set the other values to null)
+        var request = UpdateUserRequestHelper.Create(username: user.Username, makePasswordNull: true, makeImageNull: true);
 
         // *** act
-        var result = await handler.Handle(request, CancellationToken.None);
+        var result = await _handler.Handle(request, CancellationToken.None);
 
         // *** assert
-        // get user directly from DB
-        var userFromDb = await collection.GetAsync(username);
-        var userFromDbDoc = userFromDb.ContentAs<User>();
         Assert.That(result, Is.Not.Null);
         Assert.That(result.ValidationErrors == null || !result.ValidationErrors.Any(), Is.EqualTo(true));
-        Assert.That(userFromDbDoc.Bio, Is.EqualTo(request.Model.User.Bio)); // assert that bio WAS changed
-        Assert.That(userFromDbDoc.Image, Is.EqualTo(existingUser.Image));  // assert that image was NOT changed
-        Assert.That(userFromDbDoc.Email, Is.EqualTo(request.Model.User.Email)); // assert that email WAS changed
+        await _usersCollectionProvider.AssertExists(user.Username, u =>
+        {
+            Assert.That(u.Bio, Is.EqualTo(request.Model.User.Bio)); // assert that bio WAS changed
+            Assert.That(u.Email, Is.EqualTo(request.Model.User.Email)); // assert that email WAS changed
+            Assert.That(u.Image, Is.EqualTo(user.Image));  // assert that image was NOT changed
+            Assert.That(u.Password, Is.EqualTo(user.Password));  // assert that password was NOT changed
+        });
 ;    }
 }

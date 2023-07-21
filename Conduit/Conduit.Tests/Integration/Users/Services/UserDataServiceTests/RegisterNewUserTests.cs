@@ -1,4 +1,5 @@
-﻿using Conduit.Web.Models;
+﻿using Conduit.Tests.TestHelpers.Data;
+using Conduit.Web.Models;
 using Conduit.Web.Users.Services;
 using Couchbase.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,24 +32,15 @@ public class RegisterNewUserTests : CouchbaseIntegrationTest
     public async Task Given_a_user_with_a_username_the_username_is_only_stored_as_document_id()
     {
         // arrange
-        var usernameKey = $"key-{Path.GetRandomFileName()}";
-        var userToInsert = new User
-        {
-            Bio = "lorem ipsum",
-            Email = "foo@bar.baz",
-            Image = "http://example.net/foo.jpg",
-            Password = "abc",
-            PasswordSalt = "abcsalty",
-            Username = usernameKey
-        };
+        var userToInsert = UserHelper.CreateUser();
 
         // act
-        var result = await _userDataService.RegisterNewUser(userToInsert);
+        await _userDataService.RegisterNewUser(userToInsert);
 
         // assert that username was only stored as key/id
-        var collection = await _usersCollectionProvider.GetCollectionAsync();
-        var doc = await collection.GetAsync(usernameKey);
-        var docContent = doc.ContentAs<User>();
-        Assert.That(docContent.Username, Is.Null);
+        await _usersCollectionProvider.AssertExists(userToInsert.Username, u =>
+        {
+            Assert.That(u.Username, Is.Null);
+        });
     }
 }

@@ -1,4 +1,5 @@
-﻿using Conduit.Web.Models;
+﻿using Conduit.Tests.TestHelpers.Data;
+using Conduit.Web.Models;
 using Conduit.Web.Users.Handlers;
 using Conduit.Web.Users.Services;
 using Couchbase.Extensions.DependencyInjection;
@@ -8,6 +9,9 @@ namespace Conduit.Tests.Integration.Users.Handlers;
 
 public class GetCurrentUserRequestHandlerTests : CouchbaseIntegrationTest
 {
+    private IConduitUsersCollectionProvider _usersCollectionProvider;
+    private GetCurrentUserHandler _getCurrentUserHandler;
+
     [OneTimeSetUp]
     public override async Task Setup()
     {
@@ -19,18 +23,17 @@ public class GetCurrentUserRequestHandlerTests : CouchbaseIntegrationTest
                 .AddScope("_default")
                 .AddCollection<IConduitUsersCollectionProvider>("Users");
         });
+
+        // setup handler and dependencies
+        _usersCollectionProvider = ServiceProvider.GetRequiredService<IConduitUsersCollectionProvider>();
+        var authService = new AuthService();
+        _getCurrentUserHandler = new GetCurrentUserHandler(authService, new UserDataService(_usersCollectionProvider, authService));
     }
 
     [Test]
     public async Task GetCurrentUserRequestHandler_Is_Successful()
     {
         // *** arrange
-        // arrange collections provider
-        var usersCollectionProvider = ServiceProvider.GetRequiredService<IConduitUsersCollectionProvider>();
-
-        // arrange the handler
-        var authService = new AuthService();
-        var getCurrentUserHandler = new GetCurrentUserHandler(authService, new UserDataService(usersCollectionProvider, authService));
 
         // arrange the request
         var email = $"valid{Path.GetRandomFileName()}@example.net";
@@ -39,20 +42,10 @@ public class GetCurrentUserRequestHandlerTests : CouchbaseIntegrationTest
         var request = new GetCurrentUserRequest(fakeToken);
 
         // arrange the current user already in the database
-        var collection = await usersCollectionProvider.GetCollectionAsync();
-        var password = "ValidPassword1#";
-        var salt = new AuthService().GenerateSalt();
-        await collection.InsertAsync(username, new User
-        {
-            Email = email,
-            Password = new AuthService().HashPassword(password, salt),
-            PasswordSalt = salt,
-            Bio = "lorem ipsum",
-            Image = "http://example.net/profile.jpg"
-        });
+        await _usersCollectionProvider.CreateUserInDatabase(username: username, email: email);
 
         // *** act
-        var result = await getCurrentUserHandler.Handle(request, CancellationToken.None);
+        var result = await _getCurrentUserHandler.Handle(request, CancellationToken.None);
 
         // *** assert
         Assert.That(result, Is.Not.Null);
