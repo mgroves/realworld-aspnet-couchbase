@@ -69,24 +69,7 @@ public static class UserHelper
     {
         var user = CreateUser(username, email, bio, image, password);
 
-        // username ??= "user-" + Path.GetRandomFileName();
-        // email ??= "email-" + Path.GetRandomFileName() + "@example.net";
-        // bio ??= "Lorem Ipsum bio " + Path.GetRandomFileName();
-        // image ??= "http://example.net/" + Path.GetRandomFileName() + ".jpg";
-        // password ??= "ValidPassword1#-" + Path.GetRandomFileName();
-
         var collection = await @this.GetCollectionAsync();
-        //var salt = new AuthService().GenerateSalt();
-
-        // var user = new User
-        // {
-        //     Email = email,
-        //     Password = new AuthService().HashPassword(password, salt),
-        //     PasswordSalt = salt,
-        //     Bio = bio,
-        //     Image = image,
-        //     Username = username
-        // };
 
         await collection.InsertAsync(user.Username, user);
 

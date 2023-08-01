@@ -36,6 +36,9 @@ public class UsersController : Controller
         if (loginResult.IsUnauthorized)
             return Unauthorized();
 
+        if (loginResult.ValidationErrors?.Any() ?? false)
+            return Unauthorized(loginResult.ValidationErrors.ToCsv());
+
         return Ok(new { user = loginResult.UserView });
     }
 
