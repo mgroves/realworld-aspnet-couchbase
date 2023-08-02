@@ -1,23 +1,18 @@
-﻿namespace Conduit.Tests.Unit.Follows.Handlers;
-
-using System.Threading;
-using System.Threading.Tasks;
-using Conduit.Web.Follows.Handlers;
+﻿using Conduit.Web.Follows.Handlers;
 using Conduit.Web.Follows.Services;
 using Conduit.Web.Models;
 using Conduit.Web.Users.Services;
-using FluentValidation;
-using global::Conduit.Web.Users.ViewModels;
+using Conduit.Web.Users.ViewModels;
 using Moq;
-using NUnit.Framework;
 
+namespace Conduit.Tests.Unit.Follows.Handlers;
 
 [TestFixture]
-public class FollowUserHandlerTests
+public class UnfollowUserHandlerTests
 {
     private Mock<IUserDataService> _userDataServiceMock;
     private Mock<IFollowDataService> _followDataServiceMock;
-    private FollowUserHandler _handler;
+    private UnfollowUserHandler _handler;
 
     [SetUp]
     public async Task Setup()
@@ -25,26 +20,26 @@ public class FollowUserHandlerTests
         _userDataServiceMock = new Mock<IUserDataService>();
         _followDataServiceMock = new Mock<IFollowDataService>();
 
-        _handler = new FollowUserHandler(_userDataServiceMock.Object, _followDataServiceMock.Object, new FollowUserRequestValidator());
+        _handler = new UnfollowUserHandler(_userDataServiceMock.Object, _followDataServiceMock.Object, new UnfollowUserRequestValidator());
     }
 
     [Test]
-    public async Task Handle_ShouldInvokeFollowService_WhenUserExists()
+    public async Task Handle_ShouldInvokeUnfollowService_WhenUserExists()
     {
         // arrange
-        var request = new FollowUserRequest("userToFollow", "userDoingTheFollowing");
+        var request = new UnfollowUserRequest("userToUnfollow", "userDoingTheUnfollowing");
 
         // arrange what profile is expected to be returned
         var expectedProfile = new ProfileViewModel
         {
-            Username = "userToFollow",
+            Username = "userToUnfollow",
             Bio = "Lorem ipsum",
             Image = "http://example.net/image.jpg",
-            Following = true
+            Following = false
         };
 
         // arrange the user that will be in the database
-        var userToFollow = new User
+        var userToUnfollow = new User
         {
             Username = expectedProfile.Username,
             Bio = expectedProfile.Bio,
@@ -52,8 +47,8 @@ public class FollowUserHandlerTests
         };
 
         _userDataServiceMock.Setup(svc => svc.GetUserByUsername(It.IsAny<string>()))
-            .ReturnsAsync(new DataServiceResult<User>(userToFollow, DataResultStatus.Ok));
-        _followDataServiceMock.Setup(svc => svc.FollowUser(request.UserToFollow, request.FollowingUsername))
+            .ReturnsAsync(new DataServiceResult<User>(userToUnfollow, DataResultStatus.Ok));
+        _followDataServiceMock.Setup(svc => svc.UnfollowUser(request.UserToUnfollow, request.UserToUnfollow))
             .Returns(Task.CompletedTask);
 
         // act
@@ -72,14 +67,13 @@ public class FollowUserHandlerTests
     public async Task Handle_ShouldFailValidation_WhenRequestIsInvalid(string invalidUsername)
     {
         // arrange
-        var request = new FollowUserRequest(invalidUsername, "doesntmatter");
-
-        // TODO: why is this here?
-        var expectedValidationErrors = new[]
-        {
-            new FluentValidation.Results.ValidationFailure("FollowingUsername", "Username must not be empty."),
-            new FluentValidation.Results.ValidationFailure("UserToFollow", "Username must not be empty.")
-        };
+        var request = new UnfollowUserRequest(invalidUsername, "doesntmatter");
+        // TODO: why was this here?
+        // var expectedValidationErrors = new[]
+        // {
+        //     new FluentValidation.Results.ValidationFailure("UnfollowingUsername", "Username must not be empty."),
+        //     new FluentValidation.Results.ValidationFailure("UserToUnfollow", "Username must not be empty.")
+        // };
 
         // act
         var result = await _handler.Handle(request, CancellationToken.None);
@@ -91,10 +85,10 @@ public class FollowUserHandlerTests
     }
 
     [Test]
-    public async Task Handle_ShouldReturnUserNotFound_WhenUserToFollowDoesNotExist()
+    public async Task Handle_ShouldReturnUserNotFound_WhenUserToUnfollowDoesNotExist()
     {
         // arrange
-        var request = new FollowUserRequest("userThatDoesntExist", "userDoingTheFollowing");
+        var request = new UnfollowUserRequest("userThatDoesntExist", "userDoingTheUnfollowing");
 
         _userDataServiceMock.Setup(svc => svc.GetUserByUsername(It.IsAny<string>()))
             .ReturnsAsync(new DataServiceResult<User>(null, DataResultStatus.NotFound));

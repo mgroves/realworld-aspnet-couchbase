@@ -46,7 +46,6 @@
       <Folder Include="Integration\Users\Controllers\UserController\" />
       <Folder Include="Integration\Users\Services\UserDataServiceTests\" />
       <Folder Include="TestHelpers\Dto\" />
-      <Folder Include="Unit\Follows\Handlers\" />
     </ItemGroup>
 
 </Project>

@@ -1,4 +1,5 @@
-﻿using Conduit.Web.Users.Services;
+﻿using Conduit.Web.Follows.Services;
+using Conduit.Web.Users.Services;
 using Conduit.Web.Users.ViewModels;
 using MediatR;
 using FluentValidation;
@@ -10,11 +11,13 @@ public class GetProfileHandler : IRequestHandler<GetProfileRequest, GetProfileRe
 {
     private readonly IUserDataService _userDataService;
     private readonly IValidator<GetProfileRequest> _validator;
+    private readonly IFollowDataService _followDataService;
 
-    public GetProfileHandler(IUserDataService userDataService, IValidator<GetProfileRequest> validator)
+    public GetProfileHandler(IUserDataService userDataService, IValidator<GetProfileRequest> validator, IFollowDataService followDataService)
     {
         _userDataService = userDataService;
         _validator = validator;
+        _followDataService = followDataService;
     }
 
     public async Task<GetProfileResult> Handle(GetProfileRequest request, CancellationToken cancellationToken)
@@ -29,13 +32,18 @@ public class GetProfileHandler : IRequestHandler<GetProfileRequest, GetProfileRe
             };
         }
 
-        // TODO: if JWT is specified, use that to determine if the logged-in user is following this profile
-
         var profileResult = await _userDataService.GetProfileByUsername(request.Username);
         if (profileResult.Status == DataResultStatus.NotFound)
             return new GetProfileResult { UserNotFound = true };
 
         var result = profileResult.DataResult;
+
+        // if JWT is specified, use that to determine if the logged-in user is following this profile
+        bool isCurrentUserFollowing = false;
+        if (!string.IsNullOrEmpty(request.OptionalBearerToken))
+        {
+            isCurrentUserFollowing = await _followDataService.IsCurrentUserFollowing(request.OptionalBearerToken, request.Username);
+        }
 
         return new GetProfileResult
         {
@@ -44,7 +52,7 @@ public class GetProfileHandler : IRequestHandler<GetProfileRequest, GetProfileRe
                 Username = request.Username,
                 Bio = result.Bio,
                 Image = result.Image,
-                Following = false       // TODO: determine following or not (this MIGHT be done in the data layer?)
+                Following = isCurrentUserFollowing
             }
         };
     }

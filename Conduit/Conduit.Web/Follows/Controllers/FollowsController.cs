@@ -42,4 +42,30 @@ public class FollowsController : Controller
 
         return Ok(result.Profile);
     }
+
+    /// <summary>
+    /// Unfollow a user
+    /// </summary>
+    /// <remarks>
+    /// <a href="https://realworld-docs.netlify.app/docs/specs/backend-specs/endpoints#unfollow-user">Conduit Spec for follow user endpoint</a>
+    /// </remarks>
+    /// <param name="username">Username of the user to be followed</param>
+    /// <returns>Profile</returns>
+    /// <response code="200">Returns the unfollowed user's detailed profile information</response>
+    /// <response code="401">Unauthorized</response>
+    /// <response code="404">User not found</response>
+    [Authorize]
+    [HttpDelete("api/profiles/{username}/follow")]
+    public async Task<IActionResult> UnfollowUser(string username)
+    {
+        var authHeader = Request.Headers["Authorization"];
+        var bearerToken = _authService.GetTokenFromHeader(authHeader);
+        var currentUsername = _authService.GetUsernameClaim(bearerToken);
+
+        var result = await _mediator.Send(new UnfollowUserRequest(username, currentUsername.Value));
+        if (result.UserNotFound)
+            return NotFound("User not found");
+
+        return Ok(result.Profile);
+    }
 }

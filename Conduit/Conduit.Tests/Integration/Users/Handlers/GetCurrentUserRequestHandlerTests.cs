@@ -17,6 +17,7 @@ public class GetCurrentUserRequestHandlerTests : CouchbaseIntegrationTest
     {
         await base.Setup();
 
+        // TODO: need to get bucket name from environment/user secrets
         ServiceCollection.AddCouchbaseBucket<IConduitBucketProvider>("ConduitIntegrationTests", b =>
         {
             b

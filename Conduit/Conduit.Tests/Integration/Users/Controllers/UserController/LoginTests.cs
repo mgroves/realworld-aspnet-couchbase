@@ -4,11 +4,11 @@ using Conduit.Tests.TestHelpers.Dto;
 using Conduit.Web;
 using System.Net;
 using Conduit.Web.Models;
-using Conduit.Web.Users.ViewModels;
 using Couchbase.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
+using Microsoft.Extensions.Configuration;
 
 namespace Conduit.Tests.Integration.Users.Controllers.UserController;
 
@@ -24,11 +24,21 @@ public class LoginTests : CouchbaseIntegrationTest
         await base.Setup();
 
         // arrange ASP.NET
-        _factory = new WebApplicationFactory<Program>();
-        _client = _factory.CreateClient();
+        // TODO: pull from user secrets and environment variables
+        _factory = new WebApplicationFactory<Program>()
+            .WithWebHostBuilder(builder =>
+            {
+                builder.ConfigureAppConfiguration((context, configBuilder) =>
+                {
+                    // Add environment variables
+                    configBuilder.AddEnvironmentVariables();
+                    configBuilder.AddUserSecrets<CouchbaseIntegrationTest>();
+                });
+            });
 
+        _client = _factory.CreateClient();
         // arrange db access for arranging
-        ServiceCollection.AddCouchbaseBucket<IConduitBucketProvider>("Conduit", b =>
+        ServiceCollection.AddCouchbaseBucket<IConduitBucketProvider>("ConduitIntegrationTests", b =>
         {
             b
                 .AddScope("_default")
@@ -58,7 +68,7 @@ public class LoginTests : CouchbaseIntegrationTest
         var response = await _client.PostAsync("/api/users/login", content);
 
         // Assert
-        Assert.AreEqual(HttpStatusCode.Unauthorized, response.StatusCode);
+        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
         var responseString = await response.Content.ReadAsStringAsync();
         Assert.NotNull(responseString);
         Assert.That(responseString, Contains.Substring("Email address must not be empty."));
@@ -84,14 +94,14 @@ public class LoginTests : CouchbaseIntegrationTest
         var response = await _client.PostAsync("/api/users/login", content);
 
         // Assert
-        Assert.AreEqual(HttpStatusCode.Unauthorized, response.StatusCode);
+        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
         var responseString = await response.Content.ReadAsStringAsync();
         Assert.NotNull(responseString);
         Assert.That(responseString, Is.EqualTo(expectedErrorMessage));
     }
 
     [Test]
-    public async Task LoginWithCorrectCredentialsShouldSuccess()
+    public async Task LoginWithCorrectCredentialsShouldReturnSuccess()
     {
         // Arrange
         var payload = LoginSubmitModelHelper.Create();
@@ -105,11 +115,11 @@ public class LoginTests : CouchbaseIntegrationTest
         var response = await _client.PostAsync("/api/users/login", content);
 
         // Assert
-        Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
         var responseString = await response.Content.ReadAsStringAsync();
-        var userViewModel = (JsonConvert.DeserializeObject<dynamic>(responseString)).user) as UserViewModel;
-        Assert.That(userViewModel.Email, Is.EqualTo(payload.User.Email));
-        Assert.That(userViewModel.Username, Is.EqualTo(userInDatabase.Username));
+        var userViewModel = JsonConvert.DeserializeObject<dynamic>(responseString);
+        Assert.That(userViewModel.user.Email, Is.EqualTo(payload.User.Email));
+        Assert.That(userViewModel.user.Username, Is.EqualTo(userInDatabase.Username));
     }
 
     [TearDown]

@@ -1,4 +1,6 @@
-﻿using Conduit.Web.Models;
+﻿using Conduit.Tests.TestHelpers.Data;
+using Conduit.Web.Follows.Services;
+using Conduit.Web.Models;
 using Conduit.Web.Users.Handlers;
 using Conduit.Web.Users.Services;
 using Moq;
@@ -9,16 +11,40 @@ namespace Conduit.Tests.Unit.Users.Handlers;
 public class GetProfileHandlerTests
 {
     private Mock<IUserDataService> _userDataServiceMock;
+    private Mock<IFollowDataService> _followDataServiceMock;
+    private GetProfileHandler _handler;
 
     [SetUp]
     public void SetUp()
     {
         _userDataServiceMock = new Mock<IUserDataService>();
+        _followDataServiceMock = new Mock<IFollowDataService>();
+
+        // setup handler
+        _handler = new GetProfileHandler(_userDataServiceMock.Object, new GetProfileRequestValidator(), _followDataServiceMock.Object);
     }
 
-    // TODO: test when the user IS following
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task Profile_for_a_user_following_the_user_in_the_profile(bool isUserFollowing)
+    {
+        // arrange
+        var currentUserToken = new AuthService().GenerateJwtToken("matt.groves@example.net", "MattGroves");
 
-    // TODO: test when the user IS NOT following
+        // arrange for user to NOT be followed
+        var user = UserHelper.CreateUser(username: "SurlyDev");
+        _followDataServiceMock.Setup(m => m.IsCurrentUserFollowing(currentUserToken, user.Username))
+            .ReturnsAsync(isUserFollowing);
+        _userDataServiceMock.Setup(m => m.GetProfileByUsername(user.Username))
+            .ReturnsAsync(new DataServiceResult<User>(user, DataResultStatus.Ok));
+        var request = new GetProfileRequest(user.Username, currentUserToken);
+
+        // act
+        var result = await _handler.Handle(request, CancellationToken.None);
+
+        // assert
+        Assert.That(result.ProfileView.Following, Is.EqualTo(isUserFollowing));
+    }
 
     [Test]
     public async Task Username_not_found()
@@ -28,15 +54,12 @@ public class GetProfileHandlerTests
         var username = "napalm684doesntexist";
         var request = new GetProfileRequest(username, null);
 
-        // arrange handler
-        var handler = new GetProfileHandler(_userDataServiceMock.Object, new GetProfileRequestValidator());
-
         // arrange for user to be in mock database
         _userDataServiceMock.Setup(m => m.GetProfileByUsername(username))
             .ReturnsAsync(new DataServiceResult<User>(null, DataResultStatus.NotFound));
 
         // act
-        var result = await handler.Handle(request, CancellationToken.None);
+        var result = await _handler.Handle(request, CancellationToken.None);
 
         // assert
         Assert.That(result, Is.Not.Null);
@@ -52,24 +75,13 @@ public class GetProfileHandlerTests
         var username = "napalm684";
         var request = new GetProfileRequest(username, null);
 
-        // arrange handler
-        var handler = new GetProfileHandler(_userDataServiceMock.Object, new GetProfileRequestValidator());
-
         // arrange for user to be in mock database
-        var user = new User
-        {
-            Username = username,
-            Bio = "doesntmatter",
-            Email = "doesntmatter@example.net",
-            Image = "https://doesntmatter.example.net/whatever.jpg",
-            Password = "doesntmatter",
-            PasswordSalt = "doesntmatter"
-        };
+        var user = UserHelper.CreateUser(username: username);
         _userDataServiceMock.Setup(m => m.GetProfileByUsername(username))
             .ReturnsAsync(new DataServiceResult<User>(user, DataResultStatus.Ok));
 
         // act
-        var result = await handler.Handle(request, CancellationToken.None);
+        var result = await _handler.Handle(request, CancellationToken.None);
 
         // assert
         Assert.That(result, Is.Not.Null);

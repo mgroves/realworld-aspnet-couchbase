@@ -22,4 +22,16 @@ public static class FollowHelper
 
         Assert.Pass();
     }
+
+    public static async Task CreateFollow(this IConduitFollowsCollectionProvider @this,
+        string usernameFollowing,
+        string usernameFollower)
+    {
+        var followCollection = await @this.GetCollectionAsync();
+        var followDocId = $"{usernameFollower}::follows";
+
+        var set = followCollection.Set<string>(followDocId);
+
+        await set.AddAsync(usernameFollowing);
+    }
 }

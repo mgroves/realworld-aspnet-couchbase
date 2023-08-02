@@ -1,4 +1,5 @@
 ﻿using Conduit.Tests.TestHelpers.Data;
+using Conduit.Web.Follows.Services;
 using Conduit.Web.Models;
 using Conduit.Web.Users.Handlers;
 using Conduit.Web.Users.Services;
@@ -11,6 +12,8 @@ public class GetProfileHandlerTests : CouchbaseIntegrationTest
 {
     private IConduitUsersCollectionProvider _usersCollectionProvider;
     private GetProfileHandler _getProfileHandler;
+    private IConduitFollowsCollectionProvider _followsCollectionProvider;
+    private AuthService _authService;
 
     [OneTimeSetUp]
     public override async Task Setup()
@@ -21,14 +24,17 @@ public class GetProfileHandlerTests : CouchbaseIntegrationTest
         {
             b
                 .AddScope("_default")
-                .AddCollection<IConduitUsersCollectionProvider>("Users");
+                .AddCollection<IConduitUsersCollectionProvider>("Users")
+                .AddCollection<IConduitFollowsCollectionProvider>("Follows");
         });
 
         // setup handler
         _usersCollectionProvider = ServiceProvider.GetRequiredService<IConduitUsersCollectionProvider>();
-        var authService = new AuthService();
-        _getProfileHandler = new GetProfileHandler(new UserDataService(_usersCollectionProvider, authService),
-            new GetProfileRequestValidator());
+        _followsCollectionProvider = ServiceProvider.GetRequiredService<IConduitFollowsCollectionProvider>();
+        _authService = new AuthService();
+        _getProfileHandler = new GetProfileHandler(new UserDataService(_usersCollectionProvider, _authService),
+            new GetProfileRequestValidator(),
+            new FollowsDataService(_followsCollectionProvider, _authService));
     }
 
     [Test]
@@ -51,6 +57,52 @@ public class GetProfileHandlerTests : CouchbaseIntegrationTest
         Assert.That(result.ProfileView.Username, Is.EqualTo(username));
         Assert.That(result.ProfileView.Bio, Is.EqualTo(userInDatabase.Bio));
         Assert.That(result.ProfileView.Image, Is.EqualTo(userInDatabase.Image));
+        Assert.That(result.ProfileView.Following, Is.EqualTo(false));
+    }
+
+    [Test]
+    public async Task GetCurrentUserRequestHandler_When_Following_AnotherUser()
+    {
+        // *** arrange
+        // arrange the user already in the database
+        // arrange them following another user
+        var userInDatabaseDoingTheFollowing = await _usersCollectionProvider.CreateUserInDatabase(username: "doingTheFollowing-" + Path.GetRandomFileName());
+        var userInDatabaseBeingFollowed = await _usersCollectionProvider.CreateUserInDatabase(username: "theFollowed-" + Path.GetRandomFileName());
+        await _followsCollectionProvider.CreateFollow(userInDatabaseBeingFollowed.Username,
+            userInDatabaseDoingTheFollowing.Username);
+
+        // arrange the request
+        var bearerToken = _authService.GenerateJwtToken(userInDatabaseDoingTheFollowing.Email, userInDatabaseDoingTheFollowing.Username);
+        var request = new GetProfileRequest(userInDatabaseBeingFollowed.Username, bearerToken);
+
+        // *** act
+        var result = await _getProfileHandler.Handle(request, CancellationToken.None);
+
+        // *** assert
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.ProfileView, Is.Not.Null);
+        Assert.That(result.ProfileView.Following, Is.EqualTo(true));
+    }
+
+    [Test]
+    public async Task GetCurrentUserRequestHandler_When_NOT_Following_AnotherUser()
+    {
+        // *** arrange
+        // arrange the users already in the database
+        // but they aren't following anyone
+        var userInDatabaseDoingTheFollowing = await _usersCollectionProvider.CreateUserInDatabase(username: "doingTheFollowing-" + Path.GetRandomFileName());
+        var userInDatabaseBeingFollowed = await _usersCollectionProvider.CreateUserInDatabase(username: "theFollowed-" + Path.GetRandomFileName());
+
+        // arrange the request
+        var bearerToken = _authService.GenerateJwtToken(userInDatabaseDoingTheFollowing.Email, userInDatabaseDoingTheFollowing.Username);
+        var request = new GetProfileRequest(userInDatabaseBeingFollowed.Username, bearerToken);
+
+        // *** act
+        var result = await _getProfileHandler.Handle(request, CancellationToken.None);
+
+        // *** assert
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.ProfileView, Is.Not.Null);
         Assert.That(result.ProfileView.Following, Is.EqualTo(false));
     }
 }
