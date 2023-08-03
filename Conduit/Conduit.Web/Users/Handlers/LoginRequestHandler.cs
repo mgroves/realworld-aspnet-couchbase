@@ -46,7 +46,7 @@ public class LoginRequestHandler : IRequestHandler<LoginRequest, LoginResult>
         // return a user view object WITH a JWT token
         var userView = new UserViewModel
         {
-            Email = request.Model.User.Email,   // email is the document key
+            Email = userObj.Email,
             Token = _authService.GenerateJwtToken(request.Model.User.Email, userObj.Username),
             Username = userObj.Username,
             Bio = userObj.Bio,

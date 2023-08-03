@@ -3,12 +3,15 @@ using Conduit.Tests.TestHelpers.Data;
 using Conduit.Tests.TestHelpers.Dto;
 using Conduit.Web;
 using System.Net;
+using Conduit.Tests.TestHelpers;
 using Conduit.Web.Models;
+using Conduit.Web.Users.ViewModels;
 using Couchbase.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json.Linq;
 
 namespace Conduit.Tests.Integration.Users.Controllers.UserController;
 
@@ -113,13 +116,13 @@ public class LoginTests : CouchbaseIntegrationTest
 
         // Act
         var response = await _client.PostAsync("/api/users/login", content);
+        var responseString = await response.Content.ReadAsStringAsync();
+        var userViewModel = responseString.SubDoc<UserViewModel>("user");
 
         // Assert
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-        var responseString = await response.Content.ReadAsStringAsync();
-        var userViewModel = JsonConvert.DeserializeObject<dynamic>(responseString);
-        Assert.That(userViewModel.user.Email, Is.EqualTo(payload.User.Email));
-        Assert.That(userViewModel.user.Username, Is.EqualTo(userInDatabase.Username));
+        Assert.That(userViewModel.Email, Is.EqualTo(payload.User.Email));
+        Assert.That(userViewModel.Username, Is.EqualTo(userInDatabase.Username));
     }
 
     [TearDown]
