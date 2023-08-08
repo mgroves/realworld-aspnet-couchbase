@@ -1,4 +1,5 @@
-﻿using Conduit.Web.Models;
+﻿using Conduit.Tests.TestHelpers;
+using Conduit.Web.Models;
 using Conduit.Web.Users.Handlers;
 using Conduit.Web.Users.Services;
 using Moq;
@@ -26,7 +27,7 @@ public class GetCurrentUserRequestHandlerTests
         // arrange request from API
         var email = "myfakeemail@example.net";
         var username = "doesntmatter";
-        var fakeToken = new AuthService().GenerateJwtToken(email, username);
+        var fakeToken = AuthServiceHelper.Create().GenerateJwtToken(email, username);
         var request = new GetCurrentUserRequest(fakeToken);
 
         // arrange user that would be in db
@@ -90,7 +91,7 @@ public class GetCurrentUserRequestHandlerTests
         // arrange
         // arrange request from API
         var email = "myfakeemail@example.net";
-        var fakeToken = new AuthService().GenerateJwtToken(email, "doesntmatter");
+        var fakeToken = AuthServiceHelper.Create().GenerateJwtToken(email, "doesntmatter");
         var request = new GetCurrentUserRequest(fakeToken);
 
 

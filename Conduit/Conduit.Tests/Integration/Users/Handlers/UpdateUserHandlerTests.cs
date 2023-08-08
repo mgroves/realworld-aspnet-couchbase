@@ -1,4 +1,5 @@
-﻿using Conduit.Tests.TestHelpers.Data;
+﻿using Conduit.Tests.TestHelpers;
+using Conduit.Tests.TestHelpers.Data;
 using Conduit.Tests.TestHelpers.Dto;
 using Conduit.Web.Models;
 using Conduit.Web.Users.Handlers;
@@ -29,10 +30,11 @@ public class UpdateUserHandlerTests : CouchbaseIntegrationTest
         _usersCollectionProvider = ServiceProvider.GetRequiredService<IConduitUsersCollectionProvider>();
 
         // arrange handler and dependencies
+        var authService = AuthServiceHelper.Create();
         _handler = new UpdateUserHandler(
-            new UpdateUserRequestValidator(new UserDataService(_usersCollectionProvider, new AuthService()), new SharedUserValidator<UpdateUserViewModelUser>()),
-            new AuthService(),
-            new UserDataService(_usersCollectionProvider, new AuthService()));
+            new UpdateUserRequestValidator(new UserDataService(_usersCollectionProvider, authService), new SharedUserValidator<UpdateUserViewModelUser>()),
+            authService,
+            new UserDataService(_usersCollectionProvider, authService));
     }
 
     [Test]

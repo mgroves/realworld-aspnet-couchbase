@@ -1,4 +1,5 @@
-﻿using Conduit.Tests.TestHelpers.Data;
+﻿using Conduit.Tests.TestHelpers;
+using Conduit.Tests.TestHelpers.Data;
 using Conduit.Web.Models;
 using Conduit.Web.Users.Services;
 using Couchbase.Extensions.DependencyInjection;
@@ -25,7 +26,7 @@ public class RegisterNewUserTests : CouchbaseIntegrationTest
         });
 
         _usersCollectionProvider = ServiceProvider.GetRequiredService<IConduitUsersCollectionProvider>();
-        _userDataService = new UserDataService(_usersCollectionProvider, new AuthService());
+        _userDataService = new UserDataService(_usersCollectionProvider, AuthServiceHelper.Create());
     }
 
     [Test]

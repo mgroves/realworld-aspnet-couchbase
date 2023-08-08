@@ -1,13 +1,20 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Conduit.Web.Users.Services;
 
 public class AuthService : IAuthService
 {
+    private readonly JwtSecrets _jwtSecrets;
     private const string CLAIMTYPE_USERNAME = "Username";
+
+    public AuthService(IOptions<JwtSecrets> jwtSecrets)
+    {
+        _jwtSecrets = jwtSecrets.Value;
+    }
 
     public string GenerateJwtToken(string email, string username)
     {
@@ -19,12 +26,12 @@ public class AuthService : IAuthService
             new Claim(CLAIMTYPE_USERNAME, username)
         };
 
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("6B{DqP5aT,3b&!YRgk29m@j$L7uvnxE"));
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSecrets.SecurityKey));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
         var token = new JwtSecurityToken(
-            issuer: "ConduitAspNetCouchbase_Issuer",
-            audience: "ConduitAspNetCouchbase_Audience",
+            issuer: _jwtSecrets.Issuer,
+            audience: _jwtSecrets.Audience,
             claims: claims,
             expires: DateTime.UtcNow.AddHours(4), // Set the token expiration time
             signingCredentials: creds

@@ -1,4 +1,5 @@
-﻿using Conduit.Tests.TestHelpers.Data;
+﻿using Conduit.Tests.TestHelpers;
+using Conduit.Tests.TestHelpers.Data;
 using Conduit.Web.Follows.Handlers;
 using Conduit.Web.Follows.Services;
 using Conduit.Web.Models;
@@ -11,7 +12,6 @@ namespace Conduit.Tests.Integration.Follows.Handlers;
 [TestFixture]
 public class FollowUserHandlerIntegrationTest : CouchbaseIntegrationTest
 {
-    private FollowUserRequest _request;
     private FollowUserHandler _handler;
     private IConduitFollowsCollectionProvider _followsCollectionProvider;
     private IConduitUsersCollectionProvider _usersCollectionProvider;
@@ -35,7 +35,7 @@ public class FollowUserHandlerIntegrationTest : CouchbaseIntegrationTest
         _usersCollectionProvider = ServiceProvider.GetRequiredService<IConduitUsersCollectionProvider>();
 
         // setup handler and dependencies
-        var authService = new AuthService();
+        var authService = AuthServiceHelper.Create();
         _handler = new FollowUserHandler(
             new UserDataService(_usersCollectionProvider, authService),
             new FollowsDataService(_followsCollectionProvider, authService),

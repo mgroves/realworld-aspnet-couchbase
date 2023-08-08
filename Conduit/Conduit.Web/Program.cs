@@ -8,6 +8,7 @@ using Conduit.Web.Users.Services;
 using Couchbase.Extensions.DependencyInjection;
 using FluentValidation;
 using Microsoft.OpenApi.Models;
+using Microsoft.Extensions.Configuration;
 
 namespace Conduit.Web
 {
@@ -28,7 +29,7 @@ namespace Conduit.Web
 
             builder.Services.AddConduitSwaggerSetup();
 
-            builder.Services.AddConduitAuthenticationSetup();
+            builder.Services.AddConduitAuthenticationSetup(builder.Configuration);
 
             builder.Services.AddConduitServiceDependencies(builder.Configuration);
 
@@ -92,8 +93,11 @@ namespace Conduit.Web
         /// <summary>
         /// Add JWT authentication
         /// </summary>
-        public static void AddConduitAuthenticationSetup(this IServiceCollection @this)
+        public static void AddConduitAuthenticationSetup(this IServiceCollection @this,
+            ConfigurationManager config)
         {
+            @this.Configure<JwtSecrets>(config.GetSection("JwtSecrets"));
+
             @this.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
@@ -103,9 +107,9 @@ namespace Conduit.Web
                         ValidateAudience = true,
                         ValidateLifetime = true,
                         ValidateIssuerSigningKey = true,
-                        ValidIssuer = "ConduitAspNetCouchbase_Issuer", // Replace with your issuer
-                        ValidAudience = "ConduitAspNetCouchbase_Audience", // Replace with your audience
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("6B{DqP5aT,3b&!YRgk29m@j$L7uvnxE")) // Replace with your secret key
+                        ValidIssuer = config["JwtSecrets:Issuer"], 
+                        ValidAudience = config["JwtSecrets:Audience"],
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes( config["JwtSecrets:SecurityKey"]))
                     };
                     options.Events = new JwtBearerEvents()
                     {

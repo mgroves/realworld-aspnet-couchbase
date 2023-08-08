@@ -1,4 +1,5 @@
-﻿using Conduit.Tests.TestHelpers.Data;
+﻿using Conduit.Tests.TestHelpers;
+using Conduit.Tests.TestHelpers.Data;
 using Conduit.Web.Follows.Services;
 using Conduit.Web.Models;
 using Conduit.Web.Users.Handlers;
@@ -29,7 +30,7 @@ public class GetProfileHandlerTests
     public async Task Profile_for_a_user_following_the_user_in_the_profile(bool isUserFollowing)
     {
         // arrange
-        var currentUserToken = new AuthService().GenerateJwtToken("matt.groves@example.net", "MattGroves");
+        var currentUserToken = AuthServiceHelper.Create().GenerateJwtToken("matt.groves@example.net", "MattGroves");
 
         // arrange for user to NOT be followed
         var user = UserHelper.CreateUser(username: "SurlyDev");

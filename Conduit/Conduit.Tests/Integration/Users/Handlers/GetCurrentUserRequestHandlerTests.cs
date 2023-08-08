@@ -1,4 +1,5 @@
-﻿using Conduit.Tests.TestHelpers.Data;
+﻿using Conduit.Tests.TestHelpers;
+using Conduit.Tests.TestHelpers.Data;
 using Conduit.Web.Models;
 using Conduit.Web.Users.Handlers;
 using Conduit.Web.Users.Services;
@@ -27,7 +28,7 @@ public class GetCurrentUserRequestHandlerTests : CouchbaseIntegrationTest
 
         // setup handler and dependencies
         _usersCollectionProvider = ServiceProvider.GetRequiredService<IConduitUsersCollectionProvider>();
-        var authService = new AuthService();
+        var authService = AuthServiceHelper.Create();
         _getCurrentUserHandler = new GetCurrentUserHandler(authService, new UserDataService(_usersCollectionProvider, authService));
     }
 
@@ -39,7 +40,7 @@ public class GetCurrentUserRequestHandlerTests : CouchbaseIntegrationTest
         // arrange the request
         var email = $"valid{Path.GetRandomFileName()}@example.net";
         var username = $"valid{Path.GetRandomFileName()}";
-        var fakeToken = new AuthService().GenerateJwtToken(email, username);
+        var fakeToken = AuthServiceHelper.Create().GenerateJwtToken(email, username);
         var request = new GetCurrentUserRequest(fakeToken);
 
         // arrange the current user already in the database

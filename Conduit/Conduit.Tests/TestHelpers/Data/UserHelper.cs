@@ -22,12 +22,13 @@ public static class UserHelper
         image ??= "http://example.net/" + Path.GetRandomFileName() + ".jpg";
         password ??= "ValidPassword1#-" + Path.GetRandomFileName();
 
-        var salt = new AuthService().GenerateSalt();
+        var authService = AuthServiceHelper.Create();
+        var salt = authService.GenerateSalt();
 
         var user = new User
         {
             Email = email,
-            Password = new AuthService().HashPassword(password, salt),
+            Password = authService.HashPassword(password, salt),
             PasswordSalt = salt,
             Bio = bio,
             Image = image,

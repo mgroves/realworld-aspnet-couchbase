@@ -1,4 +1,5 @@
-﻿using Conduit.Tests.TestHelpers.Data;
+﻿using Conduit.Tests.TestHelpers;
+using Conduit.Tests.TestHelpers.Data;
 using Conduit.Tests.TestHelpers.Dto;
 using Conduit.Web.Models;
 using Conduit.Web.Users.Handlers;
@@ -29,7 +30,7 @@ public class LoginRequestHandlerTests : CouchbaseIntegrationTest
         _usersCollectionProvider = ServiceProvider.GetRequiredService<IConduitUsersCollectionProvider>();
 
         // arrange the handler
-        var authService = new AuthService();
+        var authService = AuthServiceHelper.Create();
         _loginRequestHandler = new LoginRequestHandler(authService,
             new LoginRequestValidator(),
             new UserDataService(_usersCollectionProvider, authService));

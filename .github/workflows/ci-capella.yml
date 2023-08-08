@@ -19,6 +19,9 @@ jobs:
       Couchbase__ScopeName: ${{ secrets.COUCHBASE__SCOPENAME }}
       Couchbase__UsersCollectionName: ${{ secrets.COUCHBASE__USERSCOLLECTIONNAME }}
       Couchbase__FollowsCollectionName: ${{ secrets.COUCHBASE__FOLLOWSCOLLECTIONNAME }}
+      JwtSecret__Issuer: ${{ secrets.JWTSECRET__ISSUER }}
+      JwtSecret__Audience: ${{ secrets.JWTSECRET__AUDIENCE }}
+      JwtSecret__SecurityKey: ${{ secrets.JWTSECRET__SECURITYKEY }}
 
     steps:
     - name: Checkout

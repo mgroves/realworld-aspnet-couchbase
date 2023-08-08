@@ -1,4 +1,5 @@
-﻿using Conduit.Tests.TestHelpers.Data;
+﻿using Conduit.Tests.TestHelpers;
+using Conduit.Tests.TestHelpers.Data;
 using Conduit.Web.Follows.Handlers;
 using Conduit.Web.Follows.Services;
 using Conduit.Web.Models;
@@ -35,7 +36,7 @@ public class UnfollowUserHandlerIntegrationTest : CouchbaseIntegrationTest
         _usersCollectionProvider = ServiceProvider.GetRequiredService<IConduitUsersCollectionProvider>();
 
         // setup handler and dependencies
-        var authService = new AuthService();
+        var authService = AuthServiceHelper.Create();
         _handler = new UnfollowUserHandler(
             new UserDataService(_usersCollectionProvider, authService),
             new FollowsDataService(_followsCollectionProvider, authService),

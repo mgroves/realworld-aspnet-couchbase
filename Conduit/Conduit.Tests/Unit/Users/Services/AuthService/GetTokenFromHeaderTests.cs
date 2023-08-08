@@ -1,4 +1,6 @@
-﻿namespace Conduit.Tests.Unit.Users.Services.AuthService;
+﻿using Conduit.Tests.TestHelpers;
+
+namespace Conduit.Tests.Unit.Users.Services.AuthService;
 
 [TestFixture]
 public class GetTokenFromHeaderTests
@@ -8,7 +10,7 @@ public class GetTokenFromHeaderTests
     public async Task Can_parse_header_down_to_just_token_value(string raw, string expectedParsed)
     {
         // arrange
-        var authService = new Web.Users.Services.AuthService();
+        var authService = AuthServiceHelper.Create();
 
         // act
         var result = authService.GetTokenFromHeader(raw);
