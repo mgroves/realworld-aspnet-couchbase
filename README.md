@@ -34,6 +34,7 @@ You'll need to understand at least a little bit:
   * *Models* folder - this is where data access objects are kept. These objects are used only for database interaction.
   * *Sliced* folders - these contain ASP.NET Core Controller(s), Mediatr request, response, and handler classes, viewmodels, and services for the functionality of the slice.
     * Users - Authorization/authentication, JWT, registration, login, anything for Users
+    * Follows - Follow/unfollow
     * ...more on the way...
   * *Extensions* folder - extension methods for ASP.NET functionality
 
@@ -41,6 +42,7 @@ You'll need to understand at least a little bit:
   * *Unit* folder - this is where unit tests live. The folder structure within mirrors the Conduit.Web folders as much as possible.
   * *Integration* folder - this is where integration tests live. The folder structure within mirrors the Conduit.Web folders as much as possible.
   * *Extensions* folder - this is for tests of base level extensions in the Conduit.Web project
+  * *TestHelpers* folder - various helpers to make test writing faster and more readable
 
 * *Conduit.Migrations* - Automated creation of database structures. This project uses NoSqlMigrator (see below).
 
@@ -58,12 +60,10 @@ This Conduit implementation is being streamed [live on Twitch](https://twitch.tv
       2. Couchbase Server: Create a user with read/write permission (key-value, query) to all collections in the Conduit bucket. (Or if you aren't in production, use the admin credentials)
    3. Run the migrations in the *Conduit.Migrations* project (see [NoSqlMigrator](https://github.com/mgroves/NoSqlMigrator)).
    4. (Manual alternative to step 3) Create the database objects collections, indexes, documents, indexes as described in the *comments* of the classes of the *Conduit.Migrations* project.
-3. Configure Conduit.Web
-   1. In appsettings.json, add the Couchbase connection string, username, password, and bucket name
-4. Configure Conduit.Tests and Conduit.Migrations
-   1. Add User Secrets to Conduit.Tests and Conduit.Migrations, following secrets.json.template example for both
+3. Configure Conduit.Web, Conduit.Tests and Conduit.Migrations
+   1. Add User Secrets to Conduit.Tests and Conduit.Migrations, following secrets.json.template examples
    2. You should use a separate bucket for integration tests, since integration tests will run "down" migrations and destroy anything in the bucket.
-5. Compile and run Conduit.Web
+4. Compile and run Conduit.Web
    1. Standard compile/run from command line/VSCode/Visual Studio/Rider should work fine
    2. You can use Postman to exercise the endpoints. [RealWorld has a Postman collection available for your convenience](https://realworld-docs.netlify.app/docs/specs/backend-specs/postman) (which is currently checked into this repo, but beware--if you have issues, fall back to the official one).
    3. You can also use the generated SwaggerUI to exercise the endpoints.
@@ -72,6 +72,7 @@ This Conduit implementation is being streamed [live on Twitch](https://twitch.tv
 
 The creation of this implementation of Conduit is being done (mostly) on a [live coding stream](https://twitch.tv/matthewdgroves). Here are all the recordings:
 
+An overview of the goals of this project and the Real World Conduit project, featured on the On .NET Live show: https://www.youtube.com/watch?v=DGrPQqyOpcU
 
 | Date | Description | Full Stream | Edited Stream
 |--|---|-----|-----
@@ -84,6 +85,9 @@ The creation of this implementation of Conduit is being done (mostly) on a [live
 | 2023-06-30 | Recap, Update User, Get Profile | https://www.youtube.com/watch?v=kmYFII2MKMo |
 | 2023-07-07 | Get Profile, refactoring, the trouble with async | https://www.youtube.com/watch?v=CJ362YSQKSs |
 | 2023-07-11 | Data Modeling / Data Access patterns | https://www.youtube.com/watch?v=dGGpmWonPWs |
+| 2023-07-14 | Follow and Data Structures | https://www.youtube.com/watch?v=lh8yEyGEvps |
+| 2023-08-01 | Finishing follow/unfollow | https://www.youtube.com/watch?v=-4h_a--UJEU |
+
 
 [YouTube Playlist - full streams](https://www.youtube.com/playlist?list=PLZWwU1YVRehL0psJRk35x8evMeeGAFwBa)
 
