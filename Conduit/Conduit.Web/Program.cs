@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Conduit.Web.Articles.Services;
 using Conduit.Web.Follows.Services;
 using Conduit.Web.Models;
 using Conduit.Web.Users.Handlers;
@@ -74,6 +75,7 @@ namespace Conduit.Web
             @this.AddTransient<IAuthService, AuthService>();
             @this.AddTransient<IFollowDataService, FollowsDataService>();
             @this.AddTransient<IUserDataService, UserDataService>();
+            @this.AddTransient<ITagsDataService, TagsDataService>();
             @this.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<Program>());
             @this.AddCouchbase(configManager.GetSection("Couchbase"));
             @this.AddCouchbaseBucket<IConduitBucketProvider>(configManager["Couchbase:BucketName"], b =>
@@ -84,6 +86,9 @@ namespace Conduit.Web
                 b
                     .AddScope(configManager["Couchbase:ScopeName"])
                     .AddCollection<IConduitFollowsCollectionProvider>(configManager["Couchbase:FollowsCollectionName"]);
+                b
+                    .AddScope(configManager["Couchbase:ScopeName"])
+                    .AddCollection<IConduitTagsCollectionProvider>(configManager["Couchbase:TagsCollectionName"]);
             });
         }
     }

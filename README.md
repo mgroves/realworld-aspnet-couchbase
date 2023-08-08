@@ -35,6 +35,7 @@ You'll need to understand at least a little bit:
   * *Sliced* folders - these contain ASP.NET Core Controller(s), Mediatr request, response, and handler classes, viewmodels, and services for the functionality of the slice.
     * Users - Authorization/authentication, JWT, registration, login, anything for Users
     * Follows - Follow/unfollow
+    * Articles - Articles and tags for articles
     * ...more on the way...
   * *Extensions* folder - extension methods for ASP.NET functionality
 
