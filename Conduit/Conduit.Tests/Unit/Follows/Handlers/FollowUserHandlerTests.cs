@@ -2,12 +2,12 @@
 
 using System.Threading;
 using System.Threading.Tasks;
+using Conduit.Web.DataAccess.Dto;
+using Conduit.Web.DataAccess.Models;
 using Conduit.Web.Follows.Handlers;
 using Conduit.Web.Follows.Services;
-using Conduit.Web.Models;
 using Conduit.Web.Users.Services;
-using FluentValidation;
-using global::Conduit.Web.Users.ViewModels;
+using Conduit.Web.Users.ViewModels;
 using Moq;
 using NUnit.Framework;
 

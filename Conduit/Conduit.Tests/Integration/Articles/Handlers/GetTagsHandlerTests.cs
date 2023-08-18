@@ -1,6 +1,6 @@
 ﻿using Conduit.Web.Articles.Handlers;
 using Conduit.Web.Articles.Services;
-using Conduit.Web.Models;
+using Conduit.Web.DataAccess.Providers;
 using Couchbase.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 

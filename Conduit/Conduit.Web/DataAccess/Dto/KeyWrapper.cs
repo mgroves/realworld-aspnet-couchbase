@@ -1,4 +1,4 @@
-﻿namespace Conduit.Web.Models;
+﻿namespace Conduit.Web.DataAccess.Dto;
 
 /// <summary>
 /// This should only be used to return documents from SQL++ queries

@@ -1,9 +1,11 @@
-﻿using Conduit.Web.Models;
-using Couchbase.Core.Exceptions.KeyValue;
+﻿using Couchbase.Core.Exceptions.KeyValue;
 using Couchbase.KeyValue;
 using Couchbase.Query;
 using Conduit.Web.Users.ViewModels;
 using Microsoft.AspNetCore.Mvc.Formatters;
+using Conduit.Web.DataAccess.Providers;
+using Conduit.Web.DataAccess.Models;
+using Conduit.Web.DataAccess.Dto;
 
 namespace Conduit.Web.Users.Services;
 

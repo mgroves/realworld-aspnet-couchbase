@@ -78,7 +78,7 @@ An overview of the goals of this project and the Real World Conduit project, fea
 | Date | Description | Full Stream | Edited Stream
 |--|---|-----|-----
 | 2023-06-06 | Starting the Conduit project - ASP.NET + Couchbase - Office Hours | https://www.youtube.com/watch?v=HiRj5ntqiXk | https://www.youtube.com/watch?v=3ynXWW_Vyrc
-| 2023-06-08 | JWT and Mediatr | https://www.youtube.com/watch?v=O5ZTnmM4RpQ |
+| 2023-06-08 | JWT and Mediatr | https://www.youtube.com/watch?v=O5ZTnmM4RpQ | https://www.youtube.com/watch?v=56kxkW63HOM
 | 2023-06-13 | Can ChatGPT write unit tests? | https://www.youtube.com/watch?v=eK9Ab4mWU_s | 
 | 2023-06-16 | Validation / Integration tests | https://www.youtube.com/watch?v=3vv37DP-iLM |
 | 2023-06-20 | Get User / Update User endpoints | https://www.youtube.com/watch?v=Jgen3uyNHBQ |

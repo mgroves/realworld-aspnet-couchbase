@@ -1,5 +1,4 @@
 ﻿using Conduit.Tests.TestHelpers.Dto;
-using Conduit.Web.Models;
 using Conduit.Web.Users.Handlers;
 using Conduit.Web.Users.Services;
 using Conduit.Web.Users.ViewModels;
@@ -7,6 +6,7 @@ using Couchbase.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 using Conduit.Tests.TestHelpers.Data;
 using Conduit.Tests.TestHelpers;
+using Conduit.Web.DataAccess.Providers;
 
 namespace Conduit.Tests.Integration.Users.Handlers;
 

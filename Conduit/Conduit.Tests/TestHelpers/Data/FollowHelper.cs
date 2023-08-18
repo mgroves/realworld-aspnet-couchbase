@@ -1,4 +1,4 @@
-﻿using Conduit.Web.Models;
+﻿using Conduit.Web.DataAccess.Providers;
 using Couchbase.KeyValue;
 
 namespace Conduit.Tests.TestHelpers.Data;

@@ -3,13 +3,13 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Conduit.Web.Articles.Services;
 using Conduit.Web.Follows.Services;
-using Conduit.Web.Models;
 using Conduit.Web.Users.Handlers;
 using Conduit.Web.Users.Services;
 using Couchbase.Extensions.DependencyInjection;
 using FluentValidation;
 using Microsoft.OpenApi.Models;
-using Microsoft.Extensions.Configuration;
+using Slugify;
+using Conduit.Web.DataAccess.Providers;
 
 namespace Conduit.Web
 {
@@ -70,12 +70,14 @@ namespace Conduit.Web
         /// </summary>
         public static void AddConduitServiceDependencies(this IServiceCollection @this, ConfigurationManager configManager)
         {
+            @this.AddTransient<ISlugHelper, SlugHelper>();
             @this.AddValidatorsFromAssemblyContaining<LoginRequestValidator>();
             @this.AddTransient(typeof(SharedUserValidator<>));
             @this.AddTransient<IAuthService, AuthService>();
             @this.AddTransient<IFollowDataService, FollowsDataService>();
             @this.AddTransient<IUserDataService, UserDataService>();
             @this.AddTransient<ITagsDataService, TagsDataService>();
+            @this.AddTransient<IArticlesDataService, ArticlesDataService>();
             @this.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<Program>());
             @this.AddCouchbase(configManager.GetSection("Couchbase"));
             @this.AddCouchbaseBucket<IConduitBucketProvider>(configManager["Couchbase:BucketName"], b =>
@@ -89,6 +91,9 @@ namespace Conduit.Web
                 b
                     .AddScope(configManager["Couchbase:ScopeName"])
                     .AddCollection<IConduitTagsCollectionProvider>(configManager["Couchbase:TagsCollectionName"]);
+                b
+                    .AddScope(configManager["Couchbase:ScopeName"])
+                    .AddCollection<IConduitArticlesCollectionProvider>(configManager["Couchbase:ArticlesCollectionName"]);
             });
         }
     }

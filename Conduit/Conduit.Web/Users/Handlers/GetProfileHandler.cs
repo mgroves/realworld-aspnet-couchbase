@@ -3,7 +3,7 @@ using Conduit.Web.Users.Services;
 using Conduit.Web.Users.ViewModels;
 using MediatR;
 using FluentValidation;
-using Conduit.Web.Models;
+using Conduit.Web.DataAccess.Dto;
 
 namespace Conduit.Web.Users.Handlers;
 

@@ -1,4 +1,5 @@
-﻿using Conduit.Web.Models;
+﻿using Conduit.Web.DataAccess.Models;
+using Conduit.Web.DataAccess.Providers;
 using Conduit.Web.Users.Services;
 
 namespace Conduit.Tests.TestHelpers.Data;

@@ -1,7 +1,5 @@
-﻿using Conduit.Web.Models;
-using Conduit.Web.Users.Services;
+﻿using Conduit.Web.Users.Services;
 using Conduit.Web.Users.ViewModels;
-using Couchbase.Query;
 using FluentValidation;
 
 namespace Conduit.Web.Users.Handlers;

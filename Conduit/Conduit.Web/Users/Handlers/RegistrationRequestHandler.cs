@@ -1,4 +1,5 @@
-﻿using Conduit.Web.Models;
+﻿using Conduit.Web.DataAccess.Dto;
+using Conduit.Web.DataAccess.Models;
 using Conduit.Web.Users.Services;
 using Conduit.Web.Users.ViewModels;
 using FluentValidation;

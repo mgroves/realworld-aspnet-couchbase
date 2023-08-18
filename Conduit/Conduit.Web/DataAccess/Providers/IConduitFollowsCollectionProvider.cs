@@ -1,6 +1,6 @@
 ﻿using Couchbase.Extensions.DependencyInjection;
 
-namespace Conduit.Web.Models;
+namespace Conduit.Web.DataAccess.Providers;
 
 public interface IConduitFollowsCollectionProvider : INamedCollectionProvider
 {

@@ -1,4 +1,4 @@
-﻿using Conduit.Web.Models;
+﻿using Conduit.Web.DataAccess.Providers;
 using Conduit.Web.Users.Services;
 using Couchbase.KeyValue;
 
@@ -46,6 +46,8 @@ public class FollowsDataService : IFollowDataService
 
     public async Task<bool> IsCurrentUserFollowing(string currentUserBearerToken, string username)
     {
+        // TODO: can't follow yourself
+
         var currentUserUsername = _authService.GetUsernameClaim(currentUserBearerToken);
 
         var collection = await _followsCollectionProvider.GetCollectionAsync();

@@ -1,6 +1,6 @@
 ﻿using Conduit.Tests.TestHelpers;
 using Conduit.Tests.TestHelpers.Data;
-using Conduit.Web.Models;
+using Conduit.Web.DataAccess.Providers;
 using Conduit.Web.Users.Handlers;
 using Conduit.Web.Users.Services;
 using Couchbase.Extensions.DependencyInjection;

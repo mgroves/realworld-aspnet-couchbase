@@ -1,4 +1,4 @@
-﻿namespace Conduit.Web.Models;
+﻿namespace Conduit.Web.DataAccess.Models;
 
 public class TagData
 {

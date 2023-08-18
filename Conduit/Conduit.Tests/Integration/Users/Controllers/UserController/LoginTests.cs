@@ -4,7 +4,6 @@ using Conduit.Tests.TestHelpers.Dto;
 using Conduit.Web;
 using System.Net;
 using Conduit.Tests.TestHelpers;
-using Conduit.Web.Models;
 using Conduit.Web.Users.ViewModels;
 using Couchbase.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -12,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
+using Conduit.Web.DataAccess.Providers;
 
 namespace Conduit.Tests.Integration.Users.Controllers.UserController;
 

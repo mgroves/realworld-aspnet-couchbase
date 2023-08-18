@@ -1,9 +1,9 @@
 ﻿using Conduit.Web.Users.Services;
 using Conduit.Web.Users.ViewModels;
 using Conduit.Web.Follows.Services;
-using Conduit.Web.Models;
 using MediatR;
 using FluentValidation;
+using Conduit.Web.DataAccess.Dto;
 
 namespace Conduit.Web.Follows.Handlers;
 

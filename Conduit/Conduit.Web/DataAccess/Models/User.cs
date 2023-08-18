@@ -1,7 +1,7 @@
 ﻿using System.Runtime.Serialization;
 using Newtonsoft.Json;
 
-namespace Conduit.Web.Models;
+namespace Conduit.Web.DataAccess.Models;
 
 public class User
 {

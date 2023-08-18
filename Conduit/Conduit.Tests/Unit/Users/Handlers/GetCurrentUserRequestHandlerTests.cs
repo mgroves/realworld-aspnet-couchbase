@@ -1,5 +1,6 @@
 ﻿using Conduit.Tests.TestHelpers;
-using Conduit.Web.Models;
+using Conduit.Web.DataAccess.Dto;
+using Conduit.Web.DataAccess.Models;
 using Conduit.Web.Users.Handlers;
 using Conduit.Web.Users.Services;
 using Moq;
