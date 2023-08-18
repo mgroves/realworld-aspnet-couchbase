@@ -29,7 +29,7 @@ public class SlugService : ISlugService
     {
         var slug = _slugHelper.GenerateSlug(title);
 
-        slug += _random.String(12);
+        slug += "-" + _random.String(12);
 
         return slug;
     }

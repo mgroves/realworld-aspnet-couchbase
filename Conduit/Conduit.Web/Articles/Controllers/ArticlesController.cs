@@ -1,5 +1,6 @@
 ﻿using Conduit.Web.Articles.Handlers;
 using Conduit.Web.Articles.ViewModels;
+using Conduit.Web.Extensions;
 using Conduit.Web.Users.Handlers;
 using Conduit.Web.Users.Services;
 using MediatR;
@@ -21,6 +22,14 @@ public class ArticlesController : ControllerBase
         _authService = authService;
     }
 
+    /// <summary>
+    /// Create article.
+    /// </summary>
+    /// <remarks>
+    /// <a href="https://realworld-docs.netlify.app/docs/specs/backend-specs/endpoints/#create-article">Conduit Spec for create article endpoint</a>
+    /// </remarks>
+    /// <param name="articleSubmission"></param>
+    /// <returns>Article (with profile of author embedded)</returns>
     [Authorize]
     [HttpPost("/api/articles")]
     public async Task<IActionResult> CreateArticle([FromBody] CreateArticleSubmitModel articleSubmission)
@@ -29,24 +38,20 @@ public class ArticlesController : ControllerBase
         var authHeader = Request.Headers["Authorization"];
         var bearerToken = _authService.GetTokenFromHeader(authHeader);
         var authorUsername = _authService.GetUsernameClaim(bearerToken).Value;
-        
-        var request = new CreateArticleRequest(articleSubmission, authorUsername);
 
-        var article = await _mediator.Send(request);
-
-        // TODO: check validation errors for article
-
+        // get the author profile first
         var authorProfile = await _mediator.Send(new GetProfileRequest(authorUsername, bearerToken));
+        if (authorProfile.ValidationErrors?.Any() ?? false)
+            return UnprocessableEntity(authorProfile.ValidationErrors.ToCsv());
 
-        // TODO: check validation errors for profile
+        // process the creation of the article
+        var request = new CreateArticleRequest(articleSubmission, authorUsername);
+        var articleView = await _mediator.Send(request);
+        if (articleView.ValidationErrors?.Any() ?? false)
+            return UnprocessableEntity(articleView.ValidationErrors.ToCsv());
 
-        // using dynamic here to meet requirements of Conduit
-        // spec without creating yet another DTO class
-        dynamic returnArticle = new
-        {
-            article = article.Article
-        };
-        returnArticle.article.author = authorProfile.ProfileView;
-        return Ok(returnArticle);
+        // return the combined view of article+author
+        articleView.Article.Author = authorProfile.ProfileView;
+        return Ok(articleView);
     }
 }

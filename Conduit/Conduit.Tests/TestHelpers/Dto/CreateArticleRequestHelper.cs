@@ -5,6 +5,12 @@ namespace Conduit.Tests.TestHelpers.Dto;
 
 public static class CreateArticleRequestHelper
 {
+    /// <summary>
+    /// Create a well-formed Article object in memory.
+    /// You can specify values with the optional parameters
+    /// </summary>
+    /// <param name="makeTagsNull">If set to true, the tags will be set to null</param>
+    /// <returns>Article object</returns>
     public static CreateArticleRequest Create(
         string? body = null,
         string? description = null,
@@ -22,13 +28,18 @@ public static class CreateArticleRequestHelper
         username ??= Path.GetRandomFileName();
         if (makeTagsNull) tags = null;
 
+
         var article = new CreateArticleSubmitModel
         {
-            Body = body,
-            Description = description,
-            Title = title,
-            Tags = tags
+            Article = new CreateArticleSubmitModelArticle
+            {
+                Body = body,
+                Description = description,
+                Title = title,
+                Tags = tags
+            }
         };
+
 
         return new CreateArticleRequest(article, username);
     }

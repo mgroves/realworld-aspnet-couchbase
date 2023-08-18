@@ -11,25 +11,25 @@ public class CreateArticleRequestValidator : AbstractValidator<CreateArticleRequ
     {
         _tagsDataService = tagsDataService;
 
-        RuleFor(x => x.ArticleSubmission.Title)
+        RuleFor(x => x.ArticleSubmission.Article.Title)
             .Cascade(CascadeMode.Stop)
             .NotEmpty().WithMessage("Title is required.")
             .MaximumLength(100).WithMessage("Title must be 100 characters or less.")
             .MinimumLength(10).WithMessage("Title must be at least 10 characters.");
 
-        RuleFor(x => x.ArticleSubmission.Description)
+        RuleFor(x => x.ArticleSubmission.Article.Description)
             .Cascade(CascadeMode.Stop)
             .NotEmpty().WithMessage("Description is required.")
             .MaximumLength(200).WithMessage("Description must be 200 characters or less.")
             .MinimumLength(10).WithMessage("Description must be 10 characters or more.");
 
-        RuleFor(x => x.ArticleSubmission.Body)
+        RuleFor(x => x.ArticleSubmission.Article.Body)
             .Cascade(CascadeMode.Stop)
             .NotEmpty().WithMessage("Body is required.")
             .MaximumLength(15000000).WithMessage("Body must be 15,000,000 characters or less.")
             .MinimumLength(10).WithMessage("Body must be 10 characters or more.");
 
-        RuleFor(x => x.ArticleSubmission.Tags)
+        RuleFor(x => x.ArticleSubmission.Article.Tags)
             .Cascade(CascadeMode.Stop)
             .MustAsync(BeAllowedTags).WithMessage("At least one of those tags isn't allowed.");
     }

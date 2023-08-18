@@ -40,7 +40,7 @@ public class CreateArticleHandlerTests
     {
         // arrange
         var request = CreateArticleRequestHelper.Create();
-        request.ArticleSubmission.Title = title;
+        request.ArticleSubmission.Article.Title = title;
 
         // act
         var result = await _handler.Handle(request, CancellationToken.None);
@@ -60,7 +60,7 @@ public class CreateArticleHandlerTests
     {
         // arrange
         var request = CreateArticleRequestHelper.Create();
-        request.ArticleSubmission.Description = 
+        request.ArticleSubmission.Article.Description = 
             strLength == -1
                 ? null 
                 : _random.String(strLength);
@@ -83,7 +83,7 @@ public class CreateArticleHandlerTests
     {
         // arrange
         var request = CreateArticleRequestHelper.Create();
-        request.ArticleSubmission.Body =
+        request.ArticleSubmission.Article.Body =
             strLength == -1
                 ? null
                 : _random.String(strLength);
@@ -102,7 +102,7 @@ public class CreateArticleHandlerTests
     {
         // arrange
         var request = CreateArticleRequestHelper.Create();
-        request.ArticleSubmission.Tags = new List<string>
+        request.ArticleSubmission.Article.Tags = new List<string>
         {
             "not-approved-tag-" + Path.GetRandomFileName()
         };
@@ -121,7 +121,7 @@ public class CreateArticleHandlerTests
     {
         // arrange
         var request = CreateArticleRequestHelper.Create();
-        request.ArticleSubmission.Title = " this has spaces that need trimmed ";
+        request.ArticleSubmission.Article.Title = " this has spaces that need trimmed ";
 
         // act
         var result = await _handler.Handle(request, CancellationToken.None);
@@ -136,7 +136,7 @@ public class CreateArticleHandlerTests
     {
         // arrange
         var request = CreateArticleRequestHelper.Create();
-        request.ArticleSubmission.Body = " this body has spaces that need trimmed ";
+        request.ArticleSubmission.Article.Body = " this body has spaces that need trimmed ";
 
         // act
         var result = await _handler.Handle(request, CancellationToken.None);
@@ -151,7 +151,7 @@ public class CreateArticleHandlerTests
     {
         // arrange
         var request = CreateArticleRequestHelper.Create();
-        request.ArticleSubmission.Description = " this desc has spaces that need trimmed ";
+        request.ArticleSubmission.Article.Description = " this desc has spaces that need trimmed ";
 
         // act
         var result = await _handler.Handle(request, CancellationToken.None);
@@ -166,8 +166,8 @@ public class CreateArticleHandlerTests
     {
         // arrange
         var request = CreateArticleRequestHelper.Create();
-        request.ArticleSubmission.Title = "slugify this title";
-        _slugServiceMock.Setup(m => m.GenerateSlug(request.ArticleSubmission.Title))
+        request.ArticleSubmission.Article.Title = "slugify this title";
+        _slugServiceMock.Setup(m => m.GenerateSlug(request.ArticleSubmission.Article.Title))
             .ReturnsAsync("slugified-title-a8d9a8ef");
 
         // act
@@ -183,14 +183,14 @@ public class CreateArticleHandlerTests
     {
         // arrange
         var request = CreateArticleRequestHelper.Create();
-        request.ArticleSubmission.Tags = _allTags.Take(1).ToList();
+        request.ArticleSubmission.Article.Tags = _allTags.Take(1).ToList();
 
         // act
         var result = await _handler.Handle(request, CancellationToken.None);
 
         // assert
         Assert.That(result, Is.Not.Null);
-        Assert.That(result.Article.TagList.Contains(request.ArticleSubmission.Tags.Single()), Is.True);
+        Assert.That(result.Article.TagList.Contains(request.ArticleSubmission.Article.Tags.Single()), Is.True);
     }
 
     [Test]
@@ -213,7 +213,7 @@ public class CreateArticleHandlerTests
     {
         // arrange
         var request = CreateArticleRequestHelper.Create();
-        request.ArticleSubmission.Tags = _allTags.Take(1).ToList();
+        request.ArticleSubmission.Article.Tags = _allTags.Take(1).ToList();
 
         // act
         var result = await _handler.Handle(request, CancellationToken.None);

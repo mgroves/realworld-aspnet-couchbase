@@ -106,4 +106,20 @@ public class FollowUserHandlerTests
         Assert.That(result, Is.Not.Null);
         Assert.That(result.UserNotFound, Is.True);
     }
+
+    [Test]
+    public async Task Cant_follow_yourself()
+    {
+        // arrange
+        var username = Path.GetRandomFileName();
+        var request = new FollowUserRequest(username, username);
+        
+        // act
+        var result = await _handler.Handle(request, CancellationToken.None);
+
+        // assert
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.ValidationErrors, Is.Not.Null);
+        Assert.That(result.ValidationErrors.Any(e => e.ErrorMessage == "You can't follow yourself."), Is.True);
+    }
 }

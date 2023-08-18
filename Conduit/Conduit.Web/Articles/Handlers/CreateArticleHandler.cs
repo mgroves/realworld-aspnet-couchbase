@@ -1,4 +1,6 @@
-﻿using Conduit.Web.Articles.Services;
+﻿using System.Linq.Expressions;
+using Conduit.Web.Articles.Services;
+using Conduit.Web.Articles.ViewModels;
 using Conduit.Web.DataAccess.Models;
 using FluentValidation;
 using MediatR;
@@ -32,11 +34,11 @@ public class CreateArticleHandler : IRequestHandler<CreateArticleRequest, Create
 
         var articleToInsert = new Article
         {
-            Title = request.ArticleSubmission.Title.Trim(),
-            Description = request.ArticleSubmission.Description.Trim(),
-            Body = request.ArticleSubmission.Body.Trim(),
-            Slug = await _slugService.GenerateSlug(request.ArticleSubmission.Title.Trim()),
-            TagList = request.ArticleSubmission.Tags,
+            Title = request.ArticleSubmission.Article.Title.Trim(),
+            Description = request.ArticleSubmission.Article.Description.Trim(),
+            Body = request.ArticleSubmission.Article.Body.Trim(),
+            Slug = await _slugService.GenerateSlug(request.ArticleSubmission.Article.Title.Trim()),
+            TagList = request.ArticleSubmission.Article.Tags,
             CreatedAt = new DateTimeOffset(DateTime.Now),
             Favorited = false, // brand new article, no one can have favorited it yet
             FavoritesCount = 0, // brand new article, no one can have favorited it yet
@@ -45,10 +47,20 @@ public class CreateArticleHandler : IRequestHandler<CreateArticleRequest, Create
 
         await _articleDataService.Create(articleToInsert);
 
-        var response = new CreateArticleResponse();
-        response.Article = articleToInsert;
-        response.Article.Slug = articleToInsert.Slug;
-
+        var response = new CreateArticleResponse
+        {
+            Article = new ArticleViewModel
+            {
+                Title = articleToInsert.Title,
+                Description = articleToInsert.Description,
+                Body = articleToInsert.Body,
+                Slug = articleToInsert.Slug,
+                TagList = articleToInsert.TagList,
+                CreatedAt = articleToInsert.CreatedAt,
+                FavoritesCount = articleToInsert.FavoritesCount,
+                Favorited = articleToInsert.Favorited
+            }
+        };
         return response;
     }
 }

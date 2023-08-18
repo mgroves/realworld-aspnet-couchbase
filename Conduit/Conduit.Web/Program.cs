@@ -8,8 +8,8 @@ using Conduit.Web.Users.Services;
 using Couchbase.Extensions.DependencyInjection;
 using FluentValidation;
 using Microsoft.OpenApi.Models;
-using Slugify;
 using Conduit.Web.DataAccess.Providers;
+using Slugify;
 
 namespace Conduit.Web
 {
@@ -71,6 +71,7 @@ namespace Conduit.Web
         public static void AddConduitServiceDependencies(this IServiceCollection @this, ConfigurationManager configManager)
         {
             @this.AddTransient<ISlugHelper, SlugHelper>();
+            @this.AddTransient<ISlugService, SlugService>();
             @this.AddValidatorsFromAssemblyContaining<LoginRequestValidator>();
             @this.AddTransient(typeof(SharedUserValidator<>));
             @this.AddTransient<IAuthService, AuthService>();

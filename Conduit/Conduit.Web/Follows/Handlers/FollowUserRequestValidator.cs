@@ -9,12 +9,12 @@ public class FollowUserRequestValidator : AbstractValidator<FollowUserRequest>
         RuleFor(x => x.UserToFollow)
             .NotEmpty().WithMessage("Username is required.");
 
-        RuleFor(x => x.UserToFollow)
+        RuleFor(x => x)
             .Must(NotBeMyself).WithMessage("You can't follow yourself.");
     }
 
-    private bool NotBeMyself(string username)
+    private bool NotBeMyself(FollowUserRequest request)
     {
-        throw new NotImplementedException();
+        return request.UserToFollow != request.FollowingUsername;
     }
 }
