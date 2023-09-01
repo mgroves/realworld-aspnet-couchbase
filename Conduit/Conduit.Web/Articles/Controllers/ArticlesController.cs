@@ -31,7 +31,8 @@ public class ArticlesController : ControllerBase
     /// <param name="articleSubmission"></param>
     /// <returns>Article (with profile of author embedded)</returns>
     [Authorize]
-    [HttpPost("/api/articles")]
+    [HttpPost]
+    [Route("/api/articles")]
     public async Task<IActionResult> CreateArticle([FromBody] CreateArticleSubmitModel articleSubmission)
     {
         var claims = _authService.GetAllAuthInfo(Request.Headers["Authorization"]);

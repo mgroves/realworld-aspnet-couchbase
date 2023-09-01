@@ -1,24 +1,17 @@
 ﻿using System.Text;
 using Conduit.Tests.TestHelpers.Data;
 using Conduit.Tests.TestHelpers.Dto;
-using Conduit.Web;
 using System.Net;
 using Conduit.Tests.TestHelpers;
 using Conduit.Web.Users.ViewModels;
-using Couchbase.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
-using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json.Linq;
 using Conduit.Web.DataAccess.Providers;
 
 namespace Conduit.Tests.Integration.Users.Controllers.UserController;
 
-public class LoginTests : CouchbaseIntegrationTest
+public class LoginTests : WebIntegrationTest
 {
-    private WebApplicationFactory<Program> _factory;
-    private HttpClient _client;
     private IConduitUsersCollectionProvider _usersCollectionProvider;
 
     [SetUp]
@@ -26,30 +19,9 @@ public class LoginTests : CouchbaseIntegrationTest
     {
         await base.Setup();
 
-        // arrange ASP.NET
-        // TODO: pull from user secrets and environment variables
-        _factory = new WebApplicationFactory<Program>()
-            .WithWebHostBuilder(builder =>
-            {
-                builder.ConfigureAppConfiguration((context, configBuilder) =>
-                {
-                    // Add environment variables
-                    configBuilder.AddEnvironmentVariables();
-                    configBuilder.AddUserSecrets<CouchbaseIntegrationTest>();
-                });
-            });
-
-        _client = _factory.CreateClient();
-        // arrange db access for arranging
-        ServiceCollection.AddCouchbaseBucket<IConduitBucketProvider>("ConduitIntegrationTests", b =>
-        {
-            b
-                .AddScope("_default")
-                .AddCollection<IConduitUsersCollectionProvider>("Users");
-        });
-
-        // setup handler and dependencies
-        _usersCollectionProvider = ServiceProvider.GetRequiredService<IConduitUsersCollectionProvider>();
+        // setup database objects for arranging
+        var service = WebAppFactory.Services;
+        _usersCollectionProvider = service.GetRequiredService<IConduitUsersCollectionProvider>();
     }
 
     [TestCase("","")]
@@ -68,7 +40,7 @@ public class LoginTests : CouchbaseIntegrationTest
             Encoding.UTF8, "application/json");
 
         // Act
-        var response = await _client.PostAsync("/api/users/login", content);
+        var response = await WebClient.PostAsync("/api/users/login", content);
 
         // Assert
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
@@ -94,7 +66,7 @@ public class LoginTests : CouchbaseIntegrationTest
             Encoding.UTF8, "application/json");
 
         // Act
-        var response = await _client.PostAsync("/api/users/login", content);
+        var response = await WebClient.PostAsync("/api/users/login", content);
 
         // Assert
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
@@ -115,7 +87,7 @@ public class LoginTests : CouchbaseIntegrationTest
             Encoding.UTF8, "application/json");
 
         // Act
-        var response = await _client.PostAsync("/api/users/login", content);
+        var response = await WebClient.PostAsync("/api/users/login", content);
         var responseString = await response.Content.ReadAsStringAsync();
         var userViewModel = responseString.SubDoc<UserViewModel>("user");
 
@@ -123,12 +95,5 @@ public class LoginTests : CouchbaseIntegrationTest
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
         Assert.That(userViewModel.Email, Is.EqualTo(payload.User.Email));
         Assert.That(userViewModel.Username, Is.EqualTo(userInDatabase.Username));
-    }
-
-    [TearDown]
-    public async Task Cleanup()
-    {
-        _client.Dispose();
-        await _factory.DisposeAsync();
     }
 }
