@@ -28,7 +28,7 @@ public class FavoriteArticleHandler : IRequestHandler<FavoriteArticleRequest, Fa
 
     public async Task<FavoriteArticleResponse> Handle(FavoriteArticleRequest request, CancellationToken cancellationToken)
     {
-        var articleExists = await _articlesDataService.Exists(request.Slug.GetArticleKey());
+        var articleExists = await _articlesDataService.Exists(request.Slug);
         if (!articleExists)
         {
             return new FavoriteArticleResponse
