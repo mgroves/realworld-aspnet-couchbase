@@ -8,7 +8,7 @@ public interface IFollowDataService
 {
     Task FollowUser(string userToFollow, string followerUsername);
     Task UnfollowUser(string userToUnfollow, string followerUsername);
-    Task<bool> IsCurrentUserFollowing(string currentUserBearerToken, string username);
+    Task<bool> IsCurrentUserFollowing(string currentUser, string username); 
 }
 
 public class FollowsDataService : IFollowDataService
@@ -44,15 +44,15 @@ public class FollowsDataService : IFollowDataService
         await set.RemoveAsync(userToUnfollow);
     }
 
-    public async Task<bool> IsCurrentUserFollowing(string currentUserBearerToken, string username)
+    public async Task<bool> IsCurrentUserFollowing(string currentUsername, string username)
     {
-        // TODO: can't follow yourself
-
-        var currentUserUsername = _authService.GetUsernameClaim(currentUserBearerToken);
+        // can't follow yourself
+        if (currentUsername == username)
+            return false;
 
         var collection = await _followsCollectionProvider.GetCollectionAsync();
 
-        var followKey = $"{currentUserUsername.Value}::follows";
+        var followKey = $"{currentUsername}::follows";
 
         var set = collection.Set<string>(followKey);
 

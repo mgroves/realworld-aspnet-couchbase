@@ -2,6 +2,7 @@
 using Conduit.Tests.TestHelpers.Dto;
 using Conduit.Web.Articles.Handlers;
 using Conduit.Web.Articles.Services;
+using Conduit.Web.Extensions;
 using Moq;
 
 namespace Conduit.Tests.Unit.Articles.Handlers;
@@ -168,7 +169,7 @@ public class CreateArticleHandlerTests
         var request = CreateArticleRequestHelper.Create();
         request.ArticleSubmission.Article.Title = "slugify this title";
         _slugServiceMock.Setup(m => m.GenerateSlug(request.ArticleSubmission.Article.Title))
-            .ReturnsAsync("slugified-title-a8d9a8ef");
+            .Returns("slugified-title-a8d9a8ef");
 
         // act
         var result = await _handler.Handle(request, CancellationToken.None);

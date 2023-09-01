@@ -12,12 +12,14 @@ public class GetProfileHandler : IRequestHandler<GetProfileRequest, GetProfileRe
     private readonly IUserDataService _userDataService;
     private readonly IValidator<GetProfileRequest> _validator;
     private readonly IFollowDataService _followDataService;
+    private readonly IAuthService _authService;
 
-    public GetProfileHandler(IUserDataService userDataService, IValidator<GetProfileRequest> validator, IFollowDataService followDataService)
+    public GetProfileHandler(IUserDataService userDataService, IValidator<GetProfileRequest> validator, IFollowDataService followDataService, IAuthService authService)
     {
         _userDataService = userDataService;
         _validator = validator;
         _followDataService = followDataService;
+        _authService = authService;
     }
 
     public async Task<GetProfileResult> Handle(GetProfileRequest request, CancellationToken cancellationToken)
@@ -40,9 +42,10 @@ public class GetProfileHandler : IRequestHandler<GetProfileRequest, GetProfileRe
 
         // if JWT is specified, use that to determine if the logged-in user is following this profile
         bool isCurrentUserFollowing = false;
-        if (!string.IsNullOrEmpty(request.OptionalBearerToken))
+        if (_authService.IsUserAuthenticated(request.OptionalBearerToken))
         {
-            isCurrentUserFollowing = await _followDataService.IsCurrentUserFollowing(request.OptionalBearerToken, request.Username);
+            var currentUsernameClaim = _authService.GetUsernameClaim(request.OptionalBearerToken);
+            isCurrentUserFollowing = await _followDataService.IsCurrentUserFollowing(currentUsernameClaim.Value, request.Username);
         }
 
         return new GetProfileResult

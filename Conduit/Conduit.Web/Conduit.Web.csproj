@@ -11,6 +11,7 @@
   <ItemGroup>
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
     <PackageReference Include="Couchbase.Extensions.DependencyInjection" Version="3.4.8" />
+    <PackageReference Include="Couchbase.Transactions" Version="1.1.1" />
     <PackageReference Include="EmailValidation" Version="1.0.9" />
     <PackageReference Include="FluentValidation" Version="11.5.2" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.5.2" />

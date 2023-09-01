@@ -37,7 +37,7 @@ public class CreateArticleHandler : IRequestHandler<CreateArticleRequest, Create
             Title = request.ArticleSubmission.Article.Title.Trim(),
             Description = request.ArticleSubmission.Article.Description.Trim(),
             Body = request.ArticleSubmission.Article.Body.Trim(),
-            Slug = await _slugService.GenerateSlug(request.ArticleSubmission.Article.Title.Trim()),
+            Slug = _slugService.GenerateSlug(request.ArticleSubmission.Article.Title.Trim()),
             TagList = request.ArticleSubmission.Article.Tags,
             CreatedAt = new DateTimeOffset(DateTime.Now),
             Favorited = false, // brand new article, no one can have favorited it yet

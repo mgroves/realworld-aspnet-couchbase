@@ -95,6 +95,9 @@ namespace Conduit.Web
                 b
                     .AddScope(configManager["Couchbase:ScopeName"])
                     .AddCollection<IConduitArticlesCollectionProvider>(configManager["Couchbase:ArticlesCollectionName"]);
+                b
+                    .AddScope(configManager["Couchbase:ScopeName"])
+                    .AddCollection<IConduitFavoritesCollectionProvider>("Favorites");
             });
         }
     }

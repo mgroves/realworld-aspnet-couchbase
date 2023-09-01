@@ -179,7 +179,7 @@ public class UserDataService : IUserDataService
         {
             Bio = user.Bio,
             Image = user.Image,
-            Username = user.Username
+            Username = username
         }, DataResultStatus.Ok);
     }
 }

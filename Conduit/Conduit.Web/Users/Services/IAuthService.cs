@@ -1,4 +1,6 @@
-﻿namespace Conduit.Web.Users.Services;
+﻿using Microsoft.Extensions.Primitives;
+
+namespace Conduit.Web.Users.Services;
 
 public interface IAuthService
 {
@@ -9,4 +11,6 @@ public interface IAuthService
     string GetTokenFromHeader(string bearerTokenHeader);
     AuthService.ClaimResult GetEmailClaim(string bearerToken);
     AuthService.ClaimResult GetUsernameClaim(string bearerToken);
+    AuthService.AllInfo GetAllAuthInfo(string authorizationHeader);
+    bool IsUserAuthenticated(string bearerToken);
 }

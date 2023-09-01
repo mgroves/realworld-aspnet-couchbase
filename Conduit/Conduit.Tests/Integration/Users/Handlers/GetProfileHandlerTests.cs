@@ -35,7 +35,8 @@ public class GetProfileHandlerTests : CouchbaseIntegrationTest
         _authService = AuthServiceHelper.Create();
         _getProfileHandler = new GetProfileHandler(new UserDataService(_usersCollectionProvider, _authService),
             new GetProfileRequestValidator(),
-            new FollowsDataService(_followsCollectionProvider, _authService));
+            new FollowsDataService(_followsCollectionProvider, _authService),
+            _authService);
     }
 
     [Test]

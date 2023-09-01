@@ -18,6 +18,7 @@ public class CreateArticleHandlerTests : CouchbaseIntegrationTest
     private TagsDataService _tagsDataService;
     private IConduitArticlesCollectionProvider _articleCollectionProvider;
     private ArticlesDataService _articleDataService;
+    private IConduitFavoritesCollectionProvider _favoriteCollectionProvider;
 
     public override async Task Setup()
     {
@@ -31,15 +32,19 @@ public class CreateArticleHandlerTests : CouchbaseIntegrationTest
             b
                 .AddScope("_default")
                 .AddCollection<IConduitArticlesCollectionProvider>("Articles");
+            b
+                .AddScope("_default")
+                .AddCollection<IConduitFavoritesCollectionProvider>("Favorites");
         });
 
         _tagsCollectionProvider = ServiceProvider.GetRequiredService<IConduitTagsCollectionProvider>();
         _articleCollectionProvider = ServiceProvider.GetRequiredService<IConduitArticlesCollectionProvider>();
+        _favoriteCollectionProvider = ServiceProvider.GetRequiredService<IConduitFavoritesCollectionProvider>();
 
         // setup handler and dependencies
         _tagsDataService = new TagsDataService(_tagsCollectionProvider);
         var validator = new CreateArticleRequestValidator(_tagsDataService);
-        _articleDataService = new ArticlesDataService(_articleCollectionProvider);
+        _articleDataService = new ArticlesDataService(_articleCollectionProvider, _favoriteCollectionProvider);
         var slugService = new SlugService(new SlugHelper());
         _handler = new CreateArticleHandler(validator, _articleDataService, slugService);
     }

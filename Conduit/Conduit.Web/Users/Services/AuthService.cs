@@ -108,9 +108,33 @@ public class AuthService : IAuthService
         }
     }
 
+    public AllInfo GetAllAuthInfo(string authorizationHeader)
+    {
+        var bearerToken = GetTokenFromHeader(authorizationHeader);
+        var all = new AllInfo
+        {
+            BearerToken = bearerToken,
+            Email = GetEmailClaim(bearerToken),
+            Username = GetUsernameClaim(bearerToken)
+        };
+        return all;
+    }
+
+    public bool IsUserAuthenticated(string bearerToken)
+    {
+        return !string.IsNullOrEmpty(bearerToken);
+    }
+
     public class ClaimResult
     {
         public string Value { get; set; }
         public bool IsNotFound { get; set; }
+    }
+
+    public class AllInfo
+    {
+        public string BearerToken { get; set; }
+        public ClaimResult Username { get; set; }
+        public ClaimResult Email { get; set; }
     }
 }

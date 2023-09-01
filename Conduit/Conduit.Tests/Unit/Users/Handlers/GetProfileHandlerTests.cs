@@ -5,6 +5,7 @@ using Conduit.Web.DataAccess.Models;
 using Conduit.Web.Follows.Services;
 using Conduit.Web.Users.Handlers;
 using Conduit.Web.Users.Services;
+using Microsoft.Extensions.Options;
 using Moq;
 
 namespace Conduit.Tests.Unit.Users.Handlers;
@@ -23,7 +24,16 @@ public class GetProfileHandlerTests
         _followDataServiceMock = new Mock<IFollowDataService>();
 
         // setup handler
-        _handler = new GetProfileHandler(_userDataServiceMock.Object, new GetProfileRequestValidator(), _followDataServiceMock.Object);
+        var jwtSecrets = new JwtSecrets
+        {
+            Audience = "doesntmatter-audience",
+            Issuer = "doesntmatter-issuer",
+            SecurityKey = "doesntmatter-securityKey"
+        };
+        _handler = new GetProfileHandler(_userDataServiceMock.Object,
+            new GetProfileRequestValidator(), 
+            _followDataServiceMock.Object,
+            new AuthService(new OptionsWrapper<JwtSecrets>(jwtSecrets)));
     }
 
     [TestCase(false)]
@@ -35,7 +45,7 @@ public class GetProfileHandlerTests
 
         // arrange for user to NOT be followed
         var user = UserHelper.CreateUser(username: "SurlyDev");
-        _followDataServiceMock.Setup(m => m.IsCurrentUserFollowing(currentUserToken, user.Username))
+        _followDataServiceMock.Setup(m => m.IsCurrentUserFollowing("MattGroves", user.Username))
             .ReturnsAsync(isUserFollowing);
         _userDataServiceMock.Setup(m => m.GetProfileByUsername(user.Username))
             .ReturnsAsync(new DataServiceResult<User>(user, DataResultStatus.Ok));

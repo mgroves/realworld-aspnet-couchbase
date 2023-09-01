@@ -5,7 +5,7 @@ namespace Conduit.Web.Articles.Services;
 
 public interface ISlugService
 {
-    Task<string> GenerateSlug(string title);
+    string GenerateSlug(string title);
 }
 
 public class SlugService : ISlugService
@@ -25,7 +25,7 @@ public class SlugService : ISlugService
     /// </summary>
     /// <param name="title">Title like "foo bar baz"</param>
     /// <returns>Slugified string</returns>
-    public async Task<string> GenerateSlug(string title)
+    public string GenerateSlug(string title)
     {
         var slug = _slugHelper.GenerateSlug(title);
 

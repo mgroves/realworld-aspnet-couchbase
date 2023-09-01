@@ -34,6 +34,8 @@ public abstract class CouchbaseIntegrationTest
             _config["Couchbase:Username"],
             _config["Couchbase:Password"]);
 
+        await _cluster.WaitUntilReadyAsync(TimeSpan.FromSeconds(30));
+
         var allBuckets = await _cluster.Buckets.GetAllBucketsAsync();
         var doesBucketExist = allBuckets.Any(b => b.Key == _config["Couchbase:BucketName"]);
         if (!doesBucketExist)

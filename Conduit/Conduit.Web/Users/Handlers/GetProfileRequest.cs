@@ -4,7 +4,7 @@ namespace Conduit.Web.Users.Handlers;
 
 public class GetProfileRequest : IRequest<GetProfileResult>
 {
-    public GetProfileRequest(string username, string optionalBearerToken)
+    public GetProfileRequest(string username, string optionalBearerToken = null)
     {
         Username = username;
         OptionalBearerToken = optionalBearerToken;

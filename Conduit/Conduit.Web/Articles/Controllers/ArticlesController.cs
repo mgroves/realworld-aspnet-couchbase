@@ -34,13 +34,11 @@ public class ArticlesController : ControllerBase
     [HttpPost("/api/articles")]
     public async Task<IActionResult> CreateArticle([FromBody] CreateArticleSubmitModel articleSubmission)
     {
-        // TODO: make these 3 lines into a convenience method in authservice
-        var authHeader = Request.Headers["Authorization"];
-        var bearerToken = _authService.GetTokenFromHeader(authHeader);
-        var authorUsername = _authService.GetUsernameClaim(bearerToken).Value;
+        var claims = _authService.GetAllAuthInfo(Request.Headers["Authorization"]);
+        var authorUsername = claims.Username.Value;
 
         // get the author profile first
-        var authorProfile = await _mediator.Send(new GetProfileRequest(authorUsername, bearerToken));
+        var authorProfile = await _mediator.Send(new GetProfileRequest(authorUsername, claims.BearerToken));
         if (authorProfile.ValidationErrors?.Any() ?? false)
             return UnprocessableEntity(authorProfile.ValidationErrors.ToCsv());
 
@@ -53,5 +51,54 @@ public class ArticlesController : ControllerBase
         // return the combined view of article+author
         articleView.Article.Author = authorProfile.ProfileView;
         return Ok(articleView);
+    }
+
+    [HttpPost]
+    [Route("/api/article/{slug}/favorite")]
+    [Authorize]
+    public async Task<IActionResult> FavoriteArticle(string slug)
+    {
+        // get auth info
+        var claims = _authService.GetAllAuthInfo(Request.Headers["Authorization"]);
+
+        // send request to favorite the article
+        var favoriteRequest = new FavoriteArticleRequest();
+        favoriteRequest.Username = claims.Username.Value;
+        favoriteRequest.Slug = slug;
+        var favoriteResponse = await _mediator.Send(favoriteRequest);
+        if (favoriteResponse.ValidationErrors?.Any() ?? false)
+            return UnprocessableEntity(favoriteResponse.ValidationErrors.ToCsv());
+
+        // ask handler for the article view
+        var getRequest = new GetArticleRequest(slug, claims.Username.Value);
+        var getResponse = await _mediator.Send(getRequest);
+        if (getResponse.ValidationErrors?.Any() ?? false)
+            return UnprocessableEntity(getResponse.ValidationErrors.ToCsv());
+
+        return Ok(getResponse.ArticleView);
+    }
+
+    [HttpGet]
+    [Route("/api/article/{slug}")]
+    public async Task<IActionResult> Get(string slug)
+    {
+        // get (optional) auth info
+        string username = null;
+        var headers = Request.Headers["Authorization"];
+        var isUserAnonymous = headers.All(string.IsNullOrEmpty);
+
+        if (!isUserAnonymous)
+        {
+            var claims = _authService.GetAllAuthInfo(Request.Headers["Authorization"]);
+            username = claims.Username.Value;
+        }
+
+        // send request to get article
+        var getRequest = new GetArticleRequest(slug, username);
+        var getResponse = await _mediator.Send(getRequest);
+        if (getResponse.ValidationErrors?.Any() ?? false)
+            return UnprocessableEntity(getResponse.ValidationErrors.ToCsv());
+
+        return Ok(getResponse.ArticleView);
     }
 }
