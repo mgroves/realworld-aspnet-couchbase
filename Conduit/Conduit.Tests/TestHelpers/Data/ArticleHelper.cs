@@ -16,7 +16,7 @@ public static class ArticleHelper
     public static async Task AssertExists(this IConduitArticlesCollectionProvider @this, string slug, Action<Article>? assertions = null)
     {
         var collection = await @this.GetCollectionAsync();
-        var articleInDatabase = await collection.GetAsync(slug);
+        var articleInDatabase = await collection.GetAsync(slug.GetArticleKey());
         var articleInDatabaseObj = articleInDatabase.ContentAs<Article>();
 
         if (assertions != null)
@@ -58,7 +58,7 @@ public static class ArticleHelper
         var article = CreateArticle(favoritesCount, createdAt, title, description, body, slug, tagList, authorUsername,
             favorited);
 
-        await collection.InsertAsync(article.Slug, article);
+        await collection.InsertAsync(article.Slug.GetArticleKey(), article);
 
         return article;
     }

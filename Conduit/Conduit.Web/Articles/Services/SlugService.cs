@@ -10,6 +10,8 @@ public interface ISlugService
 
 public class SlugService : ISlugService
 {
+    public const string SLUG_DELIMETER = "::";
+
     private readonly ISlugHelper _slugHelper;
     private readonly Random _random;
 
@@ -29,7 +31,7 @@ public class SlugService : ISlugService
     {
         var slug = _slugHelper.GenerateSlug(title);
 
-        slug += "-" + _random.String(12);
+        slug += SLUG_DELIMETER + _random.String(12);
 
         return slug;
     }

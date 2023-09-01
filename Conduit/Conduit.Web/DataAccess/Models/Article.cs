@@ -1,12 +1,13 @@
-﻿using Newtonsoft.Json;
+﻿using Conduit.Web.Extensions;
+using Newtonsoft.Json;
 
 namespace Conduit.Web.DataAccess.Models;
 
 public class Article
 {
-    [JsonIgnore] // ignoring this because the document ID is the slug, don't store duplicated data
+    [JsonIgnore] // ignoring this because it's the document ID (which is duplicated as part of the slug)
+    public string ArticleKey => Slug.GetArticleKey();
     public string Slug { get; set; }
-
     public string Title { get; set; }
     public string Description { get; set; }
     public string Body { get; set; }

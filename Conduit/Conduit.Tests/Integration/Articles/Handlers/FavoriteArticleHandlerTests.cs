@@ -2,6 +2,7 @@
 using Conduit.Web.Articles.Handlers;
 using Conduit.Web.Articles.Services;
 using Conduit.Web.DataAccess.Providers;
+using Conduit.Web.Extensions;
 using Couchbase.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -58,7 +59,7 @@ public class FavoriteArticleHandlerTests : CouchbaseIntegrationTest
         Assert.That(result.ValidationErrors == null || !result.ValidationErrors.Any(), Is.True);
         await _favoritesCollectionProvider.AssertExists(user.Username, x =>
         {
-            Assert.That(x.Contains(request.Slug), Is.True);
+            Assert.That(x.Contains(request.Slug.GetArticleKey()), Is.True);
         });
     }
 }

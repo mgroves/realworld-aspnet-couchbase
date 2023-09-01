@@ -15,7 +15,8 @@ public class CreateArticleRequestValidator : AbstractValidator<CreateArticleRequ
             .Cascade(CascadeMode.Stop)
             .NotEmpty().WithMessage("Title is required.")
             .MaximumLength(100).WithMessage("Title must be 100 characters or less.")
-            .MinimumLength(10).WithMessage("Title must be at least 10 characters.");
+            .MinimumLength(10).WithMessage("Title must be at least 10 characters.")
+            .Must(NotHaveSlugDelimeter).WithMessage("Double colon (::) is not allowed in titles. Sorry, it's weird.");
 
         RuleFor(x => x.ArticleSubmission.Article.Description)
             .Cascade(CascadeMode.Stop)
@@ -32,6 +33,11 @@ public class CreateArticleRequestValidator : AbstractValidator<CreateArticleRequ
         RuleFor(x => x.ArticleSubmission.Article.Tags)
             .Cascade(CascadeMode.Stop)
             .MustAsync(BeAllowedTags).WithMessage("At least one of those tags isn't allowed.");
+    }
+
+    private bool NotHaveSlugDelimeter(string title)
+    {
+        return !title.Contains(SlugService.SLUG_DELIMETER);
     }
 
     private async Task<bool> BeAllowedTags(List<string>? submittedTags, CancellationToken arg2)

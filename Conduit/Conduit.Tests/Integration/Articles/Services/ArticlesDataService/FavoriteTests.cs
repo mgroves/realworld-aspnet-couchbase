@@ -1,5 +1,6 @@
 ﻿using Conduit.Tests.TestHelpers.Data;
 using Conduit.Web.DataAccess.Providers;
+using Conduit.Web.Extensions;
 using Couchbase.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -49,7 +50,7 @@ public class FavoriteTests : CouchbaseIntegrationTest
         // assert
         await _favoriteCollectionProvider.AssertExists(user.Username, x =>
         {
-            Assert.That(x.Contains(article.Slug), Is.True);
+            Assert.That(x.Contains(article.Slug.GetArticleKey()), Is.True);
         });
         await _articleCollectionProvider.AssertExists(article.Slug, x =>
         {

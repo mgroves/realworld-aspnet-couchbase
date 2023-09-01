@@ -1,5 +1,6 @@
 ﻿using Conduit.Web.Articles.Services;
 using Conduit.Web.DataAccess.Dto;
+using Conduit.Web.Extensions;
 using FluentValidation.Results;
 using MediatR;
 
@@ -27,7 +28,7 @@ public class FavoriteArticleHandler : IRequestHandler<FavoriteArticleRequest, Fa
 
     public async Task<FavoriteArticleResponse> Handle(FavoriteArticleRequest request, CancellationToken cancellationToken)
     {
-        var articleExists = await _articlesDataService.Exists(request.Slug);
+        var articleExists = await _articlesDataService.Exists(request.Slug.GetArticleKey());
         if (!articleExists)
         {
             return new FavoriteArticleResponse
