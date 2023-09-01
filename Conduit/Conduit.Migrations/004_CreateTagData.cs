@@ -2,26 +2,27 @@
 
 namespace Conduit.Migrations;
 
+// Manual alternative: create a Tags collection
+// and create a single document with key of "tagData"
+// that contains an array with all the tags you want to allow
 [Migration(4)]
 public class CreateTagData : MigrateBase
 {
-    private readonly string? _collectionName;
     private readonly string? _scopeName;
 
     public CreateTagData()
     {
-        _collectionName = _config["Couchbase:TagsCollectionName"];
         _scopeName = _config["Couchbase:ScopeName"];
     }
 
     public override void Up()
     {
-        Create.Collection(_collectionName)
+        Create.Collection("Tags")
             .InScope(_scopeName);
 
         Insert.Into
             .Scope(_scopeName)
-            .Collection(_collectionName)
+            .Collection("Tags")
             .Document("tagData", new
             {
                 tags = new List<string>
@@ -33,7 +34,7 @@ public class CreateTagData : MigrateBase
 
     public override void Down()
     {
-        Delete.Collection(_collectionName)
+        Delete.Collection("Tags")
             .FromScope(_scopeName);
     }
 }

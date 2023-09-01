@@ -6,12 +6,10 @@ namespace Conduit.Migrations;
 [Migration(2)]
 public class CreateIndexOnEmailFieldInUsersCollection : MigrateBase
 {
-    private readonly string? _collectionName;
     private readonly string? _scopeName;
 
     public CreateIndexOnEmailFieldInUsersCollection()
     {
-        _collectionName = _config["Couchbase:UsersCollectionName"];
         _scopeName = _config["Couchbase:ScopeName"];
     }
 
@@ -19,7 +17,7 @@ public class CreateIndexOnEmailFieldInUsersCollection : MigrateBase
     {
         Create.Index("ix_users_email")
             .OnScope(_scopeName)
-            .OnCollection(_collectionName)
+            .OnCollection("Users")
             .OnField("email");
     }
 
@@ -27,6 +25,6 @@ public class CreateIndexOnEmailFieldInUsersCollection : MigrateBase
     {
         Delete.Index("ix_users_email")
             .FromScope(_scopeName)
-            .FromCollection(_collectionName);
+            .FromCollection("Users");
     }
 }

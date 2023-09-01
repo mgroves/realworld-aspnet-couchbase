@@ -85,16 +85,16 @@ namespace Conduit.Web
             {
                 b
                     .AddScope(configManager["Couchbase:ScopeName"])
-                    .AddCollection<IConduitUsersCollectionProvider>(configManager["Couchbase:UsersCollectionName"]);
+                    .AddCollection<IConduitUsersCollectionProvider>("Users");
                 b
                     .AddScope(configManager["Couchbase:ScopeName"])
-                    .AddCollection<IConduitFollowsCollectionProvider>(configManager["Couchbase:FollowsCollectionName"]);
+                    .AddCollection<IConduitFollowsCollectionProvider>("Follows");
                 b
                     .AddScope(configManager["Couchbase:ScopeName"])
-                    .AddCollection<IConduitTagsCollectionProvider>(configManager["Couchbase:TagsCollectionName"]);
+                    .AddCollection<IConduitTagsCollectionProvider>("Tags");
                 b
                     .AddScope(configManager["Couchbase:ScopeName"])
-                    .AddCollection<IConduitArticlesCollectionProvider>(configManager["Couchbase:ArticlesCollectionName"]);
+                    .AddCollection<IConduitArticlesCollectionProvider>("Articles");
                 b
                     .AddScope(configManager["Couchbase:ScopeName"])
                     .AddCollection<IConduitFavoritesCollectionProvider>("Favorites");

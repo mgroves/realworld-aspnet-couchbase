@@ -85,7 +85,15 @@ public class ArticlesDataService : IArticlesDataService
         var cluster = favoriteCollection.Scope.Bucket.Cluster;
 
         var config = TransactionConfigBuilder.Create();
+
+        // for single-node Couchbase, like for development, you must use None
+        // otherwise, use AT LEAST Majority durability
+#if DEBUG
         config.DurabilityLevel(DurabilityLevel.None);
+#else
+        config.DurabilityLevel(DurabilityLevel.Majority);
+#endif
+
         var transaction = Transactions.Create(cluster, config);
 
         await transaction.RunAsync(async (context) =>

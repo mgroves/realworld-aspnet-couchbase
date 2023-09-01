@@ -20,10 +20,6 @@ jobs:
       Couchbase__Password: "password"
       Couchbase__BucketName: ${{ secrets.COUCHBASE__BUCKETNAME }}
       Couchbase__ScopeName: ${{ secrets.COUCHBASE__SCOPENAME }}
-      Couchbase__UsersCollectionName: ${{ secrets.COUCHBASE__USERSCOLLECTIONNAME }}
-      Couchbase__FollowsCollectionName: ${{ secrets.COUCHBASE__FOLLOWSCOLLECTIONNAME }}
-      Couchbase__TagsCollectionName: ${{ secrets.COUCHBASE__TAGSCOLLECTIONNAME }}
-      Couchbase__ArticlesCollectionName: ${{ secrets.COUCHBASE__ARTICLESCOLLECTIONNAME }}
       JwtSecret__Issuer: ${{ secrets.JWTSECRET__ISSUER }}
       JwtSecret__Audience: ${{ secrets.JWTSECRET__AUDIENCE }}
       JwtSecret__SecurityKey: ${{ secrets.JWTSECRET__SECURITYKEY }}
