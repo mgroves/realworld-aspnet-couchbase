@@ -53,6 +53,14 @@ public class ArticlesController : ControllerBase
         return Ok(articleView);
     }
 
+    /// <summary>
+    /// Mark an article as a favorite of the logged-in user's
+    /// </summary>
+    /// <remarks>
+    /// <a href="https://realworld-docs.netlify.app/docs/specs/backend-specs/endpoints/#favorite-article">Conduit spec for favorite article endpoint</a>
+    /// </remarks>
+    /// <param name="slug">Article slug</param>
+    /// <returns>Article (with profile of author embedded)</returns>
     [HttpPost]
     [Route("/api/article/{slug}/favorite")]
     [Authorize]
@@ -78,6 +86,14 @@ public class ArticlesController : ControllerBase
         return Ok(getResponse.ArticleView);
     }
 
+    /// <summary>
+    /// Get an article
+    /// </summary>
+    /// <remarks>
+    /// <a href="https://realworld-docs.netlify.app/docs/specs/backend-specs/endpoints/#get-article">Conduit spec for Get Article endpoint</a>
+    /// </remarks>
+    /// <param name="slug">Article slug</param>
+    /// <returns>Article (with profile of author embedded)</returns>
     [HttpGet]
     [Route("/api/article/{slug}")]
     public async Task<IActionResult> Get(string slug)
