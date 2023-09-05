@@ -7,4 +7,5 @@ public class UpdateUserResult
 {
     public UserViewModel UserView { get; set; }
     public List<ValidationFailure> ValidationErrors { get; set; }
+    public bool IsNotFound { get; set; }
 }

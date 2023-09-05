@@ -77,4 +77,15 @@ public static class UserHelper
 
         return user;
     }
+
+    /// <summary>
+    /// Delete a user
+    /// </summary>
+    /// <param name="user">User entity</param>
+    public static async Task DeleteUserFromDatabase(this IConduitUsersCollectionProvider @this, User user)
+    {
+        var collection = await @this.GetCollectionAsync();
+
+        await collection.RemoveAsync(user.Username);
+    }
 }

@@ -33,13 +33,13 @@ public class RegistrationRequestHandler : IRequestHandler<RegistrationRequest, R
         }
 
         // construct new user object
-        var passwordSalt = _authService.GenerateSalt(); // User.GenerateSalt();
+        var passwordSalt = _authService.GenerateSalt();
 
         var userToInsert = new User
         {
             Email = request.Model.User.Email,
             Username = request.Model.User.Username,
-            Password = _authService.HashPassword(request.Model.User.Password, passwordSalt), // Models.User.HashPassword(request.Model.User.Password, passwordSalt),
+            Password = _authService.HashPassword(request.Model.User.Password, passwordSalt),
             PasswordSalt = passwordSalt
         };
 

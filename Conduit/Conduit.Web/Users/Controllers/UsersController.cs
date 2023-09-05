@@ -59,7 +59,7 @@ public class UsersController : Controller
         var registrationResult = await _mediator.Send(new RegistrationRequest(model));
 
         if (registrationResult.UserAlreadyExists)
-            return Forbid("User already exists.");
+            return new ObjectResult(new { message = "User already exists." }) { StatusCode = 403 };
 
         if (registrationResult.ValidationErrors?.Any() ?? false)
             return UnprocessableEntity(registrationResult.ValidationErrors.ToCsv());
@@ -76,7 +76,8 @@ public class UsersController : Controller
     /// <returns>User</returns>
     /// <response code="200">Returns the currently logged in User</response>
     /// <response code="401">Unauthorized</response>
-    /// <response code="422">The given token was not valid</response>
+    /// <response code="404">Not Found (weird edge case, but possible)</response>
+    /// <response code="422">The given token was not valid (weird edge case, even possible?)</response>
     [HttpGet("api/user")]
     [Authorize]
     public async Task<IActionResult> GetCurrentUser()
@@ -88,12 +89,12 @@ public class UsersController : Controller
         var result = await _mediator.Send(new GetCurrentUserRequest(bearerToken));
 
         if (result.UserNotFound)
-            return UnprocessableEntity("User not found");
+            return NotFound("User not found");
 
         if (result.IsInvalidToken)
             return UnprocessableEntity("JWT not valid");
 
-        return Ok(result.UserView);
+        return Ok(new { user = result.UserView });
     }
 
     /// <summary>
@@ -120,6 +121,9 @@ public class UsersController : Controller
         updateUser.User.Username = username.Value;
 
         var result = await _mediator.Send(new UpdateUserRequest(updateUser));
+
+        if (result.IsNotFound)
+            return NotFound("User not found");
 
         if (result.ValidationErrors?.Any() ?? false)
             return UnprocessableEntity(result.ValidationErrors.ToCsv());

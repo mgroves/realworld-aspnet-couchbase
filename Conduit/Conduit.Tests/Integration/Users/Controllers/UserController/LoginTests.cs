@@ -36,11 +36,9 @@ public class LoginTests : WebIntegrationTest
             password: password,
             makeEmailNull: email == null,
             makePasswordNull: password == null);
-        var content = new StringContent(JsonConvert.SerializeObject(payload), 
-            Encoding.UTF8, "application/json");
 
         // Act
-        var response = await WebClient.PostAsync("/api/users/login", content);
+        var response = await WebClient.PostAsync("/api/users/login", payload.ToJsonPayload());
 
         // Assert
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
@@ -62,11 +60,9 @@ public class LoginTests : WebIntegrationTest
             password: password,
             makeEmailNull: email == null,
             makePasswordNull: password == null);
-        var content = new StringContent(JsonConvert.SerializeObject(payload),
-            Encoding.UTF8, "application/json");
 
         // Act
-        var response = await WebClient.PostAsync("/api/users/login", content);
+        var response = await WebClient.PostAsync("/api/users/login", payload.ToJsonPayload());
 
         // Assert
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
@@ -83,11 +79,10 @@ public class LoginTests : WebIntegrationTest
         var userInDatabase = await _usersCollectionProvider.CreateUserInDatabase(
             email: payload.User.Email,
             password: payload.User.Password);
-        var content = new StringContent(JsonConvert.SerializeObject(payload),
-            Encoding.UTF8, "application/json");
+
 
         // Act
-        var response = await WebClient.PostAsync("/api/users/login", content);
+        var response = await WebClient.PostAsync("/api/users/login", payload.ToJsonPayload());
         var responseString = await response.Content.ReadAsStringAsync();
         var userViewModel = responseString.SubDoc<UserViewModel>("user");
 

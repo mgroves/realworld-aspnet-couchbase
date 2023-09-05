@@ -1,5 +1,6 @@
 ﻿using Conduit.Web.Users.Services;
 using Conduit.Web.Users.ViewModels;
+using Couchbase.Core.Exceptions.KeyValue;
 using FluentValidation;
 using MediatR;
 
@@ -31,7 +32,14 @@ public class UpdateUserHandler : IRequestHandler<UpdateUserRequest, UpdateUserRe
         }
 
         // update the user fields
-        await _userDataService.UpdateUserFields(request.Model.User);
+        try
+        {
+            await _userDataService.UpdateUserFields(request.Model.User);
+        }
+        catch (DocumentNotFoundException ex)
+        {
+            return new UpdateUserResult { IsNotFound = true };
+        }
 
         // get the user back out (post-update)
         var userResult = await _userDataService.GetUserByUsername(request.Model.User.Username);

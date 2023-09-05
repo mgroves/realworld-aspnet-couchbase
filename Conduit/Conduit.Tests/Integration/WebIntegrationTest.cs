@@ -1,10 +1,12 @@
 ﻿using Conduit.Migrations;
 using Conduit.Web;
+using Conduit.Web.Users.Services;
 using Couchbase;
 using Couchbase.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using NoSqlMigrator.Runner;
 
 namespace Conduit.Tests.Integration;
@@ -13,6 +15,7 @@ public abstract class WebIntegrationTest
 {
     protected WebApplicationFactory<Program> WebAppFactory;
     protected HttpClient WebClient;
+    protected IAuthService AuthSvc;
 
     private ICluster _cluster;
     private IBucket _bucket;
@@ -59,6 +62,9 @@ public abstract class WebIntegrationTest
         upSettings.Direction = DirectionEnum.Up;
         upSettings.Bucket = _bucket;
         await runner.Run(typeof(CreateUserCollectionInDefaultScope).Assembly, upSettings);
+
+        // setup authservice
+        AuthSvc = WebAppFactory.Services.GetService<IAuthService>();
     }
 
     [OneTimeTearDown]
