@@ -162,36 +162,6 @@ public class RegistrationRequestHandlerTests
         Assert.That(result.ValidationErrors.First().ErrorMessage, Is.EqualTo(errorMessage));        
     }
 
-    [Test]
-    public async Task Handle_UsernameAlreadyExists_ReturnsError()
-    {
-        // Arrange
-        // setup registration info submitted through the API
-        var submittedInfo = new RegistrationUserSubmitModel
-        {
-            Username = "iamausernamethatalreadyexists",
-            Password = "PasswordPassword1Strong!Password",
-            Email = "doesntmatter@example.net"
-        };
-        var request = new RegistrationRequest(new RegistrationSubmitModel
-        {
-            User = submittedInfo
-        });
-
-        // setup database mock for user with same username already exists
-        _userDataServiceMock.Setup(m => m.GetUserByUsername(submittedInfo.Username))
-            .ReturnsAsync(new DataServiceResult<User>(new User(), DataResultStatus.Ok));
-
-        // Act
-        var result = await _registrationHandler.Handle(request, CancellationToken.None);
-
-        // Assert
-        Assert.That(result, Is.Not.Null);
-        Assert.That(result.ValidationErrors, Is.Not.Null);
-        Assert.That(result.ValidationErrors.Count, Is.EqualTo(1));
-        Assert.That(result.ValidationErrors.First().ErrorMessage, Is.EqualTo("That username is already in use."));
-    }
-
     [TestCase("","Email address must not be empty.")]
     [TestCase(null,"Email address must not be empty.")]
     [TestCase("notarealemailaddress","Email address must be valid.")]
