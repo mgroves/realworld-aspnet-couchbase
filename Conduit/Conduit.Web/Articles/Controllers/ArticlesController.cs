@@ -118,4 +118,27 @@ public class ArticlesController : ControllerBase
 
         return Ok(getResponse.ArticleView);
     }
+
+    [Authorize]
+    [HttpPut]
+    [Route("/api/articles/{slug}")]
+    public async Task<IActionResult> Update(UpdateArticlePostModelArticle model, string slug)
+    {
+        // update the article
+        var request = new UpdateArticleRequest(model, slug);
+        var response = await _mediator.Send(request);
+        if (response.IsNotFound)
+            return NotFound("Article not found");
+        if (response.ValidationErrors?.Any() ?? false)
+            return UnprocessableEntity(response.ValidationErrors.ToCsv());
+
+        // return the updated article
+        var claims = _authService.GetAllAuthInfo(Request.Headers["Authorization"]);
+        var getRequest = new GetArticleRequest(slug, claims.Username.Value);
+        var getResponse = await _mediator.Send(getRequest);
+        if (getResponse.ValidationErrors?.Any() ?? false)
+            return UnprocessableEntity(getResponse.ValidationErrors.ToCsv());
+
+        return Ok(getResponse.ArticleView);
+    }
 }

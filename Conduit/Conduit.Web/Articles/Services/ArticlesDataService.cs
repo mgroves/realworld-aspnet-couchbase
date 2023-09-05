@@ -16,6 +16,7 @@ public interface IArticlesDataService
     Task<bool> Exists(string slug);
     Task<DataServiceResult<Article>> Get(string slug);
     Task<bool> IsFavorited(string slug, string username);
+    Task<bool> UpdateArticle(Article newArticle);
 }
 
 public class ArticlesDataService : IArticlesDataService
@@ -51,7 +52,9 @@ public class ArticlesDataService : IArticlesDataService
     public async Task<DataServiceResult<Article>> Get(string slug)
     {
         var articlesCollection = await _articlesCollectionProvider.GetCollectionAsync();
-        var articleDoc = await articlesCollection.GetAsync(slug.GetArticleKey());
+        var articleDoc = await articlesCollection.TryGetAsync(slug.GetArticleKey());
+        if (!articleDoc.Exists)
+            return new DataServiceResult<Article>(null, DataResultStatus.NotFound);
         var article = articleDoc.ContentAs<Article>();
         return new DataServiceResult<Article>(article, DataResultStatus.Ok);
     }
@@ -72,6 +75,41 @@ public class ArticlesDataService : IArticlesDataService
         var collection = await _favoritesCollectionProvider.GetCollectionAsync();
         var set = collection.Set<string>(FavoriteDocId(username));
         return await set.ContainsAsync(slug.GetArticleKey());
+    }
+
+    /// <summary>
+    /// Update an existing article with new values.
+    /// Only Title+Slug, Body, Description, and TagList can be updated
+    /// </summary>
+    /// <param name="newArticle">Article with values to update - only non-null properties will be updated</param>
+    /// <returns>True if succeeded</returns>
+    public async Task<bool> UpdateArticle(Article newArticle)
+    {
+        var collection = await _articlesCollectionProvider.GetCollectionAsync();
+
+        try
+        {
+            await collection.MutateInAsync(newArticle.ArticleKey, spec =>
+            {
+                if (newArticle.Title != null)
+                {
+                    spec.Replace("title", newArticle.Title);
+                    spec.Replace("slug", newArticle.Slug);
+                }
+                if (newArticle.Body != null)
+                    spec.Replace("body", newArticle.Body);
+                if (newArticle.Description != null)
+                    spec.Replace("description", newArticle.Description);
+                if (newArticle.TagList != null)
+                    spec.Replace("tagList", newArticle.TagList);
+            });
+        }
+        catch (Exception ex)
+        {
+            return false;
+        }
+
+        return true;
     }
 
     public async Task Favorite(string slug, string username)

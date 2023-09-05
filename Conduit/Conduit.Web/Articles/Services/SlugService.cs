@@ -6,6 +6,7 @@ namespace Conduit.Web.Articles.Services;
 public interface ISlugService
 {
     string GenerateSlug(string title);
+    string NewTitleSameSlug(string newTitle, string currentSlug);
 }
 
 public class SlugService : ISlugService
@@ -34,5 +35,14 @@ public class SlugService : ISlugService
         slug += SLUG_DELIMETER + _random.String(12);
 
         return slug;
+    }
+
+    public string NewTitleSameSlug(string newTitle, string currentSlug)
+    {
+        var slug = _slugHelper.GenerateSlug(newTitle);
+
+        var currentArticleKey = currentSlug.GetArticleKey();
+
+        return $"{slug}{SLUG_DELIMETER}{currentArticleKey}";
     }
 }

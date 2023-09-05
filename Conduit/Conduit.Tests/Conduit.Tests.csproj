@@ -41,6 +41,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="Integration\Articles\Controllers\ArticlesControllerTests\" />
       <Folder Include="Integration\Articles\Handlers\" />
       <Folder Include="Extensions\" />
       <Folder Include="Integration\Articles\Services\ArticlesDataService\" />
