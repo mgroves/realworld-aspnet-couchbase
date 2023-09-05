@@ -30,6 +30,9 @@ public class ArticlesController : ControllerBase
     /// </remarks>
     /// <param name="articleSubmission"></param>
     /// <returns>Article (with profile of author embedded)</returns>
+    /// <response code="200">Successful creating, returns the created Article</response>
+    /// <response code="401">Unauthorized, likely because credentials are incorrect</response>
+    /// <response code="422">Article was unable to be created</response>
     [Authorize]
     [HttpPost]
     [Route("/api/articles")]
@@ -62,6 +65,9 @@ public class ArticlesController : ControllerBase
     /// </remarks>
     /// <param name="slug">Article slug</param>
     /// <returns>Article (with profile of author embedded)</returns>
+    /// <response code="200">Successful favorite, returns the favorited Article</response>
+    /// <response code="401">Unauthorized, likely because credentials are incorrect</response>
+    /// <response code="422">Article was unable to be favorited</response>
     [HttpPost]
     [Route("/api/article/{slug}/favorite")]
     [Authorize]
@@ -95,6 +101,8 @@ public class ArticlesController : ControllerBase
     /// </remarks>
     /// <param name="slug">Article slug</param>
     /// <returns>Article (with profile of author embedded)</returns>
+    /// <response code="200">Successful retrieval, returns the Article</response>
+    /// <response code="422">Article updates are invalid</response>
     [HttpGet]
     [Route("/api/article/{slug}")]
     public async Task<IActionResult> Get(string slug)
@@ -119,6 +127,19 @@ public class ArticlesController : ControllerBase
         return Ok(getResponse.ArticleView);
     }
 
+    /// <summary>
+    /// Update an article
+    /// </summary>
+    /// <remarks>
+    /// <a href="https://realworld-docs.netlify.app/docs/specs/backend-specs/endpoints#update-article">Conduit spec for Update Article endpoint</a>
+    /// </remarks>
+    /// <param name="model">Article information to update</param>
+    /// <param name="slug">Article slug</param>
+    /// <returns>The updated article</returns>
+    /// <response code="200">Successful update, returns the updated Article</response>
+    /// <response code="401">Unauthorized, likely because credentials are incorrect</response>
+    /// <response code="404">Article not found</response>
+    /// <response code="422">Article updates are invalid</response>
     [Authorize]
     [HttpPut]
     [Route("/api/articles/{slug}")]

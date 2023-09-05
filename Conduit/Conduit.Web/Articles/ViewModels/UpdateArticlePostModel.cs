@@ -6,7 +6,7 @@ public class UpdateArticlePostModelArticle
 }
 
 /// <summary>
-/// At least one value must be specified
+/// At least one of Title, Description, Body, and Tags must be specified
 /// </summary>
 public class UpdateArticlePostModel
 {
