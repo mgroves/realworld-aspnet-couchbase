@@ -95,7 +95,7 @@ public class ArticlesController : ControllerBase
     }
 
     /// <summary>
-    /// Get an article
+    /// Get an article (authorization optional)
     /// </summary>
     /// <remarks>
     /// <a href="https://realworld-docs.netlify.app/docs/specs/backend-specs/endpoints/#get-article">Conduit spec for Get Article endpoint</a>
@@ -106,6 +106,7 @@ public class ArticlesController : ControllerBase
     /// <response code="422">Article updates are invalid</response>
     [HttpGet]
     [Route("/api/article/{slug}")]
+    [AllowAnonymous]
     public async Task<IActionResult> Get(string slug)
     {
         // get (optional) auth info
@@ -125,7 +126,7 @@ public class ArticlesController : ControllerBase
         if (getResponse.ValidationErrors?.Any() ?? false)
             return UnprocessableEntity(getResponse.ValidationErrors.ToCsv());
 
-        return Ok(getResponse.ArticleView);
+        return Ok(new { article = getResponse.ArticleView });
     }
 
     /// <summary>

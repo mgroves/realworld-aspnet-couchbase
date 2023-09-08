@@ -111,6 +111,7 @@ public class ArticlesDataService : IArticlesDataService
         }
         catch (Exception ex)
         {
+            // TODO: maybe some better handling here, like DocumentNotFound?
             return false;
         }
 

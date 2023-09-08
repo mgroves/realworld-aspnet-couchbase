@@ -40,6 +40,7 @@ public class UpdateArticleHandler : IRequestHandler<UpdateArticleRequest, Update
         var currentArticle = currentArticleResult.DataResult;
 
         var updatedArticle = new Article();
+        updatedArticle.Slug = request.Slug;
         if (!string.IsNullOrEmpty(request.Title))
         {
             if (currentArticle.Title != request.Title)
@@ -49,8 +50,8 @@ public class UpdateArticleHandler : IRequestHandler<UpdateArticleRequest, Update
             }
         }
 
-        updatedArticle.Body = request.Body.Trim();
-        updatedArticle.Description = request.Description.Trim();
+        updatedArticle.Body = request.Body?.Trim();
+        updatedArticle.Description = request.Description?.Trim();
         updatedArticle.TagList = request.Tags;
 
         await _articlesDataService.UpdateArticle(updatedArticle);

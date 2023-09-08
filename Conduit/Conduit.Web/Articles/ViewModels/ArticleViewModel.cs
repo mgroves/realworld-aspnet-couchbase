@@ -1,5 +1,4 @@
-﻿using Conduit.Web.DataAccess.Models;
-using Conduit.Web.Users.ViewModels;
+﻿using Conduit.Web.Users.ViewModels;
 
 namespace Conduit.Web.Articles.ViewModels;
 
