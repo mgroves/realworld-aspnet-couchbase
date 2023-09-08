@@ -1,7 +1,7 @@
 ﻿using Conduit.Web.Articles.ViewModels;
 using Conduit.Web.Extensions;
 
-namespace Conduit.Tests.TestHelpers.Dto;
+namespace Conduit.Tests.TestHelpers.Dto.ViewModels;
 
 public static class UpdateArticlePostModelHelper
 {

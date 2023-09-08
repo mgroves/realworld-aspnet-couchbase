@@ -2,11 +2,12 @@
 using Conduit.Web.Articles.Services;
 using Moq;
 using Conduit.Tests.TestHelpers.Data;
-using Conduit.Tests.TestHelpers.Dto;
 using Conduit.Web.Articles.ViewModels;
 using Conduit.Web.DataAccess.Models;
 using Conduit.Web.Extensions;
 using Conduit.Web.DataAccess.Dto;
+using Conduit.Tests.TestHelpers.Dto.Handlers;
+using Conduit.Tests.TestHelpers.Dto.ViewModels;
 
 namespace Conduit.Tests.Unit.Articles.Handlers;
 

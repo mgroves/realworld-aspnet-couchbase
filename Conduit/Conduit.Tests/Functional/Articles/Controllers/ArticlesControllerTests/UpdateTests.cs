@@ -4,11 +4,11 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Net.Http.Headers;
 using Conduit.Tests.TestHelpers;
 using Conduit.Tests.TestHelpers.Data;
-using Conduit.Tests.TestHelpers.Dto;
 using Conduit.Web.Articles.Services;
 using Conduit.Web.Articles.ViewModels;
 using Conduit.Web.DataAccess.Models;
 using Conduit.Web.Extensions;
+using Conduit.Tests.TestHelpers.Dto.ViewModels;
 
 namespace Conduit.Tests.Functional.Articles.Controllers.ArticlesControllerTests;
 

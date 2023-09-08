@@ -1,8 +1,9 @@
-﻿using Conduit.Web.Articles.Handlers;
+﻿using Conduit.Tests.TestHelpers.Dto.ViewModels;
+using Conduit.Web.Articles.Handlers;
 using Conduit.Web.Articles.ViewModels;
 using Conduit.Web.Extensions;
 
-namespace Conduit.Tests.TestHelpers.Dto;
+namespace Conduit.Tests.TestHelpers.Dto.Handlers;
 
 public static class UpdateArticleRequestHelper
 {

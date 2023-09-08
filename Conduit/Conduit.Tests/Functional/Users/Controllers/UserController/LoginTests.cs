@@ -1,12 +1,12 @@
 ﻿using System.Text;
 using Conduit.Tests.TestHelpers.Data;
-using Conduit.Tests.TestHelpers.Dto;
 using System.Net;
 using Conduit.Tests.TestHelpers;
 using Conduit.Web.Users.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Conduit.Web.DataAccess.Providers;
+using Conduit.Tests.TestHelpers.Dto.ViewModels;
 
 namespace Conduit.Tests.Functional.Users.Controllers.UserController;
 

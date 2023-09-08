@@ -3,10 +3,10 @@ using Conduit.Web.DataAccess.Providers;
 using Microsoft.Extensions.DependencyInjection;
 using System.Net.Http.Headers;
 using Conduit.Tests.TestHelpers.Data;
-using Conduit.Tests.TestHelpers.Dto;
 using Conduit.Web.DataAccess.Models;
 using Conduit.Web.Articles.ViewModels;
 using Conduit.Tests.TestHelpers;
+using Conduit.Tests.TestHelpers.Dto.ViewModels;
 
 namespace Conduit.Tests.Functional.Articles.Controllers.ArticlesControllerTests;
 

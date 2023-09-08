@@ -45,7 +45,6 @@
       <Folder Include="Extensions\" />
       <Folder Include="Integration\Articles\Services\ArticlesDataService\" />
       <Folder Include="Integration\Users\Services\UserDataServiceTests\" />
-      <Folder Include="TestHelpers\Dto\" />
       <Folder Include="Unit\Articles\Handlers\" />
     </ItemGroup>
 

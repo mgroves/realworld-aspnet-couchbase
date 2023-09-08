@@ -5,8 +5,8 @@ using Conduit.Tests.TestHelpers.Data;
 using Conduit.Web.DataAccess.Models;
 using System.Net;
 using Conduit.Tests.TestHelpers;
-using Conduit.Tests.TestHelpers.Dto;
 using Conduit.Web.Users.ViewModels;
+using Conduit.Tests.TestHelpers.Dto.ViewModels;
 
 namespace Conduit.Tests.Functional.Users.Controllers.UserController;
 

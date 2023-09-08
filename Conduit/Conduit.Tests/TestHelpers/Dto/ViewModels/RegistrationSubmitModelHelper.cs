@@ -1,7 +1,7 @@
 ﻿using Conduit.Web.Extensions;
 using Conduit.Web.Users.ViewModels;
 
-namespace Conduit.Tests.TestHelpers.Dto;
+namespace Conduit.Tests.TestHelpers.Dto.ViewModels;
 
 public static class RegistrationSubmitModelHelper
 {

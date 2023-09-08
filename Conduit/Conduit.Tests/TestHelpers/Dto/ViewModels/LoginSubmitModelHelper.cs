@@ -1,6 +1,6 @@
 ﻿using Conduit.Web.Users.ViewModels;
 
-namespace Conduit.Tests.TestHelpers.Dto;
+namespace Conduit.Tests.TestHelpers.Dto.ViewModels;
 
 public static class LoginSubmitModelHelper
 {

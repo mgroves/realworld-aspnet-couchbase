@@ -1,7 +1,7 @@
 ﻿using Conduit.Web.Users.Handlers;
 using Conduit.Web.Users.ViewModels;
 
-namespace Conduit.Tests.TestHelpers.Dto;
+namespace Conduit.Tests.TestHelpers.Dto.Handlers;
 
 public static class LoginRequestHelper
 {

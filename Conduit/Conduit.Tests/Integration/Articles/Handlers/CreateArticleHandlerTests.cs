@@ -1,5 +1,5 @@
 ﻿using Conduit.Tests.TestHelpers.Data;
-using Conduit.Tests.TestHelpers.Dto;
+using Conduit.Tests.TestHelpers.Dto.Handlers;
 using Conduit.Web.Articles.Handlers;
 using Conduit.Web.Articles.Services;
 using Conduit.Web.DataAccess.Providers;
