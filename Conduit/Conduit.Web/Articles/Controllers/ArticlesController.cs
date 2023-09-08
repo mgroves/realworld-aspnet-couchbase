@@ -160,6 +160,6 @@ public class ArticlesController : ControllerBase
         if (getResponse.ValidationErrors?.Any() ?? false)
             return UnprocessableEntity(getResponse.ValidationErrors.ToCsv());
 
-        return Ok(getResponse.ArticleView);
+        return Ok(new { article = getResponse.ArticleView});
     }
 }

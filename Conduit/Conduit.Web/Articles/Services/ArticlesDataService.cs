@@ -102,6 +102,9 @@ public class ArticlesDataService : IArticlesDataService
                     spec.Replace("description", newArticle.Description);
                 if (newArticle.TagList != null)
                     spec.Replace("tagList", newArticle.TagList);
+
+                // always update updatedAt
+                spec.Upsert("updatedAt", new DateTimeOffset(DateTime.Now));
             });
         }
         catch (Exception ex)

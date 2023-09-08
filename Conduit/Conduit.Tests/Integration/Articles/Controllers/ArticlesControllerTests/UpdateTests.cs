@@ -6,8 +6,10 @@ using Conduit.Tests.TestHelpers;
 using Conduit.Tests.TestHelpers.Data;
 using Conduit.Tests.TestHelpers.Dto;
 using Conduit.Web.Articles.Services;
+using Conduit.Web.Articles.ViewModels;
 using Conduit.Web.DataAccess.Models;
 using Conduit.Web.Extensions;
+using Conduit.Web.Users.ViewModels;
 
 namespace Conduit.Tests.Integration.Articles.Controllers.ArticlesControllerTests;
 
@@ -179,6 +181,33 @@ public class UpdateTests : WebIntegrationTest
         // assert
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.UnprocessableEntity));
         Assert.That(responseString, Contains.Substring("Update Failed: Please make sure to modify at least one of the following fields: Body, Title, Description, or Tags."));
+    }
+
+    [Test]
+    public async Task Update_returns_the_updated_article()
+    {
+        // arrange
+        var oldTags = new List<string> { "Couchbase" };
+        var newTags = new List<string> { "cruising" };
+        var user = await _usersCollectionProvider.CreateUserInDatabase();
+        var article = await _articleCollectionProvider.CreateArticleInDatabase(authorUsername: user.Username, tagList: oldTags);
+        var payload = UpdateArticlePostModelHelper.Create(tags: newTags);
+
+        // act
+        var response = await WebClient.PutAsync($"api/articles/{article.Slug}", payload.ToJsonPayload());
+        var responseString = await response.Content.ReadAsStringAsync();
+        var articleViewModel = responseString.SubDoc<ArticleViewModel>("article");
+
+        // assert
+        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+        Assert.That(articleViewModel.Title, Is.EqualTo(payload.Article.Title));
+        Assert.That(articleViewModel.Body, Is.EqualTo(payload.Article.Body));
+        Assert.That(articleViewModel.Description, Is.EqualTo(payload.Article.Description));
+        Assert.That(articleViewModel.CreatedAt, Is.EqualTo(article.CreatedAt));
+        Assert.That(articleViewModel.TagList.All(newTags.Contains), Is.True);
+        Assert.That(articleViewModel.Favorited, Is.EqualTo(article.Favorited));
+        Assert.That(articleViewModel.FavoritesCount, Is.EqualTo(article.FavoritesCount));
+        Assert.That(articleViewModel.UpdatedAt, Is.GreaterThanOrEqualTo(new DateTimeOffset(DateTime.Now - TimeSpan.FromSeconds(30))));
     }
 
     [Test]

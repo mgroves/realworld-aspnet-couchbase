@@ -1,4 +1,6 @@
-﻿using FluentValidation.Results;
+﻿using Conduit.Web.DataAccess.Dto;
+using Conduit.Web.DataAccess.Models;
+using FluentValidation.Results;
 
 namespace Conduit.Web.Articles.Handlers;
 

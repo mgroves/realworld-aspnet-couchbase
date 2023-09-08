@@ -38,21 +38,21 @@ public class UpdateArticleHandler : IRequestHandler<UpdateArticleRequest, Update
 
         var currentArticle = currentArticleResult.DataResult;
 
-        var newArticle = new Article();
+        var updatedArticle = new Article();
         if (!string.IsNullOrEmpty(request.Title))
         {
             if (currentArticle.Title != request.Title)
             {
-                newArticle.Title = request.Title;
-                newArticle.Slug = _slugService.NewTitleSameSlug(request.Title, currentArticle.Slug);
+                updatedArticle.Title = request.Title.Trim();
+                updatedArticle.Slug = _slugService.NewTitleSameSlug(request.Title, currentArticle.Slug);
             }
         }
 
-        newArticle.Body = request.Body;
-        newArticle.Description = request.Description;
-        newArticle.TagList = request.Tags;
+        updatedArticle.Body = request.Body.Trim();
+        updatedArticle.Description = request.Description.Trim();
+        updatedArticle.TagList = request.Tags;
 
-        await _articlesDataService.UpdateArticle(newArticle);
+        await _articlesDataService.UpdateArticle(updatedArticle);
 
         return new UpdateArticleResponse();
     }

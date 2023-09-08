@@ -63,7 +63,7 @@ public static class ArticleHelper
         return article;
     }
 
-    private static Article CreateArticle(
+    public static Article CreateArticle(
         int? favoritesCount = null,
         DateTimeOffset? createdAt = null,
         string? title = null,
@@ -75,7 +75,7 @@ public static class ArticleHelper
         bool? favorited = null)
     {
         var random = new Random();
-        favoritesCount ??= (int)random.NextInt64(0, 100);
+        favoritesCount ??= 0;
         createdAt ??= DateTimeOffset.Now;
         title ??= "Title " + random.String(20);
         description ??= "Description " + random.String(256);
@@ -83,7 +83,7 @@ public static class ArticleHelper
         body ??= "Body " + random.String(10000);
         slug ??= new SlugService(new SlugHelper()).GenerateSlug(title);
         tagList ??= new List<string> { "Couchbase", "baseball"};
-        favorited ??= true;
+        favorited ??= false;
         
         var article = new Article();
         article.FavoritesCount = favoritesCount.Value;

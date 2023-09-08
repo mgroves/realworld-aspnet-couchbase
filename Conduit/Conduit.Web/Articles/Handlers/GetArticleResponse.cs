@@ -18,6 +18,7 @@ public class GetArticleResponse
         ArticleView.Body = article.Body;
         ArticleView.TagList = article.TagList;
         ArticleView.CreatedAt = article.CreatedAt;
+        ArticleView.UpdatedAt = article.UpdatedAt;
         ArticleView.Favorited = article.Favorited;
         ArticleView.FavoritesCount = article.FavoritesCount;
 
