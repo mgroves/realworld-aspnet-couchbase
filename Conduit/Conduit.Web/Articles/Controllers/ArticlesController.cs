@@ -6,6 +6,7 @@ using Conduit.Web.Users.Services;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace Conduit.Web.Articles.Controllers;
 
@@ -160,6 +161,26 @@ public class ArticlesController : ControllerBase
         if (getResponse.ValidationErrors?.Any() ?? false)
             return UnprocessableEntity(getResponse.ValidationErrors.ToCsv());
 
-        return Ok(new { article = getResponse.ArticleView});
+        return Ok(new { article = getResponse.ArticleView });
+    }
+
+    [Authorize]
+    [HttpDelete]
+    [Route("/api/articles/{slug}")]
+    public async Task<IActionResult> Delete(string slug)
+    {
+        var claims = _authService.GetAllAuthInfo(Request.Headers["Authorization"]);
+        var username = claims.Username.Value;
+
+        var deleteRequest = new ArticleDeleteRequest(slug, username);
+        var deleteResponse = await _mediator.Send(deleteRequest);
+        if (deleteResponse.ArticleNotFound)
+            return NotFound("Article not found.");
+        if (deleteResponse.IsUnauthorized)
+            return Unauthorized("You're not allowed to delete that article.");
+        if(deleteResponse.ValidationErrors?.Any() ?? false)
+            return UnprocessableEntity(deleteResponse.ValidationErrors.ToCsv());
+
+        return Ok("Article deleted.");
     }
 }

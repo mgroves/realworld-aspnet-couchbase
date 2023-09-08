@@ -17,6 +17,8 @@ public interface IArticlesDataService
     Task<DataServiceResult<Article>> Get(string slug);
     Task<bool> IsFavorited(string slug, string username);
     Task<bool> UpdateArticle(Article newArticle);
+    Task<DataServiceResult<string>> DeleteArticle(string slug);
+    Task<bool> IsArticleAuthor(string slug, string username);
 }
 
 public class ArticlesDataService : IArticlesDataService
@@ -113,6 +115,43 @@ public class ArticlesDataService : IArticlesDataService
         }
 
         return true;
+    }
+
+    public async Task<DataServiceResult<string>> DeleteArticle(string slug)
+    {
+        var articlesCollection = await _articlesCollectionProvider.GetCollectionAsync();
+        try
+        {
+            await articlesCollection.RemoveAsync(slug.GetArticleKey());
+        }
+        catch (DocumentNotFoundException ex)
+        {
+            return new DataServiceResult<string>(slug, DataResultStatus.NotFound);
+        }
+        return new DataServiceResult<string>(slug, DataResultStatus.Ok);
+    }
+
+    public async Task<bool> IsArticleAuthor(string slug, string username)
+    {
+        var articlesCollection = await _articlesCollectionProvider.GetCollectionAsync();
+
+        try
+        {
+            var result =
+                await articlesCollection.LookupInAsync(slug.GetArticleKey(), spec => { spec.Get("authorUsername"); });
+
+            var authorUsername = result.ContentAs<string>(0);
+
+            return username == authorUsername;
+        }
+        catch (DocumentNotFoundException ex)
+        {
+            return false;
+        }
+        catch (ArgumentException ex)
+        {
+            return false;
+        }
     }
 
     public async Task Favorite(string slug, string username)

@@ -27,6 +27,13 @@ public static class ArticleHelper
         Assert.That(true);
     }
 
+    public static async Task AssertNotExists(this IConduitArticlesCollectionProvider @this, string slug)
+    {
+        var collection = await @this.GetCollectionAsync();
+        var doesArticleExist = await collection.ExistsAsync(slug.GetArticleKey());
+        Assert.That(doesArticleExist.Exists, Is.False);
+    }
+
     public static async Task AssertExists(this IConduitFavoritesCollectionProvider @this, string username,
         Action<List<string>>? assertions = null)
     {
