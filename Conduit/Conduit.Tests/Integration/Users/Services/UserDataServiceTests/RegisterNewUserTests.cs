@@ -2,7 +2,6 @@
 using Conduit.Tests.TestHelpers.Data;
 using Conduit.Web.DataAccess.Providers;
 using Conduit.Web.Users.Services;
-using Couchbase.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Conduit.Tests.Integration.Users.Services.UserDataServiceTests;
@@ -11,19 +10,12 @@ namespace Conduit.Tests.Integration.Users.Services.UserDataServiceTests;
 public class RegisterNewUserTests : CouchbaseIntegrationTest
 {
     private IConduitUsersCollectionProvider _usersCollectionProvider;
-    private Web.Users.Services.UserDataService _userDataService;
+    private IUserDataService _userDataService;
 
     [OneTimeSetUp]
     public override async Task Setup()
     {
         await base.Setup();
-
-        ServiceCollection.AddCouchbaseBucket<IConduitBucketProvider>("ConduitIntegrationTests", b =>
-        {
-            b
-                .AddScope("_default")
-                .AddCollection<IConduitUsersCollectionProvider>("Users");
-        });
 
         _usersCollectionProvider = ServiceProvider.GetRequiredService<IConduitUsersCollectionProvider>();
         _userDataService = new UserDataService(_usersCollectionProvider, AuthServiceHelper.Create());

@@ -1,12 +1,9 @@
-﻿using Conduit.Tests.TestHelpers;
-using Conduit.Tests.TestHelpers.Data;
+﻿using Conduit.Tests.TestHelpers.Data;
 using Conduit.Web.Articles.Handlers;
 using Conduit.Web.Articles.Services;
 using Conduit.Web.DataAccess.Providers;
-using Conduit.Web.Extensions;
 using Conduit.Web.Follows.Services;
 using Conduit.Web.Users.Services;
-using Couchbase.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
@@ -28,22 +25,6 @@ public class GetArticleHandlerTests : CouchbaseIntegrationTest
     public override async Task Setup()
     {
         await base.Setup();
-
-        ServiceCollection.AddCouchbaseBucket<IConduitBucketProvider>("ConduitIntegrationTests", b =>
-        {
-            b
-                .AddScope("_default")
-                .AddCollection<IConduitUsersCollectionProvider>("Users");
-            b
-                .AddScope("_default")
-                .AddCollection<IConduitArticlesCollectionProvider>("Articles");
-            b
-                .AddScope("_default")
-                .AddCollection<IConduitFollowsCollectionProvider>("Follows");
-            b
-                .AddScope("_default")
-                .AddCollection<IConduitFavoritesCollectionProvider>("Favorites");
-        });
 
         _usersCollectionProvider = ServiceProvider.GetRequiredService<IConduitUsersCollectionProvider>();
         _articleCollectionProvider = ServiceProvider.GetRequiredService<IConduitArticlesCollectionProvider>();

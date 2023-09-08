@@ -1,7 +1,6 @@
 ﻿using Conduit.Web.Articles.Handlers;
 using Conduit.Web.Articles.Services;
 using Conduit.Web.DataAccess.Providers;
-using Couchbase.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Conduit.Tests.Integration.Articles.Handlers;
@@ -16,13 +15,6 @@ public class GetTagsHandlerTests : CouchbaseIntegrationTest
     public async Task SetUp()
     {
         await base.Setup();
-
-        ServiceCollection.AddCouchbaseBucket<IConduitBucketProvider>("ConduitIntegrationTests", b =>
-        {
-            b
-                .AddScope("_default")
-                .AddCollection<IConduitTagsCollectionProvider>("Tags");
-        });
 
         _tagsCollectionProvider = ServiceProvider.GetRequiredService<IConduitTagsCollectionProvider>();
 

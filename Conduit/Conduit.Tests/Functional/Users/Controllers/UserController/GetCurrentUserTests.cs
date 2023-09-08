@@ -11,10 +11,10 @@ using Conduit.Tests.TestHelpers;
 using Conduit.Web.DataAccess.Models;
 using Conduit.Web.Users.ViewModels;
 
-namespace Conduit.Tests.Integration.Users.Controllers.UserController;
+namespace Conduit.Tests.Functional.Users.Controllers.UserController;
 
 [TestFixture]
-public class GetCurrentUserTests : WebIntegrationTest
+public class GetCurrentUserTests : FunctionalTestBase
 {
     private IConduitUsersCollectionProvider _usersCollectionProvider;
     private User _user;
@@ -44,7 +44,7 @@ public class GetCurrentUserTests : WebIntegrationTest
             new AuthenticationHeaderValue("Authorization", authorizationHeader);
 
         // Act
-        var response = await WebClient.GetAsync( "/api/user");
+        var response = await WebClient.GetAsync("/api/user");
 
         // Assert
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));

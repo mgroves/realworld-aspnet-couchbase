@@ -8,9 +8,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Conduit.Web.DataAccess.Providers;
 
-namespace Conduit.Tests.Integration.Users.Controllers.UserController;
+namespace Conduit.Tests.Functional.Users.Controllers.UserController;
 
-public class LoginTests : WebIntegrationTest
+public class LoginTests : FunctionalTestBase
 {
     private IConduitUsersCollectionProvider _usersCollectionProvider;
 
@@ -24,10 +24,10 @@ public class LoginTests : WebIntegrationTest
         _usersCollectionProvider = service.GetRequiredService<IConduitUsersCollectionProvider>();
     }
 
-    [TestCase("","")]
-    [TestCase(null,"")]
-    [TestCase("",null)]
-    [TestCase(null,null)]
+    [TestCase("", "")]
+    [TestCase(null, "")]
+    [TestCase("", null)]
+    [TestCase(null, null)]
     public async Task LoginWithNullOrEmptyBothCredentials_Should_Fail(string? email, string? password)
     {
         // Arrange

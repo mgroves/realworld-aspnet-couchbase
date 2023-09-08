@@ -1,6 +1,5 @@
 ﻿using Conduit.Tests.TestHelpers.Data;
 using Conduit.Web.DataAccess.Providers;
-using Couchbase.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 using Conduit.Web.Articles.Services;
 
@@ -16,16 +15,6 @@ public class UpdateArticleTests : CouchbaseIntegrationTest
     public override async Task Setup()
     {
         await base.Setup();
-
-        ServiceCollection.AddCouchbaseBucket<IConduitBucketProvider>("ConduitIntegrationTests", b =>
-        {
-            b
-                .AddScope("_default")
-                .AddCollection<IConduitArticlesCollectionProvider>("Articles");
-            b
-                .AddScope("_default")
-                .AddCollection<IConduitFavoritesCollectionProvider>("Favorites");
-        });
 
         _articleCollectionProvider = ServiceProvider.GetRequiredService<IConduitArticlesCollectionProvider>();
         _favoriteCollectionProvider = ServiceProvider.GetRequiredService<IConduitFavoritesCollectionProvider>();
@@ -50,7 +39,7 @@ public class UpdateArticleTests : CouchbaseIntegrationTest
         await _articleCollectionProvider.AssertExists(articleInDatabase.Slug, x =>
         {
             Assert.That(x.CreatedAt, Is.EqualTo(articleInDatabase.CreatedAt));
-            Assert.That((new DateTimeOffset(DateTime.Now) - x.UpdatedAt).TotalSeconds, Is.LessThanOrEqualTo(30));
+            Assert.That((new DateTimeOffset(DateTime.Now) - x.UpdatedAt).Value.TotalSeconds, Is.LessThanOrEqualTo(30));
         });
     }
 }

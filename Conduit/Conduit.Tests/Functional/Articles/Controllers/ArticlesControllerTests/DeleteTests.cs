@@ -7,10 +7,10 @@ using System.Net.Http.Headers;
 using Conduit.Tests.TestHelpers.Data;
 using Conduit.Web.Extensions;
 
-namespace Conduit.Tests.Integration.Articles.Controllers.ArticlesControllerTests;
+namespace Conduit.Tests.Functional.Articles.Controllers.ArticlesControllerTests;
 
 [TestFixture]
-public class DeleteTests : WebIntegrationTest
+public class DeleteTests : FunctionalTestBase
 {
     private Random _random;
 

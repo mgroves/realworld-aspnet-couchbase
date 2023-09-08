@@ -41,11 +41,9 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Integration\Articles\Controllers\ArticlesControllerTests\" />
       <Folder Include="Integration\Articles\Handlers\" />
       <Folder Include="Extensions\" />
       <Folder Include="Integration\Articles\Services\ArticlesDataService\" />
-      <Folder Include="Integration\Users\Controllers\UserController\" />
       <Folder Include="Integration\Users\Services\UserDataServiceTests\" />
       <Folder Include="TestHelpers\Dto\" />
       <Folder Include="Unit\Articles\Handlers\" />

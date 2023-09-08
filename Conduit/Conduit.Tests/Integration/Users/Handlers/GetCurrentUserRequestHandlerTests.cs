@@ -3,7 +3,6 @@ using Conduit.Tests.TestHelpers.Data;
 using Conduit.Web.DataAccess.Providers;
 using Conduit.Web.Users.Handlers;
 using Conduit.Web.Users.Services;
-using Couchbase.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Conduit.Tests.Integration.Users.Handlers;
@@ -17,14 +16,6 @@ public class GetCurrentUserRequestHandlerTests : CouchbaseIntegrationTest
     public override async Task Setup()
     {
         await base.Setup();
-
-        // TODO: need to get bucket name from environment/user secrets
-        ServiceCollection.AddCouchbaseBucket<IConduitBucketProvider>("ConduitIntegrationTests", b =>
-        {
-            b
-                .AddScope("_default")
-                .AddCollection<IConduitUsersCollectionProvider>("Users");
-        });
 
         // setup handler and dependencies
         _usersCollectionProvider = ServiceProvider.GetRequiredService<IConduitUsersCollectionProvider>();

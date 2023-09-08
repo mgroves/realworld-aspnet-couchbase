@@ -8,9 +8,9 @@ using Conduit.Tests.TestHelpers;
 using Conduit.Tests.TestHelpers.Dto;
 using Conduit.Web.Users.ViewModels;
 
-namespace Conduit.Tests.Integration.Users.Controllers.UserController;
+namespace Conduit.Tests.Functional.Users.Controllers.UserController;
 
-public class UpdateUserTests : WebIntegrationTest
+public class UpdateUserTests : FunctionalTestBase
 {
     private IConduitUsersCollectionProvider _usersCollectionProvider;
     private User _user;

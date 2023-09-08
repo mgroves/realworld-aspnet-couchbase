@@ -4,7 +4,6 @@ using Conduit.Web.DataAccess.Providers;
 using Conduit.Web.Follows.Handlers;
 using Conduit.Web.Follows.Services;
 using Conduit.Web.Users.Services;
-using Couchbase.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Conduit.Tests.Integration.Follows.Handlers;
@@ -20,16 +19,6 @@ public class FollowUserHandlerIntegrationTest : CouchbaseIntegrationTest
     public async Task SetUp()
     {
         await base.Setup();
-
-        ServiceCollection.AddCouchbaseBucket<IConduitBucketProvider>("ConduitIntegrationTests", b =>
-        {
-            b
-                .AddScope("_default")
-                .AddCollection<IConduitFollowsCollectionProvider>("Follows");
-            b
-                .AddScope("_default")
-                .AddCollection<IConduitUsersCollectionProvider>("Users");
-        });
 
         _followsCollectionProvider = ServiceProvider.GetRequiredService<IConduitFollowsCollectionProvider>();
         _usersCollectionProvider = ServiceProvider.GetRequiredService<IConduitUsersCollectionProvider>();

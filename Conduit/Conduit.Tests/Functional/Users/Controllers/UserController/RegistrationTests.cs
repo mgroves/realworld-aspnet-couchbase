@@ -6,9 +6,9 @@ using System.Net;
 using Conduit.Tests.TestHelpers;
 using Conduit.Tests.TestHelpers.Data;
 
-namespace Conduit.Tests.Integration.Users.Controllers.UserController;
+namespace Conduit.Tests.Functional.Users.Controllers.UserController;
 
-public class RegistrationTests : WebIntegrationTest
+public class RegistrationTests : FunctionalTestBase
 {
     private IConduitUsersCollectionProvider _userCollectionProvider;
 

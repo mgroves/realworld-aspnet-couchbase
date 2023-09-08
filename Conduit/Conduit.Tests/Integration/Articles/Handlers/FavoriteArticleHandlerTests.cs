@@ -3,7 +3,6 @@ using Conduit.Web.Articles.Handlers;
 using Conduit.Web.Articles.Services;
 using Conduit.Web.DataAccess.Providers;
 using Conduit.Web.Extensions;
-using Couchbase.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Conduit.Tests.Integration.Articles.Handlers;
@@ -19,19 +18,6 @@ public class FavoriteArticleHandlerTests : CouchbaseIntegrationTest
     public override async Task Setup()
     {
         await base.Setup();
-
-        ServiceCollection.AddCouchbaseBucket<IConduitBucketProvider>("ConduitIntegrationTests", b =>
-        {
-            b
-                .AddScope("_default")
-                .AddCollection<IConduitArticlesCollectionProvider>("Articles");
-            b
-                .AddScope("_default")
-                .AddCollection<IConduitFavoritesCollectionProvider>("Favorites");
-            b
-                .AddScope("_default")
-                .AddCollection<IConduitUsersCollectionProvider>("Users");
-        });
 
         _articleCollectionProvider = ServiceProvider.GetRequiredService<IConduitArticlesCollectionProvider>();
         _favoritesCollectionProvider = ServiceProvider.GetRequiredService<IConduitFavoritesCollectionProvider>();

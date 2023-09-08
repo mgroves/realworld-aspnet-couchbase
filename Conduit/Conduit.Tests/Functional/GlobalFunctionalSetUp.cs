@@ -1,27 +1,39 @@
 ﻿using Conduit.Migrations;
-using Conduit.Web;
 using Conduit.Web.Users.Services;
-using Couchbase;
 using Couchbase.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Mvc.Testing;
+using NoSqlMigrator.Runner;
+using Conduit.Web;
+using Couchbase;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using NoSqlMigrator.Runner;
 
-namespace Conduit.Tests.Integration;
+namespace Conduit.Tests.Functional;
 
-public abstract class WebIntegrationTest
+/// <summary>
+/// This look weird to you?
+/// It's NUnit's way of running something before ALL tests, just once
+/// and then running something after ALL tests, just once.
+/// This DRAMATICALLY speeds up the web integration tests--
+/// no need to migrate up/down every time
+/// no need to reinstantiate WebAppFactory and client every time
+/// So I'm keeping this, unless something better comes along
+/// The only weirdness are the static properties, which should only be used
+/// in the WebIntergrationTest base class
+///
+/// </summary>
+[SetUpFixture]
+public class GlobalFunctionalSetUp
 {
-    protected WebApplicationFactory<Program> WebAppFactory;
-    protected HttpClient WebClient;
-    protected IAuthService AuthSvc;
+    public static WebApplicationFactory<Program> WebAppFactory { get; private set; }
+    public static HttpClient WebClient { get; private set; }
+    public static IAuthService AuthSvc { get; private set; }
 
     private ICluster _cluster;
     private IBucket _bucket;
 
     [OneTimeSetUp]
-    public virtual async Task Setup()
+    public async Task RunBeforeAllTests()
     {
         WebAppFactory = new WebApplicationFactory<Program>()
             .WithWebHostBuilder(builder =>
@@ -30,7 +42,7 @@ public abstract class WebIntegrationTest
                 {
                     // Add environment variables
                     configBuilder.AddEnvironmentVariables();
-                    configBuilder.AddUserSecrets<WebIntegrationTest>();
+                    configBuilder.AddUserSecrets<GlobalFunctionalSetUp>();
                 });
             });
 
@@ -41,14 +53,14 @@ public abstract class WebIntegrationTest
         var config = WebAppFactory.Services.GetService<IConfiguration>();
 
         await _cluster.WaitUntilReadyAsync(TimeSpan.FromSeconds(30));
-        
+
         var allBuckets = await _cluster.Buckets.GetAllBucketsAsync();
         var doesBucketExist = allBuckets.Any(b => b.Key == config["Couchbase:BucketName"]);
         if (!doesBucketExist)
             throw new Exception($"There is no bucket for integration testing named '{config["Couchbase:BucketName"]}'.");
-        
+
         _bucket = await _cluster.BucketAsync(config["Couchbase:BucketName"]);
-        
+
         // *** nosql migrations
         var runner = new MigrationRunner();
         // run the migrations down just to be safe
@@ -56,7 +68,7 @@ public abstract class WebIntegrationTest
         downSettings.Direction = DirectionEnum.Down;
         downSettings.Bucket = _bucket;
         await runner.Run(typeof(CreateUserCollectionInDefaultScope).Assembly, downSettings);
-        
+
         // run the migrations
         var upSettings = new RunSettings();
         upSettings.Direction = DirectionEnum.Up;
@@ -68,7 +80,7 @@ public abstract class WebIntegrationTest
     }
 
     [OneTimeTearDown]
-    public async Task TearDown()
+    public async Task RunAfterAllTests()
     {
         // run the migrations down to clean up
         var runner = new MigrationRunner();

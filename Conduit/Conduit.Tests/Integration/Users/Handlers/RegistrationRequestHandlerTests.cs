@@ -2,7 +2,6 @@
 using Conduit.Web.Users.Handlers;
 using Conduit.Web.Users.Services;
 using Conduit.Web.Users.ViewModels;
-using Couchbase.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 using Conduit.Tests.TestHelpers.Data;
 using Conduit.Tests.TestHelpers;
@@ -20,13 +19,6 @@ public class RegistrationRequestHandlerTests : CouchbaseIntegrationTest
     public override async Task Setup()
     {
         await base.Setup();
-
-        ServiceCollection.AddCouchbaseBucket<IConduitBucketProvider>("ConduitIntegrationTests", b =>
-        {
-            b
-                .AddScope("_default")
-                .AddCollection<IConduitUsersCollectionProvider>("Users");
-        });
 
         // setup the handler and dependencies
         _usersCollectionProvider = ServiceProvider.GetRequiredService<IConduitUsersCollectionProvider>();

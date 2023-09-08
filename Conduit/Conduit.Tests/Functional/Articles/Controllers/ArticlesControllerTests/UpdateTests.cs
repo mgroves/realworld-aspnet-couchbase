@@ -9,12 +9,11 @@ using Conduit.Web.Articles.Services;
 using Conduit.Web.Articles.ViewModels;
 using Conduit.Web.DataAccess.Models;
 using Conduit.Web.Extensions;
-using Conduit.Web.Users.ViewModels;
 
-namespace Conduit.Tests.Integration.Articles.Controllers.ArticlesControllerTests;
+namespace Conduit.Tests.Functional.Articles.Controllers.ArticlesControllerTests;
 
 [TestFixture]
-public class UpdateTests : WebIntegrationTest
+public class UpdateTests : FunctionalTestBase
 {
     private IConduitUsersCollectionProvider _usersCollectionProvider;
     private User _user;
@@ -88,7 +87,7 @@ public class UpdateTests : WebIntegrationTest
         Assert.That(responseString, Contains.Substring(message));
     }
 
-    [TestCase(0,"Description is required.")]
+    [TestCase(0, "Description is required.")]
     [TestCase(5, "Description must be 10 characters or more.")]
     [TestCase(205, "Description must be 200 characters or less.")]
     public async Task Update_article_fails_when_description_invalid(int invalidDescriptionLength, string message)

@@ -3,8 +3,6 @@ using Conduit.Tests.TestHelpers.Dto;
 using Conduit.Web.Articles.Handlers;
 using Conduit.Web.Articles.Services;
 using Conduit.Web.DataAccess.Providers;
-using Couchbase.Extensions.DependencyInjection;
-using Couchbase.KeyValue;
 using Microsoft.Extensions.DependencyInjection;
 using Slugify;
 
@@ -23,19 +21,6 @@ public class CreateArticleHandlerTests : CouchbaseIntegrationTest
     public override async Task Setup()
     {
         await base.Setup();
-
-        ServiceCollection.AddCouchbaseBucket<IConduitBucketProvider>("ConduitIntegrationTests", b =>
-        {
-            b
-                .AddScope("_default")
-                .AddCollection<IConduitTagsCollectionProvider>("Tags");
-            b
-                .AddScope("_default")
-                .AddCollection<IConduitArticlesCollectionProvider>("Articles");
-            b
-                .AddScope("_default")
-                .AddCollection<IConduitFavoritesCollectionProvider>("Favorites");
-        });
 
         _tagsCollectionProvider = ServiceProvider.GetRequiredService<IConduitTagsCollectionProvider>();
         _articleCollectionProvider = ServiceProvider.GetRequiredService<IConduitArticlesCollectionProvider>();
