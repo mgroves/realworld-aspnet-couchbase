@@ -16,5 +16,5 @@ public class Article
     public bool Favorited { get; set; }
     public int FavoritesCount { get; set; }
     public string AuthorUsername { get; set; }
-    public DateTimeOffset UpdatedAt { get; set; }
+    public DateTimeOffset? UpdatedAt { get; set; }
 }

@@ -35,6 +35,7 @@ public class UpdateArticleHandler : IRequestHandler<UpdateArticleRequest, Update
         if (currentArticleResult.Status == DataResultStatus.NotFound)
             return new UpdateArticleResponse { IsNotFound = true };
 
+        // TODO: check to see if current user matches author, if NOT, return unauthorized
 
         var currentArticle = currentArticleResult.DataResult;
 

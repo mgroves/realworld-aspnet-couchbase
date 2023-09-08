@@ -11,7 +11,7 @@ public class ArticleViewModel
     public string Body { get; set; }
     public List<string> TagList { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
-    public DateTimeOffset UpdatedAt { get; set; }
+    public DateTimeOffset? UpdatedAt { get; set; }
     public bool Favorited { get; set; }
     public int FavoritesCount { get; set; }
     public ProfileViewModel Author { get; set; }
