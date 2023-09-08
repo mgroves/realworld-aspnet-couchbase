@@ -31,8 +31,12 @@ public class UpdateArticleHandlerTests
         _tagsDataServiceMock.Setup(t => t.GetAllTags())
             .ReturnsAsync(new List<string> { "tag1", "tag2" });
 
+        // assumption: article Get always returns something
         _articlesDataServiceMock.Setup(m => m.Get(It.IsAny<string>()))
             .ReturnsAsync(new DataServiceResult<Article> (ArticleHelper.CreateArticle(), DataResultStatus.Ok));
+        // assumption: always allowed to update
+        _articlesDataServiceMock.Setup(m => m.IsArticleAuthor(It.IsAny<string>(), It.IsAny<string>()))
+            .ReturnsAsync(true);
 
         _handler = new UpdateArticleHandler(
             _articlesDataServiceMock.Object,

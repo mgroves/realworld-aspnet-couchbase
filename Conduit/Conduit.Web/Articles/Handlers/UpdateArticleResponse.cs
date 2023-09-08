@@ -8,4 +8,5 @@ public class UpdateArticleResponse
 {
     public bool IsNotFound { get; set; }
     public List<ValidationFailure> ValidationErrors { get; set; }
+    public bool IsNotAuthorized { get; set; }
 }

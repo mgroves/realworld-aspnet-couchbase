@@ -147,16 +147,20 @@ public class ArticlesController : ControllerBase
     [Route("/api/articles/{slug}")]
     public async Task<IActionResult> Update(UpdateArticlePostModelArticle model, string slug)
     {
+        var claims = _authService.GetAllAuthInfo(Request.Headers["Authorization"]);
+        var username = claims.Username.Value;
+
         // update the article
-        var request = new UpdateArticleRequest(model, slug);
+        var request = new UpdateArticleRequest(model, slug, claims.Username.Value);
         var response = await _mediator.Send(request);
+        if (response.IsNotAuthorized)
+            return Unauthorized("Not authorized to update that article.");
         if (response.IsNotFound)
             return NotFound("Article not found");
         if (response.ValidationErrors?.Any() ?? false)
             return UnprocessableEntity(response.ValidationErrors.ToCsv());
 
         // return the updated article
-        var claims = _authService.GetAllAuthInfo(Request.Headers["Authorization"]);
         var getRequest = new GetArticleRequest(slug, claims.Username.Value);
         var getResponse = await _mediator.Send(getRequest);
         if (getResponse.ValidationErrors?.Any() ?? false)

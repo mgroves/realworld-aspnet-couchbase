@@ -46,8 +46,7 @@ public class UpdateTests : FunctionalTestBase
         // arrange
         var oldTags = new List<string> { "Couchbase" };
         var newTags = new List<string> { "cruising" };
-        var user = await _usersCollectionProvider.CreateUserInDatabase();
-        var article = await _articleCollectionProvider.CreateArticleInDatabase(authorUsername: user.Username, tagList: oldTags);
+        var article = await _articleCollectionProvider.CreateArticleInDatabase(authorUsername: _user.Username, tagList: oldTags);
         var payload = UpdateArticlePostModelHelper.Create(tags: newTags);
         var expectedNewSlug = _slugService.NewTitleSameSlug(payload.Article.Title, article.Slug);
 
@@ -188,8 +187,7 @@ public class UpdateTests : FunctionalTestBase
         // arrange
         var oldTags = new List<string> { "Couchbase" };
         var newTags = new List<string> { "cruising" };
-        var user = await _usersCollectionProvider.CreateUserInDatabase();
-        var article = await _articleCollectionProvider.CreateArticleInDatabase(authorUsername: user.Username, tagList: oldTags);
+        var article = await _articleCollectionProvider.CreateArticleInDatabase(authorUsername: _user.Username, tagList: oldTags);
         var payload = UpdateArticlePostModelHelper.Create(tags: newTags);
 
         // act
@@ -207,6 +205,23 @@ public class UpdateTests : FunctionalTestBase
         Assert.That(articleViewModel.Favorited, Is.EqualTo(article.Favorited));
         Assert.That(articleViewModel.FavoritesCount, Is.EqualTo(article.FavoritesCount));
         Assert.That(articleViewModel.UpdatedAt, Is.GreaterThanOrEqualTo(new DateTimeOffset(DateTime.Now - TimeSpan.FromSeconds(30))));
+    }
+
+    [Test]
+    public async Task Unauthorized_when_trying_to_update_someone_elses_article()
+    {
+        // arrange
+        var user = await _usersCollectionProvider.CreateUserInDatabase();
+        var article = await _articleCollectionProvider.CreateArticleInDatabase(authorUsername: user.Username);
+        var payload = UpdateArticlePostModelHelper.Create();
+
+        // act
+        var response = await WebClient.PutAsync($"api/articles/{article.Slug}", payload.ToJsonPayload());
+        var responseString = await response.Content.ReadAsStringAsync();
+
+        // assert
+        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
+        Assert.That(responseString, Contains.Substring("Not authorized to update that article."));
     }
 
     [Test]
