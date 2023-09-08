@@ -6,7 +6,6 @@ using Conduit.Web.Users.Services;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Net;
 
 namespace Conduit.Web.Articles.Controllers;
 
@@ -169,6 +168,18 @@ public class ArticlesController : ControllerBase
         return Ok(new { article = getResponse.ArticleView });
     }
 
+    /// <summary>
+    /// Delete an article (it cannot be recovered)
+    /// </summary>
+    /// <remarks>
+    /// <a href="https://realworld-docs.netlify.app/docs/specs/backend-specs/endpoints/#delete-article">Conduit spec for Delete Article endpoint</a>
+    /// </remarks>
+    /// <param name="slug">Article slug</param>
+    /// <returns>Message</returns>
+    /// <response code="200">Successful delete</response>
+    /// <response code="401">Unauthorized, likely because credentials are incorrect</response>
+    /// <response code="404">Article not found</response>
+    /// <response code="422">Article deletion is invalid</response>
     [Authorize]
     [HttpDelete]
     [Route("/api/articles/{slug}")]

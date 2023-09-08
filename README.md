@@ -42,8 +42,9 @@ You'll need to understand at least a little bit:
 * *Conduit.Tests* - Automated tests for Conduit.Web.
   * *Unit* folder - this is where unit tests live. The folder structure within mirrors the Conduit.Web folders as much as possible.
   * *Integration* folder - this is where integration tests live. The folder structure within mirrors the Conduit.Web folders as much as possible.
+  * *Functional* folder - this is where tests for controller actions that test all the way from request-to-database-to-response. The folder structure within mirrors the Conduit.Web folders as much as possible.
   * *Extensions* folder - this is for tests of base level extensions in the Conduit.Web project
-  * *TestHelpers* folder - various helpers to make test writing faster and more readable
+  * *TestHelpers* folder - various helpers to make test writing faster and more readable. Data helpers are for helpers for objects used directly by the data layer. Dto folder is for Handler and ViewModel DTO helpers.
 
 * *Conduit.Migrations* - Automated creation of database structures. This project uses NoSqlMigrator (see below).
 
@@ -88,7 +89,12 @@ An overview of the goals of this project and the Real World Conduit project, fea
 | 2023-07-11 | Data Modeling / Data Access patterns | https://www.youtube.com/watch?v=dGGpmWonPWs |
 | 2023-07-14 | Follow and Data Structures | https://www.youtube.com/watch?v=lh8yEyGEvps |
 | 2023-08-01 | Finishing follow/unfollow | https://www.youtube.com/watch?v=-4h_a--UJEU |
-
+| 2023-08-07 | On .NET Live (dotnet channel) | https://www.youtube.com/watch?v=DGrPQqyOpcU |
+| 2023-08-08 | Secrets and tags | https://youtu.be/T2EXUrV6U_U |
+| 2023-08-22 | Articles | https://youtu.be/uDS4DFfDL_M |
+| 2023-08-25 | Articles (lost to terrible connection) |
+| 2023-09-05 | Update Article (two parts) | https://youtu.be/33i3X3fx7xw and https://www.youtube.com/watch?v=nve4yo9qt9o
+| 2023-09-08 | Delete Article | https://youtu.be/5_bnbWWXvu0
 
 [YouTube Playlist - full streams](https://www.youtube.com/playlist?list=PLZWwU1YVRehL0psJRk35x8evMeeGAFwBa)
 

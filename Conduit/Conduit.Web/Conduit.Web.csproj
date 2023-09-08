@@ -9,6 +9,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="secrets.json.template" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="secrets.json.template" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
     <PackageReference Include="Couchbase.Extensions.DependencyInjection" Version="3.4.8" />
     <PackageReference Include="Couchbase.Transactions" Version="1.1.1" />
