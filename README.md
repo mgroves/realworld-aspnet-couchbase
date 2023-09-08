@@ -63,7 +63,7 @@ This Conduit implementation is being streamed [live on Twitch](https://twitch.tv
    3. Run the migrations in the *Conduit.Migrations* project (see [NoSqlMigrator](https://github.com/mgroves/NoSqlMigrator)).
    4. (Manual alternative to step 3) Create the database objects collections, indexes, documents, indexes as described in the *comments* of the classes of the *Conduit.Migrations* project.
 3. Configure Conduit.Web, Conduit.Tests and Conduit.Migrations
-   1. Add User Secrets to Conduit.Tests and Conduit.Migrations, following secrets.json.template examples
+   1. Add User Secrets to Conduit.Tests, Conduit.Web, and/or Conduit.Migrations, following secrets.json.template examples
    2. You should use a separate bucket for integration tests, since integration tests will run "down" migrations and destroy anything in the bucket.
 4. Compile and run Conduit.Web
    1. Standard compile/run from command line/VSCode/Visual Studio/Rider should work fine
