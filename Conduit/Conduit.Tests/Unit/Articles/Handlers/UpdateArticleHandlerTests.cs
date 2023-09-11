@@ -222,4 +222,40 @@ public class UpdateArticleHandlerTests
         Assert.That(result.ValidationErrors, Is.Not.Null);
         Assert.That(result.ValidationErrors.Any(e => e.ErrorMessage == "Update Failed: Please make sure to modify at least one of the following fields: Body, Title, Description, or Tags."));
     }
+
+    [Test]
+    public async Task Returns_NotFound_if_article_doesnt_exist()
+    {
+        // arrange
+        var model = UpdateArticlePostModelHelper.Create();
+        model.Article.Tags = new List<string> { "tag1" };
+        var request = UpdateArticleRequestHelper.Create(model: model);
+        _articlesDataServiceMock.Setup(m => m.Get(request.Slug))
+            .ReturnsAsync(new DataServiceResult<Article>(null, DataResultStatus.NotFound));
+
+        // act
+        var result = await _handler.Handle(request, CancellationToken.None);
+
+        // assert
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.IsNotFound, Is.True);
+    }
+    
+    [Test]
+    public async Task Returns_NotAuthorized_if_non_author_is_trying_to_update()
+    {
+        // arrange
+        var model = UpdateArticlePostModelHelper.Create();
+        model.Article.Tags = new List<string> { "tag1" };
+        var request = UpdateArticleRequestHelper.Create(model: model);
+        _articlesDataServiceMock.Setup(m => m.IsArticleAuthor(It.IsAny<string>(), It.IsAny<string>()))
+            .ReturnsAsync(false);
+
+        // act
+        var result = await _handler.Handle(request, CancellationToken.None);
+
+        // assert
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.IsNotAuthorized, Is.True);
+    }
 }

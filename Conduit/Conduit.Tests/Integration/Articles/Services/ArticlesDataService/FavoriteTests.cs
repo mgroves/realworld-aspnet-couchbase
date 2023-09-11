@@ -47,4 +47,26 @@ public class FavoriteTests : CouchbaseIntegrationTest
             Assert.That(x.FavoritesCount, Is.EqualTo(expectedCount));
         });
     }
+
+    [Test]
+    [Ignore("TXNN-134 see comments")]
+    public async Task Favoriting_an_already_favorited_article_does_not_change_the_favorites()
+    {
+        // might be a BUG https://issues.couchbase.com/browse/TXNN-134
+        // or could be user error - ignoring this test until I can resolve that issue
+
+        // arrange
+        var article = await _articleCollectionProvider.CreateArticleInDatabase();
+        var user = UserHelper.CreateUser();
+        await _articleDataService.Favorite(article.Slug, user.Username);
+
+        // act
+        await _articleDataService.Favorite(article.Slug, user.Username);
+
+        // assert
+        await _favoriteCollectionProvider.AssertExists(user.Username, x =>
+        {
+            Assert.That(x.Count, Is.EqualTo(1));
+        });
+    }
 }

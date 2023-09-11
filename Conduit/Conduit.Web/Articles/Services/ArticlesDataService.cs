@@ -184,6 +184,7 @@ public class ArticlesDataService : IArticlesDataService
             // check to see if user has already favorited this article (if they have, bail out)
             var favoritesDoc = await context.GetAsync(favoriteCollection, favoriteKey);
             var favorites = favoritesDoc.ContentAs<List<string>>();
+            // BUG? https://issues.couchbase.com/browse/TXNN-134
             if (favorites.Contains(slug.GetArticleKey()))
             {
                 await context.RollbackAsync();
@@ -199,7 +200,10 @@ public class ArticlesDataService : IArticlesDataService
             var article = articleDoc.ContentAs<Article>();
             article.FavoritesCount++;
             await context.ReplaceAsync(articleDoc, article);
+            await context.CommitAsync();
         });
+
+        await transaction.DisposeAsync();
     }
 
     private async Task EnsureFavoritesDocumentExists(string username)
