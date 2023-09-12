@@ -97,13 +97,13 @@ public class ArticlesController : ControllerBase
     /// Remove a favorite of the logged-in user's
     /// </summary>
     /// <remarks>
-    /// 
+    /// <a href="https://realworld-docs.netlify.app/docs/specs/backend-specs/endpoints/#unfavorite-article">Conduit spec for Unfavorite article</a>
     /// </remarks>
     /// <param name="slug">Article slug</param>
     /// <returns>Article (with profile of author embedded)</returns>
-    /// <response code="200">Successful favorite, returns the favorited Article</response>
+    /// <response code="200">Successful unfavorite, returns the unfavorited Article</response>
     /// <response code="401">Unauthorized, likely because credentials are incorrect</response>
-    /// <response code="422">Article was unable to be favorited</response>
+    /// <response code="422">Article was unable to be unfavorited</response>
     [HttpDelete]
     [Route("/api/article/{slug}/favorite")]
     [Authorize]
