@@ -94,6 +94,42 @@ public class ArticlesController : ControllerBase
     }
 
     /// <summary>
+    /// Remove a favorite of the logged-in user's
+    /// </summary>
+    /// <remarks>
+    /// 
+    /// </remarks>
+    /// <param name="slug">Article slug</param>
+    /// <returns>Article (with profile of author embedded)</returns>
+    /// <response code="200">Successful favorite, returns the favorited Article</response>
+    /// <response code="401">Unauthorized, likely because credentials are incorrect</response>
+    /// <response code="422">Article was unable to be favorited</response>
+    [HttpDelete]
+    [Route("/api/article/{slug}/favorite")]
+    [Authorize]
+    public async Task<IActionResult> UnfavoriteArticle(string slug)
+    {
+        // get auth info
+        var claims = _authService.GetAllAuthInfo(Request.Headers["Authorization"]);
+
+        // send request to favorite the article
+        var favoriteRequest = new UnfavoriteArticleRequest();
+        favoriteRequest.Username = claims.Username.Value;
+        favoriteRequest.Slug = slug;
+        var favoriteResponse = await _mediator.Send(favoriteRequest);
+        if (favoriteResponse.ValidationErrors?.Any() ?? false)
+            return UnprocessableEntity(favoriteResponse.ValidationErrors.ToCsv());
+
+        // ask handler for the article view
+        var getRequest = new GetArticleRequest(slug, claims.Username.Value);
+        var getResponse = await _mediator.Send(getRequest);
+        if (getResponse.ValidationErrors?.Any() ?? false)
+            return UnprocessableEntity(getResponse.ValidationErrors.ToCsv());
+
+        return Ok(getResponse.ArticleView);
+    }
+
+    /// <summary>
     /// Get an article (authorization optional)
     /// </summary>
     /// <remarks>
