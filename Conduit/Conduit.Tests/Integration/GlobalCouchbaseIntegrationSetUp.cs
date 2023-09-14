@@ -44,15 +44,8 @@ public class GlobalCouchbaseIntegrationSetUp
 
         _bucket = await _cluster.BucketAsync(_config["Couchbase:BucketName"]);
 
-        // *** nosql migrations
+        // run any outstanding migrations
         var runner = new MigrationRunner();
-        // run the migrations down just to be safe
-        var downSettings = new RunSettings();
-        downSettings.Direction = DirectionEnum.Down;
-        downSettings.Bucket = _bucket;
-        await runner.Run(typeof(CreateUserCollectionInDefaultScope).Assembly, downSettings);
-
-        // run the migrations
         var upSettings = new RunSettings();
         upSettings.Direction = DirectionEnum.Up;
         upSettings.Bucket = _bucket;
@@ -68,7 +61,7 @@ public class GlobalCouchbaseIntegrationSetUp
             options.Password = _config["Couchbase:Password"];
         });
 
-        services.AddCouchbaseBucket<IConduitBucketProvider>("ConduitIntegrationTests", b =>
+        services.AddCouchbaseBucket<IConduitBucketProvider>(_config["Couchbase:BucketName"], b =>
         {
             b
                 .AddScope("_default")
@@ -93,13 +86,6 @@ public class GlobalCouchbaseIntegrationSetUp
     [OneTimeTearDown]
     public async Task RunAfterAllTests()
     {
-        // run the migrations down to clean up
-        var runner = new MigrationRunner();
-        var downSettings = new RunSettings();
-        downSettings.Direction = DirectionEnum.Down;
-        downSettings.Bucket = _bucket;
-        await runner.Run(typeof(CreateUserCollectionInDefaultScope).Assembly, downSettings);
-
         // dispose couchbase services
         await _cluster.DisposeAsync();
         await ServiceProvider.GetRequiredService<ICouchbaseLifetimeService>().CloseAsync();

@@ -61,15 +61,8 @@ public class GlobalFunctionalSetUp
 
         _bucket = await _cluster.BucketAsync(config["Couchbase:BucketName"]);
 
-        // *** nosql migrations
+        // *** run any outstanding migrations
         var runner = new MigrationRunner();
-        // run the migrations down just to be safe
-        var downSettings = new RunSettings();
-        downSettings.Direction = DirectionEnum.Down;
-        downSettings.Bucket = _bucket;
-        await runner.Run(typeof(CreateUserCollectionInDefaultScope).Assembly, downSettings);
-
-        // run the migrations
         var upSettings = new RunSettings();
         upSettings.Direction = DirectionEnum.Up;
         upSettings.Bucket = _bucket;
@@ -82,13 +75,6 @@ public class GlobalFunctionalSetUp
     [OneTimeTearDown]
     public async Task RunAfterAllTests()
     {
-        // run the migrations down to clean up
-        var runner = new MigrationRunner();
-        var downSettings = new RunSettings();
-        downSettings.Direction = DirectionEnum.Down;
-        downSettings.Bucket = _bucket;
-        await runner.Run(typeof(CreateUserCollectionInDefaultScope).Assembly, downSettings);
-
         // dispose couchbase services
         await _cluster.DisposeAsync();
         await WebAppFactory.Services.GetService<ICouchbaseLifetimeService>().CloseAsync();

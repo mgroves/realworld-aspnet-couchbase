@@ -80,7 +80,6 @@ public class LoginTests : FunctionalTestBase
             email: payload.User.Email,
             password: payload.User.Password);
 
-
         // Act
         var response = await WebClient.PostAsync("/api/users/login", payload.ToJsonPayload());
         var responseString = await response.Content.ReadAsStringAsync();
