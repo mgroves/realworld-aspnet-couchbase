@@ -1,10 +1,13 @@
-﻿using Conduit.Web.DataAccess.Dto;
+﻿using Conduit.Web.Articles.Handlers;
+using Conduit.Web.Articles.ViewModels;
+using Conduit.Web.DataAccess.Dto;
 using Conduit.Web.DataAccess.Models;
 using Conduit.Web.DataAccess.Providers;
 using Conduit.Web.Extensions;
 using Couchbase;
 using Couchbase.Core.Exceptions.KeyValue;
 using Couchbase.KeyValue;
+using Couchbase.Query;
 using Couchbase.Transactions;
 using Couchbase.Transactions.Config;
 
@@ -21,12 +24,16 @@ public interface IArticlesDataService
     Task<bool> UpdateArticle(Article newArticle);
     Task<DataServiceResult<string>> DeleteArticle(string slug);
     Task<bool> IsArticleAuthor(string slug, string username);
+    Task<DataServiceResult<List<ArticleViewModel>>> GetArticles(GetArticlesRequest request);
 }
 
 public class ArticlesDataService : IArticlesDataService
 {
     private readonly IConduitArticlesCollectionProvider _articlesCollectionProvider;
     private readonly IConduitFavoritesCollectionProvider _favoritesCollectionProvider;
+
+    // a virtual method so it can be overridden by a testing class if necessary
+    protected virtual QueryScanConsistency ScanConsistency => QueryScanConsistency.NotBounded;
 
     public ArticlesDataService(IConduitArticlesCollectionProvider articlesCollectionProvider, IConduitFavoritesCollectionProvider favoritesCollectionProvider)
     {
@@ -285,5 +292,104 @@ public class ArticlesDataService : IArticlesDataService
         {
             // if this exception happens, that's fine! I just want the document to exist
         }
+    }
+
+    public async Task<DataServiceResult<List<ArticleViewModel>>> GetArticles(GetArticlesRequest request)
+    {
+        var collection = await _articlesCollectionProvider.GetCollectionAsync();
+        var cluster = collection.Scope.Bucket.Cluster;
+        var bucketName = collection.Scope.Bucket.Name;
+        var scopeName = collection.Scope.Name;
+
+        var authenticatedUsersJoin = "";
+        var authenticatedFavoriteProjection = "";
+        var authenticatedFollowProjection = "";
+        if (request.Username != null)
+        {
+            authenticatedUsersJoin = $@"
+            LEFT JOIN `{bucketName}`.`{scopeName}`.`Favorites` favCurrent ON META(favCurrent).id = ($loggedInUsername || ""::favorites"")
+            LEFT JOIN `{bucketName}`.`{scopeName}`.`Follows` fol ON META(fol).id = ($loggedInUsername || ""::follows"")";
+
+            authenticatedFavoriteProjection = @"ARRAY_CONTAINS(favCurrent, articleKey) AS favorited";
+
+            authenticatedFollowProjection = @"""following"": ARRAY_CONTAINS(COALESCE(fol,[]), META(u).id)";
+        }
+        else
+        {
+            authenticatedFavoriteProjection = "false AS favorited";
+            authenticatedFollowProjection = "\"following\" : false";
+        }
+
+        var filteringOnFavoritedByJoin = "";
+        var filteringOnFavoritedByPredicate = "";
+        if (request.FavoritedByUsername != null)
+        {
+            filteringOnFavoritedByJoin = $@"
+                LEFT JOIN `{bucketName}`.`{scopeName}`.Favorites favFilter ON META(favFilter).id = ($favoritedBy || ""::favorites"")";
+            filteringOnFavoritedByPredicate = @" AND ARRAY_CONTAINS(favFilter, articleKey) ";
+        }
+
+        var filteringByTagPredicate = "";
+        if (request.Tag != null)
+        {
+            filteringByTagPredicate = @" AND ARRAY_CONTAINS(a.tagList, $tag) ";
+        }
+
+        var filteringByAuthorPredicate = "";
+        if (request.AuthorUsername != null)
+        {
+            filteringByAuthorPredicate = @" AND a.authorUsername = $authorUsername ";
+        }
+
+        var sql = $@"SELECT 
+           a.slug,
+           a.title,
+           a.description,
+           a.body,
+           a.tagList,
+           a.createdAt,
+           a.updatedAt,
+           {authenticatedFavoriteProjection},
+           a.favoritesCount,
+           {{
+                ""username"": META(u).id,
+                u.bio,
+                u.image,
+                {authenticatedFollowProjection}
+           }} AS author
+
+        FROM `{bucketName}`.`{scopeName}`.`Articles` a
+        JOIN `{bucketName}`.`{scopeName}`.`Users` u ON a.authorUsername = META(u).id
+
+        {authenticatedUsersJoin}
+
+        {filteringOnFavoritedByJoin}
+
+        /* convenience variable for getting the ArticleKey from slug */
+        LET articleKey = SPLIT(a.slug, ""::"")[1]
+
+        WHERE 1=1
+          {filteringByTagPredicate}
+          {filteringByAuthorPredicate}
+          {filteringOnFavoritedByPredicate}
+
+        ORDER BY COALESCE(a.updatedAt, a.createdAt) DESC
+
+        LIMIT $limit
+        OFFSET $offset
+        ";
+
+        var result = await cluster.QueryAsync<ArticleViewModel>(sql, options =>
+        {
+            options.Parameter("loggedInUsername", request.Username);
+            options.Parameter("favoritedBy", request.FavoritedByUsername);
+            options.Parameter("tag", request.Tag);
+            options.Parameter("authorUsername", request.AuthorUsername);
+            options.Parameter("limit", request.Limit ?? 20);    // default page size of 20
+            options.Parameter("offset", request.Offset ?? 0);   // default to first page
+            options.ScanConsistency(ScanConsistency);
+        });
+
+        return new DataServiceResult<List<ArticleViewModel>>(await result.Rows.ToListAsync(), DataResultStatus.Ok);
     }
 }

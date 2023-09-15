@@ -28,7 +28,7 @@ public class UnfollowUserHandlerIntegrationTest : CouchbaseIntegrationTest
         var authService = AuthServiceHelper.Create();
         _handler = new UnfollowUserHandler(
             new UserDataService(_usersCollectionProvider, authService),
-            new FollowsDataService(_followsCollectionProvider, authService),
+            new FollowsDataService(_followsCollectionProvider),
             new UnfollowUserRequestValidator());
     }
 

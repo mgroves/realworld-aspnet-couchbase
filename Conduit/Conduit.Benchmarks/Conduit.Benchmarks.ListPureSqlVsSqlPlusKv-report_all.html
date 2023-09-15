@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='utf-8' />
+<title>Conduit.Benchmarks.ListPureSqlVsSqlPlusKv-20230914-142651</title>
+
+<style type="text/css">
+	table { border-collapse: collapse; display: block; width: 100%; overflow: auto; }
+	td, th { padding: 6px 13px; border: 1px solid #ddd; text-align: right; }
+	tr { background-color: #fff; border-top: 1px solid #ccc; }
+	tr:nth-child(even) { background: #f8f8f8; }
+</style>
+</head>
+<body>
+
+<pre><code>
+BenchmarkDotNet v0.13.6, Windows 10 (10.0.19045.3448/22H2/2022Update)
+Intel Core i7-6700K CPU 4.00GHz (Skylake), 1 CPU, 8 logical and 4 physical cores
+.NET SDK 7.0.304
+  [Host]     : .NET 7.0.11 (7.0.1123.42427), X64 RyuJIT AVX2
+  Job-WSWITF : .NET 7.0.11 (7.0.1123.42427), X64 RyuJIT AVX2
+</code></pre>
+<pre><code>IterationCount=50  
+</code></pre>
+
+<table>
+<thead><tr><th>Method</th><th>Mean</th><th>Error</th><th>StdDev</th>
+</tr>
+</thead><tbody><tr><td>PureSql</td><td>975.6 ms</td><td>32.40 ms</td><td>64.71 ms</td>
+</tr><tr><td>SqlPlusKv</td><td>811.6 ms</td><td>16.00 ms</td><td>31.58 ms</td>
+</tr></tbody></table>
+</body>
+
+<p><strong>This run used adv_authorUsername index:</strong></p>
+<pre>
+	CREATE INDEX `adv_authorUsername` ON `Conduit`.`_default`.`Articles`(`authorUsername`)
+</pre>
+
+<hr />
+
+<pre><code>
+BenchmarkDotNet v0.13.6, Windows 10 (10.0.19045.3448/22H2/2022Update)
+Intel Core i7-6700K CPU 4.00GHz (Skylake), 1 CPU, 8 logical and 4 physical cores
+.NET SDK 7.0.304
+  [Host]     : .NET 7.0.11 (7.0.1123.42427), X64 RyuJIT AVX2
+  Job-OMWSIB : .NET 7.0.11 (7.0.1123.42427), X64 RyuJIT AVX2
+</code></pre>
+<pre><code>IterationCount=50  
+</code></pre>
+
+<table>
+<thead><tr><th>Method</th><th>Mean</th><th>Error</th><th>StdDev</th><th>Median</th>
+</tr>
+</thead><tbody><tr><td>PureSql</td><td>909.5 ms</td><td>20.76 ms</td><td>40.00 ms</td><td>893.3 ms</td>
+</tr><tr><td>SqlPlusKv</td><td>662.4 ms</td><td>27.51 ms</td><td>53.66 ms</td><td>634.8 ms</td>
+</tr></tbody></table>
+
+<p><strong>This run used adv_authorUsername index, covering, optimized for PureSql query</strong></p>
+<pre>
+	CREATE INDEX `adv_authorUsername_ifmissingornull_updatedAtcreatedAt_split_slug3125661358` ON `Conduit`.`_default`.`Articles`(`authorUsername`,ifmissingornull(`updatedAt`, `createdAt`),(split(`slug`, "::")[1]),`title`,`tagList`,`updatedAt`,`description`,`slug`,`body`,`createdAt`,`favoritesCount`)
+</pre>
+
+<hr />
+
+<pre><code>
+BenchmarkDotNet v0.13.6, Windows 10 (10.0.19045.3448/22H2/2022Update)
+Intel Core i7-6700K CPU 4.00GHz (Skylake), 1 CPU, 8 logical and 4 physical cores
+.NET SDK 7.0.304
+  [Host]     : .NET 7.0.11 (7.0.1123.42427), X64 RyuJIT AVX2
+  Job-POMPJX : .NET 7.0.11 (7.0.1123.42427), X64 RyuJIT AVX2
+</code></pre>
+<pre><code>IterationCount=50  
+</code></pre>
+
+<table>
+<thead><tr><th>Method</th><th>Mean</th><th>Error</th><th>StdDev</th><th>Median</th>
+</tr>
+</thead><tbody><tr><td>PureSql</td><td>1,262.1 ms</td><td>51.63 ms</td><td>104.29 ms</td><td>1,219.9 ms</td>
+</tr><tr><td>SqlPlusKv</td><td>250.9 ms</td><td>3.63 ms</td><td>7.07 ms</td><td>251.6 ms</td>
+</tr></tbody></table>
+
+<p><strong>This run used adv_authorUsername index, covering, optimized for Sql+KV query:</strong></p>
+<pre>
+CREATE INDEX `adv_authorUsername_ifmissingornull_updatedAtcreatedAt_split_slug_1_slug` ON `Conduit`.`_default`.`Articles`(`authorUsername`,ifmissingornull(`updatedAt`, `createdAt`),(split(`slug`, "::")[1]),`slug`)
+</pre>
+
+</html>

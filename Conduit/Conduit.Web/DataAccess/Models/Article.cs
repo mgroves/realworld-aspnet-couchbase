@@ -13,6 +13,7 @@ public class Article
     public string Body { get; set; }
     public List<string> TagList { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
+    [JsonIgnore] // this is always calculated, depending on the logged in user, don't store
     public bool Favorited { get; set; }
     public int FavoritesCount { get; set; }
     public string AuthorUsername { get; set; }

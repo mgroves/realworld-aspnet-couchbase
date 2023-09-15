@@ -14,12 +14,10 @@ public interface IFollowDataService
 public class FollowsDataService : IFollowDataService
 {
     private readonly IConduitFollowsCollectionProvider _followsCollectionProvider;
-    private readonly IAuthService _authService;
 
-    public FollowsDataService(IConduitFollowsCollectionProvider followsCollectionProvider, IAuthService authService)
+    public FollowsDataService(IConduitFollowsCollectionProvider followsCollectionProvider)
     {
         _followsCollectionProvider = followsCollectionProvider;
-        _authService = authService;
     }
 
     public async Task FollowUser(string userToFollow, string followerUsername)

@@ -40,7 +40,7 @@ public class GetArticleHandlerTests : CouchbaseIntegrationTest
         };
         _authService = new AuthService(new OptionsWrapper<JwtSecrets>(jwtSecrets));
         _articleDataService = new ArticlesDataService(_articleCollectionProvider, _favoriteCollectionProvider);
-        _followDataService = new FollowsDataService(_followsCollectionProvider, _authService);
+        _followDataService = new FollowsDataService(_followsCollectionProvider);
         _userDataService = new UserDataService(_usersCollectionProvider, _authService);
         _handler = new GetArticleHandler(_articleDataService, _userDataService, _followDataService);
         _random = new Random();

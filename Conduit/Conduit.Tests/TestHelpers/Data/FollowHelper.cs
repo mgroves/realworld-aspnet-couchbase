@@ -34,4 +34,15 @@ public static class FollowHelper
 
         await set.AddAsync(usernameFollowing);
     }
+
+    public static async Task CreateFollow(this ICouchbaseCollection followCollection,
+        string usernameFollowing,
+        string usernameFollower)
+    {
+        var followDocId = $"{usernameFollower}::follows";
+
+        var set = followCollection.Set<string>(followDocId);
+
+        await set.AddAsync(usernameFollowing);
+    }
 }

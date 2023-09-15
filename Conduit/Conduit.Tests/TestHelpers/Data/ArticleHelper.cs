@@ -2,6 +2,7 @@
 using Conduit.Web.DataAccess.Providers;
 using Conduit.Web.Articles.Services;
 using Conduit.Web.Extensions;
+using Couchbase.KeyValue;
 using Slugify;
 
 namespace Conduit.Tests.TestHelpers.Data;
@@ -47,6 +48,25 @@ public static class ArticleHelper
         // if we made it this far, the favorites was retrieved
         // and the assertions passed
         Assert.That(true);
+    }
+
+    public static async Task<Article> CreateArticleInDatabase(this ICouchbaseCollection articleCollection,
+        int? favoritesCount = null,
+        DateTimeOffset? createdAt = null,
+        string? title = null,
+        string? description = null,
+        string? body = null,
+        string? slug = null,
+        List<string>? tagList = null,
+        string? authorUsername = null,
+        bool? favorited = null)
+    {
+        var article = CreateArticle(favoritesCount, createdAt, title, description, body, slug, tagList, authorUsername,
+            favorited);
+
+        await articleCollection.InsertAsync(article.Slug.GetArticleKey(), article);
+
+        return article;
     }
 
     public static async Task<Article> CreateArticleInDatabase(this IConduitArticlesCollectionProvider @this,

@@ -186,7 +186,7 @@ public class ArticlesController : ControllerBase
         var username = claims.Username.Value;
 
         // update the article
-        var request = new UpdateArticleRequest(model, slug, claims.Username.Value);
+        var request = new UpdateArticleRequest(model, slug, username);
         var response = await _mediator.Send(request);
         if (response.IsNotAuthorized)
             return Unauthorized("Not authorized to update that article.");
@@ -196,7 +196,7 @@ public class ArticlesController : ControllerBase
             return UnprocessableEntity(response.ValidationErrors.ToCsv());
 
         // return the updated article
-        var getRequest = new GetArticleRequest(slug, claims.Username.Value);
+        var getRequest = new GetArticleRequest(slug, username);
         var getResponse = await _mediator.Send(getRequest);
         if (getResponse.ValidationErrors?.Any() ?? false)
             return UnprocessableEntity(getResponse.ValidationErrors.ToCsv());
@@ -234,5 +234,31 @@ public class ArticlesController : ControllerBase
             return UnprocessableEntity(deleteResponse.ValidationErrors.ToCsv());
 
         return Ok("Article deleted.");
+    }
+
+    [HttpGet]
+    [Route("/api/articles")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetArticles([FromQuery] ArticleFilterOptionsModel filter)
+    {
+        // get (optional) auth info
+        string username = null;
+        var headers = Request.Headers["Authorization"];
+        var isUserAnonymous = headers.All(string.IsNullOrEmpty);
+        if (!isUserAnonymous)
+        {
+            var claims = _authService.GetAllAuthInfo(Request.Headers["Authorization"]);
+            username = claims.Username.Value;
+        }
+
+        var getArticlesRequest = new GetArticlesRequest(username, filter);
+        var getArticlesResponse = await _mediator.Send(getArticlesRequest);
+
+        if (getArticlesResponse.IsFailure)
+            return UnprocessableEntity("There was an error retrieving articles.");
+        if (getArticlesResponse.ValidationErrors?.Any() ?? false)
+            return UnprocessableEntity(getArticlesResponse.ValidationErrors.ToCsv());
+
+        return Ok(new { articles = getArticlesResponse.ArticlesView });
     }
 }

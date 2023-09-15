@@ -22,4 +22,18 @@ public static class FavoritesHelper
 
         return;
     }
+
+    public static async Task AddFavoriteInDatabase(this ICouchbaseCollection favoritesCollection,
+        string? username = "",
+        string? articleSlug = "")
+    {
+        var random = new Random();
+        username ??= $"valid-username-{random.String(8)}";
+        articleSlug ??= $"valid-slug-{random.String(8)}::{random.String(10)}";
+
+        var set = favoritesCollection.Set<string>(ArticlesDataService.FavoriteDocId(username));
+        await set.AddAsync(articleSlug.GetArticleKey());
+
+        return;
+    }
 }

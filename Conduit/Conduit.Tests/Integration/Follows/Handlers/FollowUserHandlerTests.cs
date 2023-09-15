@@ -27,7 +27,7 @@ public class FollowUserHandlerIntegrationTest : CouchbaseIntegrationTest
         var authService = AuthServiceHelper.Create();
         _handler = new FollowUserHandler(
             new UserDataService(_usersCollectionProvider, authService),
-            new FollowsDataService(_followsCollectionProvider, authService),
+            new FollowsDataService(_followsCollectionProvider),
             new FollowUserRequestValidator());
     }
 

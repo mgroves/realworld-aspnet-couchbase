@@ -1,6 +1,7 @@
 ﻿using Conduit.Web.DataAccess.Models;
 using Conduit.Web.DataAccess.Providers;
 using Conduit.Web.Users.Services;
+using Couchbase.KeyValue;
 
 namespace Conduit.Tests.TestHelpers.Data;
 
@@ -74,6 +75,20 @@ public static class UserHelper
         var collection = await @this.GetCollectionAsync();
 
         await collection.InsertAsync(user.Username, user);
+
+        return user;
+    }
+
+    public static async Task<User> CreateUserInDatabase(this ICouchbaseCollection userCollection,
+        string? username = null,
+        string? email = null,
+        string? bio = null,
+        string? image = null,
+        string? password = null)
+    {
+        var user = CreateUser(username, email, bio, image, password);
+
+        await userCollection.InsertAsync(user.Username, user);
 
         return user;
     }
