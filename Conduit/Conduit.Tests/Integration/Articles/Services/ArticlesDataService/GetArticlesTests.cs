@@ -54,9 +54,10 @@ public class GetArticlesTests : CouchbaseIntegrationTest
     public async Task Results_with_no_filters_no_authenticated_user()
     {
         // arrange - create articles so there's at least 20 in the db
-        for (var i = 0; i < 25; i++)
+        var author = await _userCollectionProvider.CreateUserInDatabase();
+        for (var i = 0; i < 20; i++)
         {
-            var article = await _articleCollectionProvider.CreateArticleInDatabase();
+            var article = await _articleCollectionProvider.CreateArticleInDatabase(authorUsername: author.Username);
             _keysToCleanup.Add(article.ArticleKey);
         }
         var request = new GetArticlesRequest(null, new ArticleFilterOptionsModel());
