@@ -1,6 +1,7 @@
 ﻿using Conduit.Web.Articles.Handlers;
 using Conduit.Web.Articles.ViewModels;
 using Conduit.Web.DataAccess.Dto;
+using Conduit.Web.DataAccess.Dto.Articles;
 using Conduit.Web.DataAccess.Models;
 using Conduit.Web.DataAccess.Providers;
 using Conduit.Web.Extensions;
@@ -24,7 +25,7 @@ public interface IArticlesDataService
     Task<bool> UpdateArticle(Article newArticle);
     Task<DataServiceResult<string>> DeleteArticle(string slug);
     Task<bool> IsArticleAuthor(string slug, string username);
-    Task<DataServiceResult<List<ArticleViewModel>>> GetArticles(GetArticlesRequest request);
+    Task<DataServiceResult<List<ArticleViewModel>>> GetArticles(GetArticlesSpec request);
 }
 
 public class ArticlesDataService : IArticlesDataService
@@ -294,7 +295,7 @@ public class ArticlesDataService : IArticlesDataService
         }
     }
 
-    public async Task<DataServiceResult<List<ArticleViewModel>>> GetArticles(GetArticlesRequest request)
+    public async Task<DataServiceResult<List<ArticleViewModel>>> GetArticles(GetArticlesSpec spec)
     {
         var collection = await _articlesCollectionProvider.GetCollectionAsync();
         var cluster = collection.Scope.Bucket.Cluster;
@@ -304,7 +305,7 @@ public class ArticlesDataService : IArticlesDataService
         var authenticatedUsersJoin = "";
         var authenticatedFavoriteProjection = "";
         var authenticatedFollowProjection = "";
-        if (request.Username != null)
+        if (spec.Username != null)
         {
             authenticatedUsersJoin = $@"
             LEFT JOIN `{bucketName}`.`{scopeName}`.`Favorites` favCurrent ON META(favCurrent).id = ($loggedInUsername || ""::favorites"")
@@ -322,21 +323,27 @@ public class ArticlesDataService : IArticlesDataService
 
         var filteringOnFavoritedByJoin = "";
         var filteringOnFavoritedByPredicate = "";
-        if (request.FavoritedByUsername != null)
+        if (spec.FavoritedByUsername != null)
         {
             filteringOnFavoritedByJoin = $@"
                 LEFT JOIN `{bucketName}`.`{scopeName}`.Favorites favFilter ON META(favFilter).id = ($favoritedBy || ""::favorites"")";
             filteringOnFavoritedByPredicate = @" AND ARRAY_CONTAINS(favFilter, articleKey) ";
         }
 
+        var filteringOnFollowedByPredicate = "";
+        if (spec.FollowedByUsername != null)
+        {
+            filteringOnFollowedByPredicate = $@"  AND ARRAY_CONTAINS(COALESCE(fol,[]), a.authorUsername) ";
+        }
+
         var filteringByTagPredicate = "";
-        if (request.Tag != null)
+        if (spec.Tag != null)
         {
             filteringByTagPredicate = @" AND ARRAY_CONTAINS(a.tagList, $tag) ";
         }
 
         var filteringByAuthorPredicate = "";
-        if (request.AuthorUsername != null)
+        if (spec.AuthorUsername != null)
         {
             filteringByAuthorPredicate = @" AND a.authorUsername = $authorUsername ";
         }
@@ -372,6 +379,7 @@ public class ArticlesDataService : IArticlesDataService
           {filteringByTagPredicate}
           {filteringByAuthorPredicate}
           {filteringOnFavoritedByPredicate}
+          {filteringOnFollowedByPredicate}
 
         ORDER BY COALESCE(a.updatedAt, a.createdAt) DESC
 
@@ -381,12 +389,12 @@ public class ArticlesDataService : IArticlesDataService
 
         var result = await cluster.QueryAsync<ArticleViewModel>(sql, options =>
         {
-            options.Parameter("loggedInUsername", request.Username);
-            options.Parameter("favoritedBy", request.FavoritedByUsername);
-            options.Parameter("tag", request.Tag);
-            options.Parameter("authorUsername", request.AuthorUsername);
-            options.Parameter("limit", request.Limit ?? 20);    // default page size of 20
-            options.Parameter("offset", request.Offset ?? 0);   // default to first page
+            options.Parameter("loggedInUsername", spec.Username);
+            options.Parameter("favoritedBy", spec.FavoritedByUsername);
+            options.Parameter("tag", spec.Tag);
+            options.Parameter("authorUsername", spec.AuthorUsername);
+            options.Parameter("limit", spec.Limit ?? 20);    // default page size of 20
+            options.Parameter("offset", spec.Offset ?? 0);   // default to first page
             options.ScanConsistency(ScanConsistency);
         });
 

@@ -2,9 +2,9 @@
 
 namespace Conduit.Web.Articles.Handlers;
 
-public class GetArticlesRequestValidator : AbstractValidator<GetArticlesRequest>
+public class GetFeedRequestValidator : AbstractValidator<GetFeedRequest>
 {
-    public GetArticlesRequestValidator()
+    public GetFeedRequestValidator()
     {
         RuleFor(x => x.Spec.Limit)
             .Cascade(CascadeMode.Stop)

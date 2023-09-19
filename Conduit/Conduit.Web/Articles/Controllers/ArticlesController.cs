@@ -271,4 +271,23 @@ public class ArticlesController : ControllerBase
 
         return Ok(new { articles = getArticlesResponse.ArticlesView });
     }
+
+    [HttpGet]
+    [Route("/api/articles/feed")]
+    public async Task<IActionResult> GetFeed([FromQuery] ArticleFeedOptionsModel filter)
+    {
+        // get auth info
+        var claims = _authService.GetAllAuthInfo(Request.Headers["Authorization"]);
+        var username = claims.Username.Value;
+
+        var getArticlesRequest = new GetFeedRequest(username, filter);
+        var getArticlesResponse = await _mediator.Send(getArticlesRequest);
+
+        if (getArticlesResponse.IsFailure)
+            return UnprocessableEntity("There was an error retrieving articles.");
+        if (getArticlesResponse.ValidationErrors?.Any() ?? false)
+            return UnprocessableEntity(getArticlesResponse.ValidationErrors.ToCsv());
+
+        return Ok(new { articles = getArticlesResponse.ArticlesView });
+    }
 }

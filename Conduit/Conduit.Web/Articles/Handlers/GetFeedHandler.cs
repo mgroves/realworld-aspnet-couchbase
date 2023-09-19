@@ -5,24 +5,24 @@ using MediatR;
 
 namespace Conduit.Web.Articles.Handlers;
 
-public class GetArticlesHandler : IRequestHandler<GetArticlesRequest, GetArticlesResponse>
+public class GetFeedHandler : IRequestHandler<GetFeedRequest, GetFeedResponse>
 {
-    private readonly IValidator<GetArticlesRequest> _validator;
     private readonly IArticlesDataService _articlesDataService;
+    private readonly IValidator<GetFeedRequest> _validator;
 
-    public GetArticlesHandler(IValidator<GetArticlesRequest> validator, IArticlesDataService articlesDataService)
+    public GetFeedHandler(IArticlesDataService articlesDataService, IValidator<GetFeedRequest> validator)
     {
-        _validator = validator;
         _articlesDataService = articlesDataService;
+        _validator = validator;
     }
 
-    public async Task<GetArticlesResponse> Handle(GetArticlesRequest request, CancellationToken cancellationToken)
+    public async Task<GetFeedResponse> Handle(GetFeedRequest request, CancellationToken cancellationToken)
     {
         // validation
         var validationResult = await _validator.ValidateAsync(request, cancellationToken);
         if (!validationResult.IsValid)
         {
-            return new GetArticlesResponse
+            return new GetFeedResponse
             {
                 ValidationErrors = validationResult.Errors
             };
@@ -30,21 +30,19 @@ public class GetArticlesHandler : IRequestHandler<GetArticlesRequest, GetArticle
 
         // create spec for request
         var spec = request.Spec;
-        spec.Username = spec.Username?.Trim();
-        spec.AuthorUsername = spec.AuthorUsername?.Trim();
-        spec.FavoritedByUsername = spec.FavoritedByUsername?.Trim();
-        spec.Tag = spec.Tag?.Trim();
+        spec.Username = spec.Username.Trim();
+        spec.FollowedByUsername = spec.FollowedByUsername.Trim();
 
         var result = await _articlesDataService.GetArticles(spec);
         if (result.Status != DataResultStatus.Ok)
         {
-            return new GetArticlesResponse
+            return new GetFeedResponse
             {
                 IsFailure = true
             };
         }
 
-        return new GetArticlesResponse
+        return new GetFeedResponse
         {
             ArticlesView = result.DataResult
         };

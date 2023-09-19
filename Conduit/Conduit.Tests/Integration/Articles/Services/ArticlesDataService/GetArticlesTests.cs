@@ -4,6 +4,7 @@ using Conduit.Web.Articles.Handlers;
 using Conduit.Web.Articles.Services;
 using Conduit.Web.Articles.ViewModels;
 using Conduit.Web.DataAccess.Dto;
+using Conduit.Web.DataAccess.Dto.Articles;
 using Conduit.Web.DataAccess.Providers;
 using Couchbase.Query;
 using Microsoft.Extensions.DependencyInjection;
@@ -63,7 +64,7 @@ public class GetArticlesTests : CouchbaseIntegrationTest
         var request = new GetArticlesRequest(null, new ArticleFilterOptionsModel());
 
         // act
-        var result = await _articleDataService.GetArticles(request);
+        var result = await _articleDataService.GetArticles(request.Spec);
 
         // assert
         Assert.That(result.Status, Is.EqualTo(DataResultStatus.Ok));
@@ -85,7 +86,7 @@ public class GetArticlesTests : CouchbaseIntegrationTest
         var request = new GetArticlesRequest(user.Username, new ArticleFilterOptionsModel());
 
         // act
-        var results = await _articleDataService.GetArticles(request);
+        var results = await _articleDataService.GetArticles(request.Spec);
 
         // assert
         Assert.That(results.Status, Is.EqualTo(DataResultStatus.Ok));
@@ -110,7 +111,7 @@ public class GetArticlesTests : CouchbaseIntegrationTest
         var request = new GetArticlesRequest(user.Username, new ArticleFilterOptionsModel());
 
         // act
-        var results = await _articleDataService.GetArticles(request);
+        var results = await _articleDataService.GetArticles(request.Spec);
 
         // assert
         Assert.That(results.Status, Is.EqualTo(DataResultStatus.Ok));
@@ -139,7 +140,7 @@ public class GetArticlesTests : CouchbaseIntegrationTest
         var request = new GetArticlesRequest(null, filter);
 
         // act
-        var results = await _articleDataService.GetArticles(request);
+        var results = await _articleDataService.GetArticles(request.Spec);
 
         // assert
         Assert.That(results.Status, Is.EqualTo(DataResultStatus.Ok));
@@ -165,7 +166,7 @@ public class GetArticlesTests : CouchbaseIntegrationTest
         var request = new GetArticlesRequest(null, filter);
 
         // act
-        var results = await _articleDataService.GetArticles(request);
+        var results = await _articleDataService.GetArticles(request.Spec);
 
         // assert
         Assert.That(results.Status, Is.EqualTo(DataResultStatus.Ok));
@@ -191,7 +192,7 @@ public class GetArticlesTests : CouchbaseIntegrationTest
         var request = new GetArticlesRequest(null, filter);
 
         // act
-        var results = await _articleDataService.GetArticles(request);
+        var results = await _articleDataService.GetArticles(request.Spec);
 
         // assert
         Assert.That(results.Status, Is.EqualTo(DataResultStatus.Ok));
@@ -216,7 +217,7 @@ public class GetArticlesTests : CouchbaseIntegrationTest
         var request = new GetArticlesRequest(null, filter);
 
         // act
-        var results = await _articleDataService.GetArticles(request);
+        var results = await _articleDataService.GetArticles(request.Spec);
 
         // assert
         Assert.That(results.Status, Is.EqualTo(DataResultStatus.Ok));
@@ -250,12 +251,47 @@ public class GetArticlesTests : CouchbaseIntegrationTest
         var request = new GetArticlesRequest(null, filter);
 
         // act
-        var results = await _articleDataService.GetArticles(request);
+        var results = await _articleDataService.GetArticles(request.Spec);
 
         // assert
         Assert.That(results.Status, Is.EqualTo(DataResultStatus.Ok));
         Assert.That(results.DataResult.Count, Is.EqualTo(5));
         foreach (var result in results.DataResult)
             Assert.That(expectedSlugs.Any(e => e == result.Slug), Is.True);
+    }
+
+    [Test]
+    public async Task Get_articles_for_the_feed()
+    {
+        // arrange a user whose feed this use
+        var user = await _userCollectionProvider.CreateUserInDatabase();
+        // arrange some authors that this user is following
+        var author1 = await _userCollectionProvider.CreateUserInDatabase();
+        var author2 = await _userCollectionProvider.CreateUserInDatabase();
+        await _followCollectionProvider.CreateFollow(author1.Username, user.Username);
+        await _followCollectionProvider.CreateFollow(author2.Username, user.Username);
+        // arrange some articles created by these authors
+        var expectedSlugs = new List<string>();
+        for (var i = 0; i < 5; i++)
+        {
+            var art1 = await _articleCollectionProvider.CreateArticleInDatabase(authorUsername: author1.Username);
+            var art2 = await _articleCollectionProvider.CreateArticleInDatabase(authorUsername: author2.Username);
+            expectedSlugs.Add(art1.Slug);
+            expectedSlugs.Add(art2.Slug);
+        }
+
+        var spec = new GetArticlesSpec();
+        spec.Username = user.Username;
+        spec.Limit = 20;
+        spec.FollowedByUsername = user.Username;
+
+        // act
+        var results = await _articleDataService.GetArticles(spec);
+
+        // assert
+        Assert.That(results.Status, Is.EqualTo(DataResultStatus.Ok));
+        Assert.That(results.DataResult.Count, Is.EqualTo(expectedSlugs.Count));
+        foreach(var expectedSlug in expectedSlugs)
+            Assert.That(results.DataResult.Any(r => r.Slug == expectedSlug), Is.True);
     }
 }

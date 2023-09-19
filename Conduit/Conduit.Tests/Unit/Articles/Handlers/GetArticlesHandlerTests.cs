@@ -2,6 +2,7 @@
 using Conduit.Web.Articles.Services;
 using Conduit.Web.Articles.ViewModels;
 using Conduit.Web.DataAccess.Dto;
+using Conduit.Web.DataAccess.Dto.Articles;
 using Moq;
 
 namespace Conduit.Tests.Unit.Articles.Handlers;
@@ -16,7 +17,7 @@ public class GetArticlesHandlerTests
     public async Task Setup()
     {
         _mockArticleDataService = new Mock<IArticlesDataService>();
-        _mockArticleDataService.Setup(m => m.GetArticles(It.IsAny<GetArticlesRequest>()))
+        _mockArticleDataService.Setup(m => m.GetArticles(It.IsAny<GetArticlesSpec>()))
             .ReturnsAsync(new DataServiceResult<List<ArticleViewModel>>(new List<ArticleViewModel>(), DataResultStatus.Ok));
 
         var validator = new GetArticlesRequestValidator();
@@ -77,7 +78,7 @@ public class GetArticlesHandlerTests
         await _handler.Handle(request, CancellationToken.None);
 
         // assert
-        _mockArticleDataService.Verify(x => x.GetArticles(It.Is<GetArticlesRequest>(
+        _mockArticleDataService.Verify(x => x.GetArticles(It.Is<GetArticlesSpec>(
             f =>
                 f.Username == "current-user-needs-trimmed"
                        && f.AuthorUsername == "author-this-needs-trimmed"
@@ -92,7 +93,7 @@ public class GetArticlesHandlerTests
         // arrange
         var filter = new ArticleFilterOptionsModel();
         var request = new GetArticlesRequest("doesnt-matter", filter);
-        _mockArticleDataService.Setup(m => m.GetArticles(It.IsAny<GetArticlesRequest>()))
+        _mockArticleDataService.Setup(m => m.GetArticles(It.IsAny<GetArticlesSpec>()))
             .ReturnsAsync(new DataServiceResult<List<ArticleViewModel>>(null, DataResultStatus.Error));
 
         // act

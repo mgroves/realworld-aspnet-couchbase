@@ -4,18 +4,16 @@ using MediatR;
 
 namespace Conduit.Web.Articles.Handlers;
 
-public class GetArticlesRequest : IRequest<GetArticlesResponse>
+public class GetFeedRequest : IRequest<GetFeedResponse>
 {
     public GetArticlesSpec Spec { get; set; }
 
-    public GetArticlesRequest(string? username, ArticleFilterOptionsModel filter)
+    public GetFeedRequest(string username, ArticleFeedOptionsModel filter)
     {
         Spec = new GetArticlesSpec();
         Spec.Username = username;
-        Spec.AuthorUsername = filter.Author;
-        Spec.FavoritedByUsername = filter.Favorited;
+        Spec.FollowedByUsername = username;
         Spec.Limit = filter.Limit;
         Spec.Offset = filter.Offset;
-        Spec.Tag = filter.Tag;
     }
 }

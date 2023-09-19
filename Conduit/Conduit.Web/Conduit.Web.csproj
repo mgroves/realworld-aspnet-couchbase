@@ -33,6 +33,7 @@
   <ItemGroup>
     <Folder Include="Articles\Handlers\" />
     <Folder Include="Articles\Services\" />
+    <Folder Include="DataAccess\Dto\Articles\" />
   </ItemGroup>
 
 </Project>
