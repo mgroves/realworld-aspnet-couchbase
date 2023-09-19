@@ -236,6 +236,16 @@ public class ArticlesController : ControllerBase
         return Ok("Article deleted.");
     }
 
+    /// <summary>
+    /// List Articles with the given criteria.
+    /// </summary>
+    /// <remarks>
+    /// <a href="https://realworld-docs.netlify.app/docs/specs/backend-specs/endpoints#list-articles">Conduit spec for List Articles Endpoint</a>
+    /// </remarks>
+    /// <param name="filter"></param>
+    /// <returns>List of articles</returns>
+    /// <response code="200">Successfully queryies articles</response>
+    /// <response code="422">Article request is invalid</response>
     [HttpGet]
     [Route("/api/articles")]
     [AllowAnonymous]

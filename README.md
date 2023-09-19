@@ -64,7 +64,6 @@ This Conduit implementation is being streamed [live on Twitch](https://twitch.tv
    4. (Manual alternative to step 3) Create the database objects collections, indexes, documents, indexes as described in the *comments* of the classes of the *Conduit.Migrations* project.
 3. Configure Conduit.Web, Conduit.Tests and Conduit.Migrations
    1. Add User Secrets to Conduit.Tests, Conduit.Web, and/or Conduit.Migrations, following secrets.json.template examples
-   2. You should use a separate bucket for integration tests, since integration tests will run "down" migrations and destroy anything in the bucket.
 4. Compile and run Conduit.Web
    1. Standard compile/run from command line/VSCode/Visual Studio/Rider should work fine
    2. You can use Postman to exercise the endpoints. [RealWorld has a Postman collection available for your convenience](https://realworld-docs.netlify.app/docs/specs/backend-specs/postman) (which is currently checked into this repo, but beware--if you have issues, fall back to the official one).
@@ -95,6 +94,8 @@ An overview of the goals of this project and the Real World Conduit project, fea
 | 2023-08-25 | Articles (lost to terrible connection) |
 | 2023-09-05 | Update Article (two parts) | https://youtu.be/33i3X3fx7xw and https://www.youtube.com/watch?v=nve4yo9qt9o
 | 2023-09-08 | Delete Article | https://youtu.be/5_bnbWWXvu0
+| 2023-09-13 | CI, Unfavorite, List | https://www.youtube.com/watch?v=gPD14qrGpmM
+| 2023-09-15 | List + benchmarks | https://www.youtube.com/watch?v=WwzgatFHihc
 
 [YouTube Playlist - full streams](https://www.youtube.com/playlist?list=PLZWwU1YVRehL0psJRk35x8evMeeGAFwBa)
 
