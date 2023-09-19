@@ -242,9 +242,9 @@ public class ArticlesController : ControllerBase
     /// <remarks>
     /// <a href="https://realworld-docs.netlify.app/docs/specs/backend-specs/endpoints#list-articles">Conduit spec for List Articles Endpoint</a>
     /// </remarks>
-    /// <param name="filter"></param>
+    /// <param name="filter">Filtering options</param>
     /// <returns>List of articles</returns>
-    /// <response code="200">Successfully queryies articles</response>
+    /// <response code="200">Successfully queryied articles</response>
     /// <response code="422">Article request is invalid</response>
     [HttpGet]
     [Route("/api/articles")]
@@ -272,15 +272,25 @@ public class ArticlesController : ControllerBase
         return Ok(new { articles = getArticlesResponse.ArticlesView });
     }
 
+    /// <summary>
+    /// Feed (latest articles created by users that the logged-in user follows)
+    /// </summary>
+    /// <remarks>
+    /// <a href="https://realworld-docs.netlify.app/docs/specs/backend-specs/endpoints#feed-articles">Conduit spec for Feed Articles Endpoint</a>
+    /// </remarks>
+    /// <param name="options">Options</param>
+    /// <returns>List of articles</returns>
+    /// <response code="200">Successfully queryied articles</response>
+    /// <response code="422">Article request is invalid</response>
     [HttpGet]
     [Route("/api/articles/feed")]
-    public async Task<IActionResult> GetFeed([FromQuery] ArticleFeedOptionsModel filter)
+    public async Task<IActionResult> GetFeed([FromQuery] ArticleFeedOptionsModel options)
     {
         // get auth info
         var claims = _authService.GetAllAuthInfo(Request.Headers["Authorization"]);
         var username = claims.Username.Value;
 
-        var getArticlesRequest = new GetFeedRequest(username, filter);
+        var getArticlesRequest = new GetFeedRequest(username, options);
         var getArticlesResponse = await _mediator.Send(getArticlesRequest);
 
         if (getArticlesResponse.IsFailure)
