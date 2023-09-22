@@ -106,7 +106,7 @@ public class AddCommentTests : FunctionalTestBase
 
         // assert
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-        await _commentsCollectionProvider.AssertExists($"{article.ArticleKey}::comments", x =>
+        await _commentsCollectionProvider.AssertExists(article.Slug, x =>
         {
             Assert.That(x.Any(c => c.AuthorUsername == _user.Username && c.Body == expectedBody));
         });

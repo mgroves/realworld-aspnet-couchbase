@@ -70,4 +70,32 @@ public class CommentsController : Controller
 
         return Ok(new { comment = viewModel });
     }
+
+    [HttpGet]
+    [AllowAnonymous]
+    [Route("/api/articles/{slug}/comments")]
+    public async Task<IActionResult> GetComments([FromRoute] string slug)
+    {
+        // get (optional) auth info
+        string username = null;
+        var headers = Request.Headers["Authorization"];
+        var isUserAnonymous = headers.All(string.IsNullOrEmpty);
+
+        if (!isUserAnonymous)
+        {
+            var claims = _authService.GetAllAuthInfo(Request.Headers["Authorization"]);
+            username = claims.Username.Value;
+        }
+
+        // make request to mediator
+        var request = new GetCommentsRequest(slug, username);
+        var response = await _mediator.Send(request);
+
+        if (response.IsArticleNotFound)
+            return NotFound($"Article {slug} not found.");
+        if (response.IsFailed)
+            return StatusCode(500, "There was a problem adding that comment.");
+
+        return Ok(new { comments = response.CommentsView });
+    }
 }

@@ -1,5 +1,4 @@
-﻿using Conduit.Web.Articles.Handlers;
-using Conduit.Web.Articles.ViewModels;
+﻿using Conduit.Web.Articles.ViewModels;
 using Conduit.Web.DataAccess.Dto;
 using Conduit.Web.DataAccess.Dto.Articles;
 using Conduit.Web.DataAccess.Models;

@@ -1,6 +1,8 @@
 ﻿using Conduit.Web;
 using Conduit.Web.Users.Services;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Conduit.Tests.Functional;
 
