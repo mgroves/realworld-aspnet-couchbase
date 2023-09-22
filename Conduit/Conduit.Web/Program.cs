@@ -79,6 +79,7 @@ namespace Conduit.Web
             @this.AddTransient<IUserDataService, UserDataService>();
             @this.AddTransient<ITagsDataService, TagsDataService>();
             @this.AddTransient<IArticlesDataService, ArticlesDataService>();
+            @this.AddTransient<ICommentsDataService, CommentsDataService>();
             @this.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<Program>());
             @this.AddCouchbase(configManager.GetSection("Couchbase"));
             @this.AddCouchbaseBucket<IConduitBucketProvider>(configManager["Couchbase:BucketName"], b =>
@@ -98,6 +99,9 @@ namespace Conduit.Web
                 b
                     .AddScope(configManager["Couchbase:ScopeName"])
                     .AddCollection<IConduitFavoritesCollectionProvider>("Favorites");
+                b
+                    .AddScope(configManager["Couchbase:ScopeName"])
+                    .AddCollection<IConduitCommentsCollectionProvider>("Comments");
             });
         }
     }

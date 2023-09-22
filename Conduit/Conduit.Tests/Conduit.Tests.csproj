@@ -43,6 +43,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="Functional\Articles\Controllers\CommentsControllerTests\" />
       <Folder Include="Integration\Articles\Handlers\" />
       <Folder Include="Extensions\" />
       <Folder Include="Integration\Articles\Services\ArticlesDataService\" />
