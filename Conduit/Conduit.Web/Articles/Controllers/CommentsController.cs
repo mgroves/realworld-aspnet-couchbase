@@ -22,15 +22,29 @@ public class CommentsController : Controller
         _mediator = mediator;
     }
 
+    /// <summary>
+    /// Add comment to an article
+    /// </summary>
+    /// <remarks>
+    /// <a href="https://realworld-docs.netlify.app/docs/specs/backend-specs/endpoints#add-comments-to-an-article">Conduit spec for Add Comments to an Article</a>
+    /// </remarks>
+    /// <param name="slug">Article slug</param>
+    /// <param name="comment">Body of the comment</param>
+    /// <returns>A view of the created comment</returns>
+    /// <response code="200">Successful created, returns the created Comment</response>
+    /// <response code="401">Unauthorized, likely because credentials are incorrect</response>
+    /// <response code="404">Article wasn't found</response>
+    /// <response code="422">Article was unable to be created</response>
+    /// <response code="500">Something went wrong while creating the article</response>
     [HttpPost]
     [Route("/api/articles/{slug}/comments")]
     [Authorize]
-    public async Task<IActionResult> AddComment([FromRoute] string slug, [FromBody] CommentBodyModel body)
+    public async Task<IActionResult> AddComment([FromRoute] string slug, [FromBody] CommentBodyModel comment)
     {
         var claims = _authService.GetAllAuthInfo(Request.Headers["Authorization"]);
         var username  = claims.Username.Value;
 
-        var addCommentRequest = new AddCommentRequest(username, body, slug);
+        var addCommentRequest = new AddCommentRequest(username, comment, slug);
         var addCommentResponse = await _mediator.Send(addCommentRequest);
 
         if (addCommentResponse.ValidationErrors?.Any() ?? false)

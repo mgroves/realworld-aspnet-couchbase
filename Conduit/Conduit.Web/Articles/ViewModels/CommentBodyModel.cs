@@ -7,5 +7,8 @@ public class CommentBodyModel
 
 public class CommentBody
 {
+    /// <summary>
+    /// Body of the comment, required, must be less than 1000 characters
+    /// </summary>
     public string Body { get; set; }
 }

@@ -2,7 +2,7 @@
 
 namespace Conduit.Migrations;
 
-// Manual alternative: create a Favorites collection in _default scope
+// Manual alternative: create a Comments collection in _default scope
 [Migration(8)]
 public class CreateCollectionForComments: MigrateBase
 {
