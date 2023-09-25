@@ -16,14 +16,9 @@ public static class JsonTestHelpers
                 throw new ArgumentException($"SubDoc '{subDocKey}' not found in JSON.");
             return obj[subDocKey].ToObject<T>();
         }
-        catch
-        {   
-            Trace.WriteLine("TRACE There was a problem getting the subdoc of '{subDocKey}' from this JSON string: '{@this}");
-            Debug.Print($"DEBUG There was a problem getting the subdoc of '{subDocKey}' from this JSON string: '{@this}");
-            var logfactory = (ILoggerFactory)new LoggerFactory();
-            var logger = new Logger<Conduit.Web.Program>(logfactory);
-            logger.LogError($"TRACE There was a problem getting the subdoc of '{subDocKey}' from this JSON string: '{@this}");
-            throw;
+        catch (Exception ex)
+        {
+            throw new ArgumentException($"TRACE There was a problem getting the subdoc of '{subDocKey}' from this JSON string: '{@this}", ex);
         }
     }
 }
