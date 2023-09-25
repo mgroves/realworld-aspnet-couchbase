@@ -59,8 +59,10 @@ public class CommentsDataService : ICommentsDataService
         var bucket = scope.Bucket;
 
         var loggedInJoin = "";
+        var loggedInProjection = " \"following\" : false ";
         if (currentUsername != null)
         {
+            loggedInProjection = $" \"following\": ARRAY_CONTAINS(COALESCE(follow,[]), c.authorUsername) ";
             loggedInJoin = $" LEFT JOIN `{bucket.Name}`.`{scope.Name}`.`Follows` follow ON ($currentUsername || \"::follows\") = META(follow).id ";
         }
 
@@ -73,17 +75,16 @@ public class CommentsDataService : ICommentsDataService
                     author.bio,
                     author.image,
                     ""username"": c.authorUsername,
-                    ""following"": ARRAY_CONTAINS(COALESCE(follow,[]), c.authorUsername)
+                    {loggedInProjection}
                 }}
             }}
 
         FROM {bucket.Name}.`{scope.Name}`.`Comments` c2
+        USE KEYS $commentsKey
         UNNEST c2 AS c
         JOIN `{bucket.Name}`.`{scope.Name}`.`Users` author ON c.authorUsername = META(author).id
 
-        {loggedInJoin}
-
-        WHERE META(c2).id = $commentsKey;";
+        {loggedInJoin} ;";
 
         var cluster = collection.Scope.Bucket.Cluster;
         // try
