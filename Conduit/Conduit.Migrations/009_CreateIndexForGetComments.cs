@@ -2,8 +2,8 @@
 
 namespace Conduit.Migrations;
 
-// Manual alternative: CREATE INDEX `idx_comments_author_follows2` ON `Conduit`.`_default`.`Comments`((meta().`id`),(distinct (array (`c`.`authorUsername`) for `c` in ((`Conduit`.`_default`).`Comments`) end)))
-[Migration(8)]
+// Manual alternative: CREATE INDEX `ix_get_comments` ON `Conduit`.`_default`.`Comments`(META().id, DISTINCT ARRAY c.authorUsername FOR c IN c2 END);
+[Migration(9)]
 public class CreateIndexForGetComments : MigrateBase
 {
     private readonly string? _scopeName;
@@ -21,7 +21,7 @@ public class CreateIndexForGetComments : MigrateBase
             .OnScope(_scopeName)
             .OnCollection("Comments")
             .OnFieldRaw("META().`id`")
-            .OnFieldRaw("DISTINCT (array (`c`.`authorUsername`) for `c` in ((`Conduit`.`_default`).`Comments`");
+            .OnFieldRaw($"DISTINCT ARRAY c.authorUsername FOR c IN c2 END");
     }
 
     public override void Down()
