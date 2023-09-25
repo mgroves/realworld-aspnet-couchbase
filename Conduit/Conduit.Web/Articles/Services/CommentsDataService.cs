@@ -86,9 +86,9 @@ public class CommentsDataService : ICommentsDataService
         WHERE META(c2).id = $commentsKey;";
 
         var cluster = collection.Scope.Bucket.Cluster;
-        try
-        {
-
+        // try
+        // {
+        //
             var results = await cluster.QueryAsync<CommentListDataView>(sql, options =>
             {
                 options.Parameter("commentsKey", GetCommentsKey(slug.GetArticleKey()));
@@ -96,11 +96,11 @@ public class CommentsDataService : ICommentsDataService
                 options.ScanConsistency(_couchbaseOptions.Value.ScanConsistency);
             });
             return new DataServiceResult<List<CommentListDataView>>(await results.Rows.ToListAsync(), DataResultStatus.Ok);
-        }
-        catch (Exception ex)
-        {
-            return new DataServiceResult<List<CommentListDataView>>(null, DataResultStatus.Error);
-        }
+        // }
+        // catch (Exception ex)
+        // {
+        //     return new DataServiceResult<List<CommentListDataView>>(null, DataResultStatus.Error);
+        // }
     }
 
     private async Task<ulong> GetNextCommentId(string slug)
