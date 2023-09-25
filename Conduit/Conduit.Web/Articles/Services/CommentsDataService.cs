@@ -19,7 +19,11 @@ public class CommentsDataService : ICommentsDataService
     private readonly IConduitCommentsCollectionProvider _commentsCollectionProvider;
 
     // a virtual method so it can be overridden by a testing class if necessary
+#if DEBUG
+    protected virtual QueryScanConsistency ScanConsistency => QueryScanConsistency.RequestPlus;
+#else
     protected virtual QueryScanConsistency ScanConsistency => QueryScanConsistency.NotBounded;
+#endif
 
     public static string GetCommentsKey(string articleKey) => $"{articleKey}::comments";
 
