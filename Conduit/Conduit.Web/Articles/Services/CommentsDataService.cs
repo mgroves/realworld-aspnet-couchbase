@@ -77,9 +77,9 @@ public class CommentsDataService : ICommentsDataService
                 }}
             }}
 
-        FROM {bucket.Name}._default.Comments c2
+        FROM {bucket.Name}.`{scope.Name}`.`Comments` c2
         UNNEST c2 AS c
-        JOIN `{bucket.Name}`.`{scope.Name}`._default.Users author ON c.authorUsername = META(author).id
+        JOIN `{bucket.Name}`.`{scope.Name}`.`Users` author ON c.authorUsername = META(author).id
 
         {loggedInJoin}
 

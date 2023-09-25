@@ -64,19 +64,19 @@ public class GlobalCouchbaseIntegrationSetUp
         services.AddCouchbaseBucket<IConduitBucketProvider>(_config["Couchbase:BucketName"], b =>
         {
             b
-                .AddScope("_default")
+                .AddScope(_config["Couchbase:ScopeName"])
                 .AddCollection<IConduitTagsCollectionProvider>("Tags");
             b
-                .AddScope("_default")
+                .AddScope(_config["Couchbase:ScopeName"])
                 .AddCollection<IConduitArticlesCollectionProvider>("Articles");
             b
-                .AddScope("_default")
+                .AddScope(_config["Couchbase:ScopeName"])
                 .AddCollection<IConduitFavoritesCollectionProvider>("Favorites");
             b
-                .AddScope("_default")
+                .AddScope(_config["Couchbase:ScopeName"])
                 .AddCollection<IConduitUsersCollectionProvider>("Users");
             b
-                .AddScope("_default")
+                .AddScope(_config["Couchbase:ScopeName"])
                 .AddCollection<IConduitFollowsCollectionProvider>("Follows");
         });
 
