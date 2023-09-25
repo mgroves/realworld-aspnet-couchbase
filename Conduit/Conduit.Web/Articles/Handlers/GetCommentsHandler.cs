@@ -1,5 +1,6 @@
 ﻿using Conduit.Web.Articles.Services;
 using Conduit.Web.Articles.ViewModels;
+using Conduit.Web.DataAccess.Dto;
 using Conduit.Web.Users.ViewModels;
 using MediatR;
 
@@ -29,6 +30,14 @@ public class GetCommentsHandler : IRequestHandler<GetCommentsRequest, GetComment
         }
 
         var results = await _commentsDataService.Get(request.Slug, request.Username);
+
+        if (results.Status == DataResultStatus.Error)
+        {
+            return new GetCommentsResponse
+            {
+                IsFailed = true
+            };
+        }
 
         return new GetCommentsResponse
         {

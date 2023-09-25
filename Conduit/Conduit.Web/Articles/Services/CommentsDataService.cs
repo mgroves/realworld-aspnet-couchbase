@@ -79,7 +79,6 @@ public class CommentsDataService : ICommentsDataService
 
         {loggedInJoin}
 
-        /* parameterized with comments key */
         WHERE META(c2).id = $commentsKey;";
 
         var collection = await _commentsCollectionProvider.GetCollectionAsync();

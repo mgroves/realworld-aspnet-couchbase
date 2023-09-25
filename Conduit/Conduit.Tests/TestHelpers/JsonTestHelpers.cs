@@ -18,7 +18,7 @@ public static class JsonTestHelpers
         }
         catch (Exception ex)
         {
-            throw new ArgumentException($"TRACE There was a problem getting the subdoc of '{subDocKey}' from this JSON string: '{@this}", ex);
+            throw new ArgumentException($"There was a problem getting the subdoc of '{subDocKey}' from this JSON string: '{@this}", ex);
         }
     }
 }
