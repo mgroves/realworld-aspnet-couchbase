@@ -1,10 +1,12 @@
-﻿using Conduit.Web.DataAccess.Dto;
+﻿using Conduit.Web.DataAccess;
+using Conduit.Web.DataAccess.Dto;
 using Conduit.Web.DataAccess.Models;
 using Conduit.Web.DataAccess.Providers;
 using Conduit.Web.Extensions;
 using Couchbase.KeyValue;
 using Couchbase;
 using Couchbase.Query;
+using Microsoft.Extensions.Options;
 
 namespace Conduit.Web.Articles.Services;
 
@@ -17,19 +19,14 @@ public interface ICommentsDataService
 public class CommentsDataService : ICommentsDataService
 {
     private readonly IConduitCommentsCollectionProvider _commentsCollectionProvider;
-
-    // a virtual method so it can be overridden by a testing class if necessary
-#if DEBUG
-    protected virtual QueryScanConsistency ScanConsistency => QueryScanConsistency.RequestPlus;
-#else
-    protected virtual QueryScanConsistency ScanConsistency => QueryScanConsistency.NotBounded;
-#endif
+    private readonly IOptions<CouchbaseOptions> _couchbaseOptions;
 
     public static string GetCommentsKey(string articleKey) => $"{articleKey}::comments";
 
-    public CommentsDataService(IConduitCommentsCollectionProvider commentsCollectionProvider)
+    public CommentsDataService(IConduitCommentsCollectionProvider commentsCollectionProvider, IOptions<CouchbaseOptions> couchbaseOptions)
     {
         _commentsCollectionProvider = commentsCollectionProvider;
+        _couchbaseOptions = couchbaseOptions;
     }
 
     public async Task<DataServiceResult<Comment>> Add(Comment newComment, string slug)
@@ -94,7 +91,7 @@ public class CommentsDataService : ICommentsDataService
             {
                 options.Parameter("commentsKey", GetCommentsKey(slug.GetArticleKey()));
                 options.Parameter("currentUsername", currentUsername);
-                options.ScanConsistency(ScanConsistency);
+                options.ScanConsistency(_couchbaseOptions.Value.ScanConsistency);
             });
             return new DataServiceResult<List<CommentListDataView>>(await results.Rows.ToListAsync(), DataResultStatus.Ok);
         }

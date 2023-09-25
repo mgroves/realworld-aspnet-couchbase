@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Conduit.Web.Articles.Services;
+using Conduit.Web.DataAccess;
 using Conduit.Web.Follows.Services;
 using Conduit.Web.Users.Handlers;
 using Conduit.Web.Users.Services;
@@ -103,6 +104,7 @@ namespace Conduit.Web
                     .AddScope(configManager["Couchbase:ScopeName"])
                     .AddCollection<IConduitCommentsCollectionProvider>("Comments");
             });
+            @this.Configure<CouchbaseOptions>(configManager.GetSection("Couchbase"));
         }
     }
 
