@@ -54,10 +54,14 @@ public class CommentsDataService : ICommentsDataService
 
     public async Task<DataServiceResult<List<CommentListDataView>>> Get(string slug, string? currentUsername)
     {
+        var collection = await _commentsCollectionProvider.GetCollectionAsync();
+        var scope = collection.Scope;
+        var bucket = scope.Bucket;
+
         var loggedInJoin = "";
         if (currentUsername != null)
         {
-            loggedInJoin = " LEFT JOIN Conduit._default.Follows follow ON ($currentUsername || \"::follows\") = META(follow).id ";
+            loggedInJoin = $" LEFT JOIN `{bucket.Name}`.`{scope.Name}`.`Follows` follow ON ($currentUsername || \"::follows\") = META(follow).id ";
         }
 
         var sql = $@"SELECT VALUE
@@ -73,18 +77,17 @@ public class CommentsDataService : ICommentsDataService
                 }}
             }}
 
-        FROM Conduit._default.Comments c2
+        FROM {bucket.Name}._default.Comments c2
         UNNEST c2 AS c
-        JOIN Conduit._default.Users author ON c.authorUsername = META(author).id
+        JOIN `{bucket.Name}`.`{scope.Name}`._default.Users author ON c.authorUsername = META(author).id
 
         {loggedInJoin}
 
         WHERE META(c2).id = $commentsKey;";
 
-        var collection = await _commentsCollectionProvider.GetCollectionAsync();
         var cluster = collection.Scope.Bucket.Cluster;
-        // try
-        // {
+        try
+        {
 
             var results = await cluster.QueryAsync<CommentListDataView>(sql, options =>
             {
@@ -93,11 +96,11 @@ public class CommentsDataService : ICommentsDataService
                 options.ScanConsistency(_couchbaseOptions.Value.ScanConsistency);
             });
             return new DataServiceResult<List<CommentListDataView>>(await results.Rows.ToListAsync(), DataResultStatus.Ok);
-        // }
-        // catch (Exception ex)
-        // {
-        //     return new DataServiceResult<List<CommentListDataView>>(ex, DataResultStatus.Error);
-        // }
+        }
+        catch (Exception ex)
+        {
+            return new DataServiceResult<List<CommentListDataView>>(null, DataResultStatus.Error);
+        }
     }
 
     private async Task<ulong> GetNextCommentId(string slug)
