@@ -83,8 +83,8 @@ public class CommentsDataService : ICommentsDataService
 
         var collection = await _commentsCollectionProvider.GetCollectionAsync();
         var cluster = collection.Scope.Bucket.Cluster;
-        try
-        {
+        // try
+        // {
 
             var results = await cluster.QueryAsync<CommentListDataView>(sql, options =>
             {
@@ -93,11 +93,11 @@ public class CommentsDataService : ICommentsDataService
                 options.ScanConsistency(_couchbaseOptions.Value.ScanConsistency);
             });
             return new DataServiceResult<List<CommentListDataView>>(await results.Rows.ToListAsync(), DataResultStatus.Ok);
-        }
-        catch (Exception ex)
-        {
-            return new DataServiceResult<List<CommentListDataView>>(null, DataResultStatus.Error);
-        }
+        // }
+        // catch (Exception ex)
+        // {
+        //     return new DataServiceResult<List<CommentListDataView>>(ex, DataResultStatus.Error);
+        // }
     }
 
     private async Task<ulong> GetNextCommentId(string slug)

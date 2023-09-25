@@ -94,7 +94,7 @@ public class CommentsController : Controller
         if (response.IsArticleNotFound)
             return NotFound($"Article {slug} not found.");
         if (response.IsFailed)
-            return StatusCode(500, "There was a problem adding that comment.");
+            return StatusCode(500, "There was a problem getting comments.");
 
         return Ok(new { comments = response.CommentsView });
     }
