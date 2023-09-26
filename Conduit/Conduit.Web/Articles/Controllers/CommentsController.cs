@@ -79,6 +79,9 @@ public class CommentsController : Controller
     /// </remarks>
     /// <param name="slug">Article slug (required)</param>
     /// <returns>Comments array</returns>
+    /// <response code="200">Successfully retrieved comments</response>
+    /// <response code="404">Article wasn't found</response>
+    /// <response code="500">Something went wrong while deleting the comment</response>
     [HttpGet]
     [AllowAnonymous]
     [Route("/api/articles/{slug}/comments")]
@@ -107,6 +110,16 @@ public class CommentsController : Controller
         return Ok(new { comments = response.CommentsView });
     }
 
+    /// <summary>
+    /// Delete a comment from an article
+    /// </summary>
+    /// <param name="slug">Article slug (required)</param>
+    /// <param name="commentId">Comment ID (required)</param>
+    /// <response code="200">Successfully deleted</response>
+    /// <response code="401">Unauthorized, likely because credentials are incorrect or its not your comment</response>
+    /// <response code="404">Article or comment wasn't found</response>
+    /// <response code="422">Comment couldn't be deleted</response>
+    /// <response code="500">Something went wrong while deleting the comment</response>
     [HttpDelete]
     [Route("/api/articles/{slug}/comments/{commentId}")]
     [Authorize]
