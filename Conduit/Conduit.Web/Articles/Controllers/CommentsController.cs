@@ -74,6 +74,9 @@ public class CommentsController : Controller
     /// <summary>
     /// Get all comments for a given article
     /// </summary>
+    /// <remarks>
+    /// <a href="https://realworld-docs.netlify.app/docs/specs/backend-specs/endpoints/#get-comments-from-an-article">Conduit spec for Get All Comments for and Article</a>
+    /// </remarks>
     /// <param name="slug">Article slug (required)</param>
     /// <returns>Comments array</returns>
     [HttpGet]
