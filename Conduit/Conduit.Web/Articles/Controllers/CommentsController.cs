@@ -71,6 +71,11 @@ public class CommentsController : Controller
         return Ok(new { comment = viewModel });
     }
 
+    /// <summary>
+    /// Get all comments for a given article
+    /// </summary>
+    /// <param name="slug">Article slug (required)</param>
+    /// <returns>Comments array</returns>
     [HttpGet]
     [AllowAnonymous]
     [Route("/api/articles/{slug}/comments")]

@@ -31,12 +31,11 @@ You'll need to understand at least a little bit:
 
 * *Conduit.Web* - This is the most important project. It's where the actual implementation is. The project is "sliced" by feature as much as possible. That is, grouping together objects with common functionality.
 
-  * *Models* folder - this is where data access objects are kept. These objects are used only for database interaction.
+  * *DataAccess* folder - this is where data access objects are kept. These objects are used only for database interaction. There are also some VSCode Notebooks for the queries that are used in the project (uses the [Couchbase VSCode Extension](https://marketplace.visualstudio.com/items?itemName=Couchbase.vscode-couchbase)).
   * *Sliced* folders - these contain ASP.NET Core Controller(s), Mediatr request, response, and handler classes, viewmodels, and services for the functionality of the slice.
     * Users - Authorization/authentication, JWT, registration, login, anything for Users
     * Follows - Follow/unfollow
-    * Articles - Articles, favorites, and tags for articles
-    * ...more on the way...
+    * Articles - Articles, favorites, comments, and tags for articles
   * *Extensions* folder - extension methods for ASP.NET functionality
 
 * *Conduit.Tests* - Automated tests for Conduit.Web.
