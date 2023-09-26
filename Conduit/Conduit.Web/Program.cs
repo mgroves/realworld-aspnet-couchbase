@@ -35,6 +35,17 @@ namespace Conduit.Web
 
             builder.Services.AddConduitServiceDependencies(builder.Configuration);
 
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy(name: "CorsPolicy",
+                    builder =>
+                    {
+                        builder.AllowAnyOrigin()
+                            .AllowAnyHeader()
+                            .AllowAnyMethod();
+                    });
+            });
+
             // ****************************************************
 
             var app = builder.Build();
@@ -53,6 +64,8 @@ namespace Conduit.Web
             app.UseAuthorization();
 
             app.MapControllers();
+
+            app.UseCors("CorsPolicy");
 
             app.Run();
 
