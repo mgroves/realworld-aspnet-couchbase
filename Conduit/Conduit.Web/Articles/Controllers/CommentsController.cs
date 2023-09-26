@@ -106,4 +106,29 @@ public class CommentsController : Controller
 
         return Ok(new { comments = response.CommentsView });
     }
+
+    [HttpDelete]
+    [Route("/api/articles/{slug}/comments/{commentId}")]
+    [Authorize]
+    public async Task<IActionResult> DeleteComment([FromRoute] string slug, [FromRoute] ulong commentId)
+    {
+        var claims = _authService.GetAllAuthInfo(Request.Headers["Authorization"]);
+        var username = claims.Username.Value;
+
+        var deleteCommentRequest = new DeleteCommentRequest { Slug = slug, CommentId = commentId, Username = username };
+        var deleteCommentResponse = await _mediator.Send(deleteCommentRequest);
+
+        if (deleteCommentResponse.IsArticleNotFound)
+            return NotFound($"Article {slug} not found.");
+        if (deleteCommentResponse.IsCommentNotFound)
+            return NotFound($"Comment with ID {commentId} not found.");
+        if (deleteCommentResponse.IsNotAuthorized)
+            return Unauthorized("You aren't allowed to delete that comment.");
+        if (deleteCommentResponse.IsFailed)
+            return StatusCode(500, "There was a problem deleting that comment.");
+        if (deleteCommentResponse.ValidationErrors?.Any() ?? false)
+            return UnprocessableEntity(deleteCommentResponse.ValidationErrors.ToCsv());
+
+        return Ok();
+    }
 }

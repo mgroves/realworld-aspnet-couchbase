@@ -14,6 +14,7 @@ public interface ICommentsDataService
 {
     Task<DataServiceResult<Comment>> Add(Comment newComment, string slug);
     Task<DataServiceResult<List<CommentListDataView>>> Get(string slug, string? currentUsername = null);
+    Task<DataResultStatus> Delete(ulong commentId, string slug, string username);
 }
 
 public class CommentsDataService : ICommentsDataService
@@ -87,9 +88,9 @@ public class CommentsDataService : ICommentsDataService
         {loggedInJoin} ;";
 
         var cluster = collection.Scope.Bucket.Cluster;
-        // try
-        // {
-        //
+        try
+        {
+        
             var results = await cluster.QueryAsync<CommentListDataView>(sql, options =>
             {
                 options.Parameter("commentsKey", GetCommentsKey(slug.GetArticleKey()));
@@ -97,11 +98,48 @@ public class CommentsDataService : ICommentsDataService
                 options.ScanConsistency(_couchbaseOptions.Value.ScanConsistency);
             });
             return new DataServiceResult<List<CommentListDataView>>(await results.Rows.ToListAsync(), DataResultStatus.Ok);
-        // }
-        // catch (Exception ex)
-        // {
-        //     return new DataServiceResult<List<CommentListDataView>>(null, DataResultStatus.Error);
-        // }
+        }
+        catch (Exception ex)
+        {
+            return new DataServiceResult<List<CommentListDataView>>(null, DataResultStatus.Error);
+        }
+    }
+
+    public async Task<DataResultStatus> Delete(ulong commentId, string slug, string username)
+    {
+        var collection = await _commentsCollectionProvider.GetCollectionAsync();
+
+        try
+        {
+            var commentsList = collection.List<Comment>(GetCommentsKey(slug.GetArticleKey()));
+
+            // comment with ID must exist
+            var comment = commentsList.SingleOrDefault(c => c.Id == commentId);
+            if (comment == null)
+                return DataResultStatus.NotFound;
+
+            // comment must be authored by the given user
+            var isAuthorized = comment.AuthorUsername == username;
+            if (!isAuthorized)
+                return DataResultStatus.Unauthorized;
+
+            // delete comment
+            // this is a hacky workaround, see NCBC-3498 https://issues.couchbase.com/browse/NCBC-3498
+            var list = await commentsList.ToListAsync();
+            for (var i = 0; i < list.Count; i++)
+            {
+                if (list[i].Id == commentId)
+                {
+                    await commentsList.RemoveAtAsync(i);
+                }
+            }
+        }
+        catch
+        {
+            return DataResultStatus.Error;
+        }
+
+        return DataResultStatus.Ok;
     }
 
     private async Task<ulong> GetNextCommentId(string slug)

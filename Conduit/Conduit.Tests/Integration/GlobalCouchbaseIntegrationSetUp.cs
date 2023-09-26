@@ -78,6 +78,9 @@ public class GlobalCouchbaseIntegrationSetUp
             b
                 .AddScope(_config["Couchbase:ScopeName"])
                 .AddCollection<IConduitFollowsCollectionProvider>("Follows");
+            b
+                .AddScope(_config["Couchbase:ScopeName"])
+                .AddCollection<IConduitCommentsCollectionProvider>("Comments");
         });
 
         ServiceCollection = services;

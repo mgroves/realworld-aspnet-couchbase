@@ -47,6 +47,7 @@
       <Folder Include="Integration\Articles\Handlers\" />
       <Folder Include="Extensions\" />
       <Folder Include="Integration\Articles\Services\ArticlesDataService\" />
+      <Folder Include="Integration\Articles\Services\CommentsDataService\" />
       <Folder Include="Integration\Users\Services\UserDataServiceTests\" />
       <Folder Include="Unit\Articles\Handlers\" />
     </ItemGroup>
