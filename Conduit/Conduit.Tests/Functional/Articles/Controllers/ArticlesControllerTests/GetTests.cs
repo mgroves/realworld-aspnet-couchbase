@@ -41,7 +41,7 @@ public class GetTests : FunctionalTestBase
         var article = await _articleCollectionProvider.CreateArticleInDatabase(authorUsername: author.Username);
 
         // act
-        var response = await WebClient.GetAsync($"api/article/{article.Slug}");
+        var response = await WebClient.GetAsync($"api/articles/{article.Slug}");
         var responseString = await response.Content.ReadAsStringAsync();
         var articleViewModel = responseString.SubDoc<ArticleViewModel>("article");
 

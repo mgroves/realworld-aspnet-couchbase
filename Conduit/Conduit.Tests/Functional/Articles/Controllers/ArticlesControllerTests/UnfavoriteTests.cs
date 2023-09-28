@@ -45,7 +45,7 @@ public class UnfavoriteTests : FunctionalTestBase
         await _favoriteCollectionProvider.AddFavoriteInDatabase(_user.Username, article.Slug);
 
         // act
-        var response = await WebClient.DeleteAsync($"api/article/{article.Slug}/favorite");
+        var response = await WebClient.DeleteAsync($"api/articles/{article.Slug}/unfavorite");
 
         // assert
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
