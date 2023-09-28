@@ -24,7 +24,7 @@ public interface IArticlesDataService
     Task<bool> UpdateArticle(Article newArticle);
     Task<DataServiceResult<string>> DeleteArticle(string slug);
     Task<bool> IsArticleAuthor(string slug, string username);
-    Task<DataServiceResult<List<ArticleViewModel>>> GetArticles(GetArticlesSpec request);
+    Task<DataServiceResult<ArticlesViewModel>> GetArticles(GetArticlesSpec request);
 }
 
 public class ArticlesDataService : IArticlesDataService
@@ -294,7 +294,7 @@ public class ArticlesDataService : IArticlesDataService
         }
     }
 
-    public async Task<DataServiceResult<List<ArticleViewModel>>> GetArticles(GetArticlesSpec spec)
+    public async Task<DataServiceResult<ArticlesViewModel>> GetArticles(GetArticlesSpec spec)
     {
         var collection = await _articlesCollectionProvider.GetCollectionAsync();
         var cluster = collection.Scope.Bucket.Cluster;
@@ -362,7 +362,8 @@ public class ArticlesDataService : IArticlesDataService
                 u.bio,
                 u.image,
                 {authenticatedFollowProjection}
-           }} AS author
+           }} AS author,
+           COUNT(*) OVER() AS articlesCount
 
         FROM `{bucketName}`.`{scopeName}`.`Articles` a
         JOIN `{bucketName}`.`{scopeName}`.`Users` u ON a.authorUsername = META(u).id
@@ -386,7 +387,7 @@ public class ArticlesDataService : IArticlesDataService
         OFFSET $offset
         ";
 
-        var result = await cluster.QueryAsync<ArticleViewModel>(sql, options =>
+        var result = await cluster.QueryAsync<ArticleViewModelWithCount>(sql, options =>
         {
             options.Parameter("loggedInUsername", spec.Username);
             options.Parameter("favoritedBy", spec.FavoritedByUsername);
@@ -397,6 +398,14 @@ public class ArticlesDataService : IArticlesDataService
             options.ScanConsistency(ScanConsistency);
         });
 
-        return new DataServiceResult<List<ArticleViewModel>>(await result.Rows.ToListAsync(), DataResultStatus.Ok);
+        // this next part is a little hacky, but it works
+        // the goal is to get ArticlesCount (returned with each record)
+        // separated
+        var results = await result.Rows.ToListAsync();
+        var articlesResults = new ArticlesViewModel();
+        articlesResults.ArticlesCount = results.FirstOrDefault()?.ArticlesCount ?? 0;
+        articlesResults.Articles = results.Cast<ArticleViewModel>().ToList();
+
+        return new DataServiceResult<ArticlesViewModel>(articlesResults, DataResultStatus.Ok);
     }
 }

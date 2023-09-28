@@ -44,7 +44,7 @@ public class GetFeedHandler : IRequestHandler<GetFeedRequest, GetFeedResponse>
 
         return new GetFeedResponse
         {
-            ArticlesView = result.DataResult
+            ArticlesView = result.DataResult,
         };
     }
 }

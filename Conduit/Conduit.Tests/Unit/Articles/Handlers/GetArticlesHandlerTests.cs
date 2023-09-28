@@ -18,7 +18,7 @@ public class GetArticlesHandlerTests
     {
         _mockArticleDataService = new Mock<IArticlesDataService>();
         _mockArticleDataService.Setup(m => m.GetArticles(It.IsAny<GetArticlesSpec>()))
-            .ReturnsAsync(new DataServiceResult<List<ArticleViewModel>>(new List<ArticleViewModel>(), DataResultStatus.Ok));
+            .ReturnsAsync(new DataServiceResult<ArticlesViewModel>(new ArticlesViewModel(), DataResultStatus.Ok));
 
         var validator = new GetArticlesRequestValidator();
         _handler = new GetArticlesHandler(validator, _mockArticleDataService.Object);
@@ -94,7 +94,7 @@ public class GetArticlesHandlerTests
         var filter = new ArticleFilterOptionsModel();
         var request = new GetArticlesRequest("doesnt-matter", filter);
         _mockArticleDataService.Setup(m => m.GetArticles(It.IsAny<GetArticlesSpec>()))
-            .ReturnsAsync(new DataServiceResult<List<ArticleViewModel>>(null, DataResultStatus.Error));
+            .ReturnsAsync(new DataServiceResult<ArticlesViewModel>(null, DataResultStatus.Error));
 
         // act
         var result = await _handler.Handle(request, CancellationToken.None);

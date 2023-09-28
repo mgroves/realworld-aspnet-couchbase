@@ -2,6 +2,12 @@
 
 namespace Conduit.Web.Articles.ViewModels;
 
+public class ArticlesViewModel
+{
+    public int ArticlesCount { get; set; }
+    public List<ArticleViewModel> Articles { get; set; }
+}
+
 public class ArticleViewModel
 {
     public string Slug { get; set; }
@@ -14,4 +20,9 @@ public class ArticleViewModel
     public bool Favorited { get; set; }
     public int FavoritesCount { get; set; }
     public ProfileViewModel Author { get; set; }
+}
+
+public class ArticleViewModelWithCount : ArticleViewModel
+{
+    public int ArticlesCount { get; set; }
 }

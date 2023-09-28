@@ -68,7 +68,7 @@ public class GetArticlesTests : CouchbaseIntegrationTest
 
         // assert
         Assert.That(result.Status, Is.EqualTo(DataResultStatus.Ok));
-        Assert.That(result.DataResult.Count, Is.EqualTo(20));
+        Assert.That(result.DataResult.Articles.Count, Is.EqualTo(20));
     }
 
     [Test]
@@ -90,7 +90,7 @@ public class GetArticlesTests : CouchbaseIntegrationTest
 
         // assert
         Assert.That(results.Status, Is.EqualTo(DataResultStatus.Ok));
-        foreach (var result in results.DataResult)
+        foreach (var result in results.DataResult.Articles)
         {
             Assert.That(result.Favorited, Is.True);
         }
@@ -115,7 +115,7 @@ public class GetArticlesTests : CouchbaseIntegrationTest
 
         // assert
         Assert.That(results.Status, Is.EqualTo(DataResultStatus.Ok));
-        foreach (var result in results.DataResult)
+        foreach (var result in results.DataResult.Articles)
         {
             Assert.That(result.Author.Following, Is.True);
         }
@@ -144,8 +144,8 @@ public class GetArticlesTests : CouchbaseIntegrationTest
 
         // assert
         Assert.That(results.Status, Is.EqualTo(DataResultStatus.Ok));
-        Assert.That(results.DataResult.All(x => x.TagList.Contains("baseball")), Is.True);
-        Assert.That(results.DataResult.All(x => !x.TagList.Contains("cruising")), Is.True);
+        Assert.That(results.DataResult.Articles.All(x => x.TagList.Contains("baseball")), Is.True);
+        Assert.That(results.DataResult.Articles.All(x => !x.TagList.Contains("cruising")), Is.True);
     }
 
     [Test]
@@ -170,8 +170,8 @@ public class GetArticlesTests : CouchbaseIntegrationTest
 
         // assert
         Assert.That(results.Status, Is.EqualTo(DataResultStatus.Ok));
-        Assert.That(results.DataResult.All(x => x.Author.Username == authorTarget.Username), Is.True);
-        Assert.That(results.DataResult.All(x => x.Author.Username != authorOther.Username), Is.True);
+        Assert.That(results.DataResult.Articles.All(x => x.Author.Username == authorTarget.Username), Is.True);
+        Assert.That(results.DataResult.Articles.All(x => x.Author.Username != authorOther.Username), Is.True);
     }
 
     [Test]
@@ -196,7 +196,7 @@ public class GetArticlesTests : CouchbaseIntegrationTest
 
         // assert
         Assert.That(results.Status, Is.EqualTo(DataResultStatus.Ok));
-        Assert.That(results.DataResult.All(x => x.Favorited), Is.True);
+        Assert.That(results.DataResult.Articles.All(x => x.Favorited), Is.True);
     }
 
     [TestCase(5)]
@@ -221,7 +221,7 @@ public class GetArticlesTests : CouchbaseIntegrationTest
 
         // assert
         Assert.That(results.Status, Is.EqualTo(DataResultStatus.Ok));
-        Assert.That(results.DataResult.Count, Is.EqualTo(limit));
+        Assert.That(results.DataResult.Articles.Count, Is.EqualTo(limit));
     }
 
     [Test]
@@ -255,8 +255,8 @@ public class GetArticlesTests : CouchbaseIntegrationTest
 
         // assert
         Assert.That(results.Status, Is.EqualTo(DataResultStatus.Ok));
-        Assert.That(results.DataResult.Count, Is.EqualTo(5));
-        foreach (var result in results.DataResult)
+        Assert.That(results.DataResult.Articles.Count, Is.EqualTo(5));
+        foreach (var result in results.DataResult.Articles)
             Assert.That(expectedSlugs.Any(e => e == result.Slug), Is.True);
     }
 
@@ -290,8 +290,8 @@ public class GetArticlesTests : CouchbaseIntegrationTest
 
         // assert
         Assert.That(results.Status, Is.EqualTo(DataResultStatus.Ok));
-        Assert.That(results.DataResult.Count, Is.EqualTo(expectedSlugs.Count));
+        Assert.That(results.DataResult.Articles.Count, Is.EqualTo(expectedSlugs.Count));
         foreach(var expectedSlug in expectedSlugs)
-            Assert.That(results.DataResult.Any(r => r.Slug == expectedSlug), Is.True);
+            Assert.That(results.DataResult.Articles.Any(r => r.Slug == expectedSlug), Is.True);
     }
 }

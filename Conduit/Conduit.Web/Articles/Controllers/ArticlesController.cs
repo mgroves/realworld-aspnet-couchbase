@@ -269,7 +269,7 @@ public class ArticlesController : ControllerBase
         if (getArticlesResponse.ValidationErrors?.Any() ?? false)
             return UnprocessableEntity(getArticlesResponse.ValidationErrors.ToCsv());
 
-        return Ok(new { articles = getArticlesResponse.ArticlesView });
+        return Ok(new { articles = getArticlesResponse.ArticlesView.Articles, articlesCount = getArticlesResponse.ArticlesView.ArticlesCount }); //, articlesCount = getArticlesResponse.NumTotalArticles });
     }
 
     /// <summary>
@@ -298,6 +298,6 @@ public class ArticlesController : ControllerBase
         if (getArticlesResponse.ValidationErrors?.Any() ?? false)
             return UnprocessableEntity(getArticlesResponse.ValidationErrors.ToCsv());
 
-        return Ok(new { articles = getArticlesResponse.ArticlesView });
+        return Ok(new { articles = getArticlesResponse.ArticlesView.Articles, articlesCount = getArticlesResponse.ArticlesView.ArticlesCount });
     }
 }
