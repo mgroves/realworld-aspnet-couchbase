@@ -21,7 +21,7 @@ public static class UserHelper
         username ??= "user-" + Path.GetRandomFileName();
         email ??= "email-" + Path.GetRandomFileName() + "@example.net";
         bio ??= "Lorem Ipsum bio " + Path.GetRandomFileName();
-        image ??= "http://example.net/" + Path.GetRandomFileName() + ".jpg";
+        image ??= $"https://picsum.photos/seed/{Path.GetRandomFileName()}/400.jpg";
         password ??= "ValidPassword1#-" + Path.GetRandomFileName();
 
         var authService = AuthServiceHelper.Create();

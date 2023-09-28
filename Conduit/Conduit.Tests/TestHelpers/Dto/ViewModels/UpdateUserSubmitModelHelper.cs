@@ -17,7 +17,7 @@ public static class UpdateUserSubmitModelHelper
         username ??= "username-" + random.String(10);
         bio ??= "lorem ipsum bio " + random.String(256);
         email ??= "email-" + random.String(10) + "@example.net";
-        image ??= "https://example.net/" + random.String(10) + ".jpg";
+        image ??= $"https://picsum.photos/seed/{Path.GetRandomFileName()}/400.jpg";
         password ??= "ValidPassword1!" + random.String(10);
 
         var model = new UpdateUserSubmitModel
