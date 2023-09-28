@@ -69,7 +69,7 @@ public class ArticlesController : ControllerBase
     /// <response code="401">Unauthorized, likely because credentials are incorrect</response>
     /// <response code="422">Article was unable to be favorited</response>
     [HttpPost]
-    [Route("/api/article/{slug}/favorite")]
+    [Route("/api/articles/{slug}/favorite")]
     [Authorize]
     public async Task<IActionResult> FavoriteArticle(string slug)
     {
@@ -105,7 +105,7 @@ public class ArticlesController : ControllerBase
     /// <response code="401">Unauthorized, likely because credentials are incorrect</response>
     /// <response code="422">Article was unable to be unfavorited</response>
     [HttpDelete]
-    [Route("/api/article/{slug}/favorite")]
+    [Route("/api/articles/{slug}/unfavorite")]
     [Authorize]
     public async Task<IActionResult> UnfavoriteArticle(string slug)
     {
@@ -140,7 +140,7 @@ public class ArticlesController : ControllerBase
     /// <response code="200">Successful retrieval, returns the Article</response>
     /// <response code="422">Article updates are invalid</response>
     [HttpGet]
-    [Route("/api/article/{slug}")]
+    [Route("/api/articles/{slug}")]
     [AllowAnonymous]
     public async Task<IActionResult> Get(string slug)
     {
