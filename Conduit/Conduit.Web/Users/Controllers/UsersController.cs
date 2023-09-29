@@ -128,7 +128,7 @@ public class UsersController : Controller
         if (result.ValidationErrors?.Any() ?? false)
             return UnprocessableEntity(result.ValidationErrors.ToCsv());
 
-        return Ok(result.UserView);
+        return Ok(new { user = result.UserView });
     }
 
     /// <summary>
@@ -157,6 +157,6 @@ public class UsersController : Controller
         if (result.ValidationErrors?.Any() ?? false)
             return UnprocessableEntity(result.ValidationErrors.ToCsv());
 
-        return Ok(result.ProfileView);
+        return Ok(new { profile = result.ProfileView });
     }
 }
