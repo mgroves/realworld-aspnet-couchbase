@@ -37,7 +37,7 @@ public static class CreateArticleRequestHelper
                 Body = body,
                 Description = description,
                 Title = title,
-                Tags = tags
+                TagList = tags
             }
         };
 

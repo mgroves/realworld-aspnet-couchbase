@@ -27,5 +27,5 @@ public class CreateArticleSubmitModelArticle
     /// <summary>
     /// Tags, optional. Any tags specified must be from the allowed list of tags.
     /// </summary>
-    public List<string> Tags { get; set; }
+    public List<string> TagList { get; set; }
 }

@@ -30,7 +30,7 @@ public class CreateArticleRequestValidator : AbstractValidator<CreateArticleRequ
             .MaximumLength(15000000).WithMessage("Body must be 15,000,000 characters or less.")
             .MinimumLength(10).WithMessage("Body must be 10 characters or more.");
 
-        RuleFor(x => x.ArticleSubmission.Article.Tags)
+        RuleFor(x => x.ArticleSubmission.Article.TagList)
             .Cascade(CascadeMode.Stop)
             .MustAsync(BeAllowedTags).WithMessage("At least one of those tags isn't allowed.");
     }

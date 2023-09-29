@@ -23,7 +23,7 @@ public static class CreateArticleSubmitModelHelper
             Title = title,
             Description = description,
             Body = body,
-            Tags = tags
+            TagList = tags
         };
         return model;
     }

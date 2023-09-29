@@ -102,7 +102,7 @@ public class CreateArticleHandlerTests
     {
         // arrange
         var request = CreateArticleRequestHelper.Create();
-        request.ArticleSubmission.Article.Tags = new List<string>
+        request.ArticleSubmission.Article.TagList = new List<string>
         {
             "not-approved-tag-" + Path.GetRandomFileName()
         };
@@ -183,14 +183,14 @@ public class CreateArticleHandlerTests
     {
         // arrange
         var request = CreateArticleRequestHelper.Create();
-        request.ArticleSubmission.Article.Tags = _allTags.Take(1).ToList();
+        request.ArticleSubmission.Article.TagList = _allTags.Take(1).ToList();
 
         // act
         var result = await _handler.Handle(request, CancellationToken.None);
 
         // assert
         Assert.That(result, Is.Not.Null);
-        Assert.That(result.Article.TagList.Contains(request.ArticleSubmission.Article.Tags.Single()), Is.True);
+        Assert.That(result.Article.TagList.Contains(request.ArticleSubmission.Article.TagList.Single()), Is.True);
     }
 
     [Test]
@@ -213,7 +213,7 @@ public class CreateArticleHandlerTests
     {
         // arrange
         var request = CreateArticleRequestHelper.Create();
-        request.ArticleSubmission.Article.Tags = _allTags.Take(1).ToList();
+        request.ArticleSubmission.Article.TagList = _allTags.Take(1).ToList();
 
         // act
         var result = await _handler.Handle(request, CancellationToken.None);
