@@ -67,6 +67,9 @@ namespace Conduit.Web
 
             app.UseCors("CorsPolicy");
 
+            app.UseStaticFiles();
+            app.MapFallbackToFile("index.html");
+
             app.Run();
 
             // Add the following line to close the Couchbase connection inside the app.Run() method at the end of Program.cs

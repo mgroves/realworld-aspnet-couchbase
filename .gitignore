@@ -335,3 +335,5 @@ appsettings.Production.json
 /Conduit/migrateup.bat
 /Conduit/Conduit.Tests/integrationtestsettings.json
 /Conduit/*.lutconfig
+/Conduit/migrateup.azure.bat
+/Conduit/Conduit.Web/wwwroot
