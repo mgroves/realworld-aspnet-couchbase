@@ -96,6 +96,7 @@ public class UserDataService : IUserDataService
             return new DataServiceResult<User>(null, DataResultStatus.NotFound);
         
         var user = userResult.ContentAs<User>();
+        user.Username = username;
         
         return new DataServiceResult<User>(user, DataResultStatus.Ok);
     }
