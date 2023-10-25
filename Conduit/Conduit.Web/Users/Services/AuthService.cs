@@ -18,8 +18,6 @@ public class AuthService : IAuthService
 
     public string GenerateJwtToken(string email, string username)
     {
-        // TODO: put username in claim too?
-
         var claims = new[]
         {
             new Claim(ClaimTypes.Email, email),
@@ -42,7 +40,7 @@ public class AuthService : IAuthService
 
     public bool DoesPasswordMatch(string submittedPassword, string passwordFromDatabase, string passwordSalt)
     {
-        return HashPassword(submittedPassword, passwordSalt) == passwordFromDatabase;
+        return BCrypt.Net.BCrypt.Verify(submittedPassword, passwordFromDatabase);
     }
 
     public string HashPassword(string password, string passwordSalt)

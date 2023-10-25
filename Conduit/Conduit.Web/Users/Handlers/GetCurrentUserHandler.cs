@@ -18,6 +18,8 @@ public class GetCurrentUserHandler : IRequestHandler<GetCurrentUserRequest, GetC
 
     public async Task<GetCurrentUserResult> Handle(GetCurrentUserRequest request, CancellationToken cancellationToken)
     {
+        // TODO: the whole user could be put into a JWT token, which would mean a database call could be skipped
+
         var usernameClaim = _authService.GetUsernameClaim(request.BearerToken);
         if (usernameClaim.IsNotFound)
             return new GetCurrentUserResult { IsInvalidToken = true };
