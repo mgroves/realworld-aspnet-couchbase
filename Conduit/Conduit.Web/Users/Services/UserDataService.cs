@@ -113,8 +113,6 @@ public class UserDataService : IUserDataService
         var collection = await _usersCollectionProvider.GetCollectionAsync();
         await collection.MutateInAsync(fieldsToUpdate.Username, specs =>
         {
-            // TODO: create UpsertIfNotEmpty extension method to make this less verbose?
-            // TODO: and possibly avoid hardcoding field names?
             if (!string.IsNullOrEmpty(fieldsToUpdate.Email))
                 specs.Upsert("email", fieldsToUpdate.Email);
             if (!string.IsNullOrEmpty(fieldsToUpdate.Bio))
