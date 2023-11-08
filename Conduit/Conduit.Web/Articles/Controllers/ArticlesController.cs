@@ -244,7 +244,7 @@ public class ArticlesController : ControllerBase
     /// </remarks>
     /// <param name="filter">Filtering options</param>
     /// <returns>List of articles</returns>
-    /// <response code="200">Successfully queryied articles</response>
+    /// <response code="200">Successfully queried articles</response>
     /// <response code="422">Article request is invalid</response>
     [HttpGet]
     [Route("/api/articles")]
