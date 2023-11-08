@@ -68,6 +68,14 @@ This Conduit implementation is being streamed [live on Twitch](https://twitch.tv
    2. You can use Postman to exercise the endpoints. [RealWorld has a Postman collection available for your convenience](https://realworld-docs.netlify.app/docs/specs/backend-specs/postman) (which is currently checked into this repo, but beware--if you have issues, fall back to the official one).
    3. You can also use the generated SwaggerUI to exercise the endpoints.
 
+# Seed Data
+
+I have included a small set of data that you can load into Couchbase with [cbimport](https://docs.couchbase.com/server/current/tools/cbimport-json.html) if you want.
+
+Note that the fields _dockey, _scopeName, and _collectionName are only for use with import, and can be removed once the data is loaded into a Couchbase bucket.
+
+For each user in this seed data, every password is "StrongPassword1!".
+
 # Video Series
 
 The creation of this implementation of Conduit is being done (mostly) on a [live coding stream](https://twitch.tv/matthewdgroves). Here are all the recordings:
