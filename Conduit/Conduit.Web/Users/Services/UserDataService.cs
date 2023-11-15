@@ -2,7 +2,6 @@
 using Couchbase.KeyValue;
 using Couchbase.Query;
 using Conduit.Web.Users.ViewModels;
-using Microsoft.AspNetCore.Mvc.Formatters;
 using Conduit.Web.DataAccess.Providers;
 using Conduit.Web.DataAccess.Models;
 using Conduit.Web.DataAccess.Dto;
