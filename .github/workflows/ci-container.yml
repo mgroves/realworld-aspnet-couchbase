@@ -23,7 +23,7 @@ jobs:
       Couchbase__ScanConsistency: ${{ secrets.COUCHBASE__SCANCONSISTENCY }}
       JwtSecret__Issuer: ${{ secrets.JWTSECRET__ISSUER }}
       JwtSecret__Audience: ${{ secrets.JWTSECRET__AUDIENCE }}
-      JwtSecret__SecurityKey: ${{ secrets.JWTSECRET__SECURITYKEY }}
+      JwtSecret__SecurityKey: "${{ secrets.JWTSECRET__SECURITYKEY }}"
 
     services:
       couchbase:
@@ -52,11 +52,6 @@ jobs:
           - 18096:18096
 
     steps:
-    - name: Check JWT Secret Length
-      run: |
-        JWT_SECRET="${{ secrets.JWTSECRET__SECURITYKEY }}"
-        echo "Secret length: ${#JWT_SECRET}"
-
     - name: Check out code
       uses: actions/checkout@v2
 
