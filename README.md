@@ -20,7 +20,7 @@ The code is meant to be readable, and simple enough to follow along. If you can'
 
 You'll need to understand at least a little bit:
 
-* [.NET 7](https://dotnet.microsoft.com/en-us/)
+* [.NET 8](https://dotnet.microsoft.com/en-us/)
 * [C#](https://learn.microsoft.com/en-us/dotnet/csharp/)
 * [ASP.NET Core](https://dotnet.microsoft.com/en-us/apps/aspnet) - web framework for .NET
 * [Couchbase Capella (or Couchbase Server)](https://www.couchbase.com/developers/) - NoSQL database
@@ -86,7 +86,7 @@ An overview of the goals of this project and the Real World Conduit project, fea
 |--|---|-----|-----
 | 2023-06-06 | Starting the Conduit project - ASP.NET + Couchbase - Office Hours | https://www.youtube.com/watch?v=HiRj5ntqiXk | https://www.youtube.com/watch?v=3ynXWW_Vyrc
 | 2023-06-08 | JWT and Mediatr | https://www.youtube.com/watch?v=O5ZTnmM4RpQ | https://www.youtube.com/watch?v=56kxkW63HOM
-| 2023-06-13 | Can ChatGPT write unit tests? | https://www.youtube.com/watch?v=eK9Ab4mWU_s | 
+| 2023-06-13 | Can ChatGPT write unit tests? | https://www.youtube.com/watch?v=eK9Ab4mWU_s | https://www.youtube.com/watch?v=JdxKY7wN0zY
 | 2023-06-16 | Validation / Integration tests | https://www.youtube.com/watch?v=3vv37DP-iLM |
 | 2023-06-20 | Get User / Update User endpoints | https://www.youtube.com/watch?v=Jgen3uyNHBQ |
 | 2023-06-27 | Integration tests | https://www.youtube.com/watch?v=04WWcvSwtQg
