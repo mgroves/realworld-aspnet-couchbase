@@ -28,7 +28,7 @@ public class GetProfileHandlerTests
         {
             Audience = "doesntmatter-audience",
             Issuer = "doesntmatter-issuer",
-            SecurityKey = "doesntmatter-securityKey"
+            SecurityKey = "doesntmatter-securityKey-doesntmatter-securityKey-doesntmatter-securityKey-doesntmatter-securityKey"
         };
         _handler = new GetProfileHandler(_userDataServiceMock.Object,
             new GetProfileRequestValidator(), 
