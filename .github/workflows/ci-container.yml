@@ -23,7 +23,7 @@ jobs:
       Couchbase__ScanConsistency: ${{ secrets.COUCHBASE__SCANCONSISTENCY }}
       JwtSecret__Issuer: ${{ secrets.JWTSECRET__ISSUER }}
       JwtSecret__Audience: ${{ secrets.JWTSECRET__AUDIENCE }}
-      JwtSecret__SecurityKey: "${{ secrets.JWTSECRET__SECURITYKEY }}"
+      JwtSecret__SecurityKey: "thisishardcodedtryingtofigureouttheissue29mjL7uvnxE6BDqP5aT3bYRg"
 
     services:
       couchbase:
