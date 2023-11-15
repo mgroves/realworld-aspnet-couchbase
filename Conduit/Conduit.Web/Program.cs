@@ -72,10 +72,9 @@ namespace Conduit.Web
 
             app.Run();
 
-            // Add the following line to close the Couchbase connection inside the app.Run() method at the end of Program.cs
             app.Lifetime.ApplicationStopped.Register(() =>
             {
-                app.Services.GetRequiredService<ICouchbaseLifetimeService>().Close();
+                app.Services.GetRequiredService<ICouchbaseLifetimeService>().CloseAsync().ConfigureAwait(false);
             });
         }
     }
@@ -145,7 +144,7 @@ namespace Conduit.Web
                         ValidateIssuerSigningKey = true,
                         ValidIssuer = config["JwtSecrets:Issuer"], 
                         ValidAudience = config["JwtSecrets:Audience"],
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes( config["JwtSecrets:SecurityKey"]))
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["JwtSecrets:SecurityKey"]))
                     };
                     options.Events = new JwtBearerEvents()
                     {

@@ -12,9 +12,9 @@ public static class AuthServiceHelper
         return new AuthService(new OptionsWrapper<JwtSecrets>(
             new JwtSecrets()
             {
-                Issuer = "ConduitAspNetCouchbase_Issuer",
-                Audience = "ConduitAspNetCouchbase_Audience",
-                SecurityKey = "6B{DqP5aT,3b&!YRgk29m@j$L7uvnxE"
+                Issuer = "PlaceholderIssuer",
+                Audience = "PlaceholderAudience",
+                SecurityKey = "aaaaabbbbbcccccdddddeeeeefffffggggghhhhhiiiiijjjjjkkkkklllllmmmmmnn"
             }));
     }
 }

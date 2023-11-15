@@ -1,7 +1,5 @@
-﻿using System.Net;
-using Conduit.Web.Articles.Handlers;
+﻿using Conduit.Web.Articles.Handlers;
 using Conduit.Web.Articles.ViewModels;
-using Conduit.Web.DataAccess.Models;
 using Conduit.Web.Extensions;
 using Conduit.Web.Users.Handlers;
 using Conduit.Web.Users.Services;

@@ -27,7 +27,6 @@ public class GetCurrentUserRequestHandlerTests : CouchbaseIntegrationTest
     public async Task GetCurrentUserRequestHandler_Is_Successful()
     {
         // *** arrange
-
         // arrange the request
         var email = $"valid{Path.GetRandomFileName()}@example.net";
         var username = $"valid{Path.GetRandomFileName()}";
