@@ -20,7 +20,6 @@ public class GetArticleHandlerTests : CouchbaseIntegrationTest
     private AuthService _authService;
     private UserDataService _userDataService;
     private FollowsDataService _followDataService;
-    private Random _random;
 
     public override async Task Setup()
     {
@@ -36,14 +35,13 @@ public class GetArticleHandlerTests : CouchbaseIntegrationTest
         {
             Audience = "dummy-audience",
             Issuer = "dummy-issuer",
-            SecurityKey = "dummy-securitykey"
+            SecurityKey = "dummy-securitykey-dummy-securitykey-dummy-securitykey-dummy-securitykey"
         };
         _authService = new AuthService(new OptionsWrapper<JwtSecrets>(jwtSecrets));
         _articleDataService = new ArticlesDataService(_articleCollectionProvider, _favoriteCollectionProvider);
         _followDataService = new FollowsDataService(_followsCollectionProvider);
         _userDataService = new UserDataService(_usersCollectionProvider, _authService);
         _handler = new GetArticleHandler(_articleDataService, _userDataService, _followDataService);
-        _random = new Random();
     }
 
     [Test]
