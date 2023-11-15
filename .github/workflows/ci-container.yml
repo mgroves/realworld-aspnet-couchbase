@@ -21,9 +21,9 @@ jobs:
       Couchbase__BucketName: ${{ secrets.COUCHBASE__BUCKETNAME }}
       Couchbase__ScopeName: ${{ secrets.COUCHBASE__SCOPENAME }}
       Couchbase__ScanConsistency: ${{ secrets.COUCHBASE__SCANCONSISTENCY }}
-      JwtSecret__Issuer: ${{ secrets.JWTSECRET__ISSUER }}
-      JwtSecret__Audience: ${{ secrets.JWTSECRET__AUDIENCE }}
-      JwtSecret__SecurityKey: ${{ secrets.JWTSECRET__SECURITYKEY }}
+      JwtSecrets__Issuer: ${{ secrets.JWTSECRET__ISSUER }}
+      JwtSecrets__Audience: ${{ secrets.JWTSECRET__AUDIENCE }}
+      JwtSecrets__SecurityKey: ${{ secrets.JWTSECRET__SECURITYKEY }}
 
     services:
       couchbase:
