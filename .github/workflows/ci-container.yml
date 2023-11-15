@@ -54,7 +54,8 @@ jobs:
     steps:
     - name: Check JWT Secret Length
       run: |
-        echo "Secret length: $(echo -n ${{ secrets.JWTSECRET__SECURITYKEY }} | wc -c)"
+        JWT_SECRET="${{ secrets.JWTSECRET__SECURITYKEY }}"
+        echo "Secret length: ${#JWT_SECRET}"
 
     - name: Check out code
       uses: actions/checkout@v2
