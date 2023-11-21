@@ -74,7 +74,15 @@ I have included a small set of data that you can load into Couchbase with [cbimp
 
 Note that the fields _dockey, _scopeName, and _collectionName are only for use with import, and can be removed once the data is loaded into a Couchbase bucket.
 
-For each user in this seed data, every password is "StrongPassword1!".
+For each user in this seed data, every password is "StrongPassword01!".
+
+Here's an example command to import seeddata.json:
+
+```
+> & 'C:\Program Files\Couchbase\Server\bin\cbimport.exe' json -c localhost -b Conduit -d file://seeddata.json -f list -u Administrator -p password --scope-collection-exp %_scopeName%.%_collectionName% --generate-key %_dockey% --ignore-fields _collectionName,_dockey,_scopeName
+```
+
+This will vary based on where cbimport is installed, which operating system you're using, your credentials, etc. The above example uses PowerShell on Windows, with Couchbase Server installed.
 
 # Video Series
 
