@@ -20,12 +20,13 @@ public class LoginRequestHandlerTests : CouchbaseIntegrationTest
         await base.Setup();
 
         _usersCollectionProvider = ServiceProvider.GetRequiredService<IConduitUsersCollectionProvider>();
+        var genAiService = ServiceProvider.GetRequiredService<IGenerativeAiService>();
 
         // arrange the handler
         var authService = AuthServiceHelper.Create();
         _loginRequestHandler = new LoginRequestHandler(authService,
             new LoginRequestValidator(),
-            new UserDataService(_usersCollectionProvider, authService));
+            new UserDataService(_usersCollectionProvider, authService, genAiService));
     }
 
     [Test]

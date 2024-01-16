@@ -23,8 +23,10 @@ public class GetProfileHandlerTests : CouchbaseIntegrationTest
         // setup handler
         _usersCollectionProvider = ServiceProvider.GetRequiredService<IConduitUsersCollectionProvider>();
         _followsCollectionProvider = ServiceProvider.GetRequiredService<IConduitFollowsCollectionProvider>();
+        var genAiService = ServiceProvider.GetRequiredService<IGenerativeAiService>();
+
         _authService = AuthServiceHelper.Create();
-        _getProfileHandler = new GetProfileHandler(new UserDataService(_usersCollectionProvider, _authService),
+        _getProfileHandler = new GetProfileHandler(new UserDataService(_usersCollectionProvider, _authService, genAiService),
             new GetProfileRequestValidator(),
             new FollowsDataService(_followsCollectionProvider),
             _authService);

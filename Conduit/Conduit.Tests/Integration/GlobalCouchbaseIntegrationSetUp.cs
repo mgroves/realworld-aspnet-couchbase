@@ -5,6 +5,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NoSqlMigrator.Runner;
 using Conduit.Web.DataAccess.Providers;
+using Conduit.Web.Users.Services;
+using OpenAI_API;
 
 namespace Conduit.Tests.Integration;
 
@@ -82,6 +84,9 @@ public class GlobalCouchbaseIntegrationSetUp
                 .AddScope(_config["Couchbase:ScopeName"])
                 .AddCollection<IConduitCommentsCollectionProvider>("Comments");
         });
+
+        services.AddTransient<IGenerativeAiService, OpenAiService>();
+        services.AddTransient<IOpenAIAPI>(x => new OpenAIAPI(_config["OpenAIApiKey"]));
 
         ServiceCollection = services;
     }

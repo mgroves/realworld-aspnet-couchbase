@@ -300,4 +300,46 @@ public class ArticlesController : ControllerBase
 
         return Ok(new { articles = getArticlesResponse.ArticlesView.Articles, articlesCount = getArticlesResponse.ArticlesView.ArticlesCount });
     }
+
+
+
+
+
+
+    /// <summary>
+    /// Adaptive Feed
+    /// </summary>
+    /// <remarks>
+    /// Not part of Conduit spec
+    /// </remarks>
+    /// <param name="options">Options</param>
+    /// <returns>List of articles</returns>
+    /// <response code="200">Successfully queryied articles</response>
+    /// <response code="422">Article request is invalid</response>
+    [HttpGet]
+    [Route("/api/articles/adaptive")]
+    public async Task<IActionResult> GetAdaptiveFeed([FromQuery] AdaptiveArticleFilterOptionsModel filter)
+    {
+        // get (optional) auth info
+        string username = null;
+        var headers = Request.Headers["Authorization"];
+        var isUserAnonymous = headers.All(string.IsNullOrEmpty);
+        if (!isUserAnonymous)
+        {
+            var claims = _authService.GetAllAuthInfo(Request.Headers["Authorization"]);
+            username = claims.Username.Value;
+        }
+
+        // TODO: make sure adaptive tags have been created?
+
+        var getArticlesRequest = new GetAdaptiveArticlesRequest(username, filter);
+        var getArticlesResponse = await _mediator.Send(getArticlesRequest);
+
+        if (getArticlesResponse.IsFailure)
+            return UnprocessableEntity("There was an error retrieving articles.");
+        if (getArticlesResponse.ValidationErrors?.Any() ?? false)
+            return UnprocessableEntity(getArticlesResponse.ValidationErrors.ToCsv());
+
+        return Ok(new { articles = getArticlesResponse.ArticlesView.Articles, articlesCount = getArticlesResponse.ArticlesView.ArticlesCount }); //, articlesCount = getArticlesResponse.NumTotalArticles });
+    }
 }

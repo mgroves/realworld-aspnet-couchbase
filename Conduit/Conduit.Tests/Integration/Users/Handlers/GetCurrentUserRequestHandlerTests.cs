@@ -19,8 +19,10 @@ public class GetCurrentUserRequestHandlerTests : CouchbaseIntegrationTest
 
         // setup handler and dependencies
         _usersCollectionProvider = ServiceProvider.GetRequiredService<IConduitUsersCollectionProvider>();
+        var genAiService = ServiceProvider.GetRequiredService<IGenerativeAiService>();
+
         var authService = AuthServiceHelper.Create();
-        _getCurrentUserHandler = new GetCurrentUserHandler(authService, new UserDataService(_usersCollectionProvider, authService));
+        _getCurrentUserHandler = new GetCurrentUserHandler(authService, new UserDataService(_usersCollectionProvider, authService, genAiService));
     }
 
     [Test]

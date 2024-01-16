@@ -18,7 +18,9 @@ public class RegisterNewUserTests : CouchbaseIntegrationTest
         await base.Setup();
 
         _usersCollectionProvider = ServiceProvider.GetRequiredService<IConduitUsersCollectionProvider>();
-        _userDataService = new UserDataService(_usersCollectionProvider, AuthServiceHelper.Create());
+        var genAiService = ServiceProvider.GetRequiredService<IGenerativeAiService>();
+
+        _userDataService = new UserDataService(_usersCollectionProvider, AuthServiceHelper.Create(), genAiService);
     }
 
     [Test]

@@ -1,3 +1,4 @@
+using System.Reflection.Metadata.Ecma335;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -11,6 +12,7 @@ using FluentValidation;
 using Microsoft.OpenApi.Models;
 using Conduit.Web.DataAccess.Providers;
 using Slugify;
+using OpenAI_API;
 
 namespace Conduit.Web
 {
@@ -86,6 +88,8 @@ namespace Conduit.Web
         /// </summary>
         public static void AddConduitServiceDependencies(this IServiceCollection @this, ConfigurationManager configManager)
         {
+            @this.AddTransient<IGenerativeAiService, OpenAiService>();
+            @this.AddTransient<IOpenAIAPI>(x => new OpenAIAPI(configManager["OpenAIApiKey"]));
             @this.AddTransient<ISlugHelper, SlugHelper>();
             @this.AddTransient<ISlugService, SlugService>();
             @this.AddValidatorsFromAssemblyContaining<LoginRequestValidator>();

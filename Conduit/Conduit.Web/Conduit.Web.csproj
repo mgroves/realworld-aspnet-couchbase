@@ -26,14 +26,9 @@
     <PackageReference Include="MediatR" Version="12.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.0" />
+    <PackageReference Include="OpenAI" Version="1.10.0" />
     <PackageReference Include="Slugify.Core" Version="4.0.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Articles\Handlers\" />
-    <Folder Include="Articles\Services\" />
-    <Folder Include="DataAccess\Dto\Articles\" />
   </ItemGroup>
 
 </Project>

@@ -20,13 +20,14 @@ public class UpdateUserHandlerTests : CouchbaseIntegrationTest
         await base.Setup();
 
         _usersCollectionProvider = ServiceProvider.GetRequiredService<IConduitUsersCollectionProvider>();
+        var genAiService = ServiceProvider.GetRequiredService<IGenerativeAiService>();
 
         // arrange handler and dependencies
         var authService = AuthServiceHelper.Create();
         _handler = new UpdateUserHandler(
-            new UpdateUserRequestValidator(new UserDataService(_usersCollectionProvider, authService), new SharedUserValidator<UpdateUserViewModelUser>()),
+            new UpdateUserRequestValidator(new UserDataService(_usersCollectionProvider, authService, genAiService), new SharedUserValidator<UpdateUserViewModelUser>()),
             authService,
-            new UserDataService(_usersCollectionProvider, authService));
+            new UserDataService(_usersCollectionProvider, authService, genAiService));
     }
 
     [Test]

@@ -23,11 +23,12 @@ public class UnfollowUserHandlerIntegrationTest : CouchbaseIntegrationTest
 
         _followsCollectionProvider = ServiceProvider.GetRequiredService<IConduitFollowsCollectionProvider>();
         _usersCollectionProvider = ServiceProvider.GetRequiredService<IConduitUsersCollectionProvider>();
+        var genAiService = ServiceProvider.GetRequiredService<IGenerativeAiService>();
 
         // setup handler and dependencies
         var authService = AuthServiceHelper.Create();
         _handler = new UnfollowUserHandler(
-            new UserDataService(_usersCollectionProvider, authService),
+            new UserDataService(_usersCollectionProvider, authService, genAiService),
             new FollowsDataService(_followsCollectionProvider),
             new UnfollowUserRequestValidator());
     }

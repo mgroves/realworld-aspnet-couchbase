@@ -22,8 +22,10 @@ public class RegistrationRequestHandlerTests : CouchbaseIntegrationTest
 
         // setup the handler and dependencies
         _usersCollectionProvider = ServiceProvider.GetRequiredService<IConduitUsersCollectionProvider>();
+        var genAiService = ServiceProvider.GetRequiredService<IGenerativeAiService>();
+
         var authService = AuthServiceHelper.Create();
-        _registrationRequestHandler = new RegistrationRequestHandler(authService, new RegistrationRequestValidator(new SharedUserValidator<RegistrationUserSubmitModel>(), new UserDataService(_usersCollectionProvider, authService)), new UserDataService(_usersCollectionProvider, authService));
+        _registrationRequestHandler = new RegistrationRequestHandler(authService, new RegistrationRequestValidator(new SharedUserValidator<RegistrationUserSubmitModel>(), new UserDataService(_usersCollectionProvider, authService, genAiService)), new UserDataService(_usersCollectionProvider, authService, genAiService));
     }
 
     [Test]
