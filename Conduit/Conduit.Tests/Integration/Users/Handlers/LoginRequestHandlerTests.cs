@@ -1,6 +1,7 @@
 ﻿using Conduit.Tests.TestHelpers;
 using Conduit.Tests.TestHelpers.Data;
 using Conduit.Tests.TestHelpers.Dto.Handlers;
+using Conduit.Web.Adaptive.Services;
 using Conduit.Web.DataAccess.Providers;
 using Conduit.Web.Users.Handlers;
 using Conduit.Web.Users.Services;
@@ -20,13 +21,13 @@ public class LoginRequestHandlerTests : CouchbaseIntegrationTest
         await base.Setup();
 
         _usersCollectionProvider = ServiceProvider.GetRequiredService<IConduitUsersCollectionProvider>();
-        var genAiService = ServiceProvider.GetRequiredService<IGenerativeAiService>();
+        var adaptiveDataService = ServiceProvider.GetRequiredService<IAdaptiveDataService>();
 
         // arrange the handler
         var authService = AuthServiceHelper.Create();
         _loginRequestHandler = new LoginRequestHandler(authService,
             new LoginRequestValidator(),
-            new UserDataService(_usersCollectionProvider, authService, genAiService));
+            new UserDataService(_usersCollectionProvider, authService));
     }
 
     [Test]

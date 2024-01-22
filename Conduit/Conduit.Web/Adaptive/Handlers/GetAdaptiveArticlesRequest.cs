@@ -1,9 +1,9 @@
-﻿using Conduit.Web.Articles.ViewModels;
+﻿using Conduit.Web.Adaptive.ViewModels;
 using Conduit.Web.DataAccess.Dto.Articles;
 using FluentValidation;
 using MediatR;
 
-namespace Conduit.Web.Articles.Handlers;
+namespace Conduit.Web.Adaptive.Handlers;
 
 public class GetAdaptiveArticlesRequest : IRequest<GetAdaptiveArticlesResponse>
 {

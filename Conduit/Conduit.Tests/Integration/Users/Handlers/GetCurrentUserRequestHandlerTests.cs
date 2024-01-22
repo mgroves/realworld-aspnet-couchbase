@@ -1,5 +1,6 @@
 ﻿using Conduit.Tests.TestHelpers;
 using Conduit.Tests.TestHelpers.Data;
+using Conduit.Web.Adaptive.Services;
 using Conduit.Web.DataAccess.Providers;
 using Conduit.Web.Users.Handlers;
 using Conduit.Web.Users.Services;
@@ -19,10 +20,10 @@ public class GetCurrentUserRequestHandlerTests : CouchbaseIntegrationTest
 
         // setup handler and dependencies
         _usersCollectionProvider = ServiceProvider.GetRequiredService<IConduitUsersCollectionProvider>();
-        var genAiService = ServiceProvider.GetRequiredService<IGenerativeAiService>();
+        var adaptiveDataService = ServiceProvider.GetRequiredService<IAdaptiveDataService>();
 
         var authService = AuthServiceHelper.Create();
-        _getCurrentUserHandler = new GetCurrentUserHandler(authService, new UserDataService(_usersCollectionProvider, authService, genAiService));
+        _getCurrentUserHandler = new GetCurrentUserHandler(authService, new UserDataService(_usersCollectionProvider, authService));
     }
 
     [Test]

@@ -1,5 +1,6 @@
 ﻿using Conduit.Tests.TestHelpers;
 using Conduit.Tests.TestHelpers.Data;
+using Conduit.Web.Adaptive.Services;
 using Conduit.Web.DataAccess.Providers;
 using Conduit.Web.Follows.Handlers;
 using Conduit.Web.Follows.Services;
@@ -22,12 +23,12 @@ public class FollowUserHandlerIntegrationTest : CouchbaseIntegrationTest
 
         _followsCollectionProvider = ServiceProvider.GetRequiredService<IConduitFollowsCollectionProvider>();
         _usersCollectionProvider = ServiceProvider.GetRequiredService<IConduitUsersCollectionProvider>();
-        var genAiService = ServiceProvider.GetRequiredService<IGenerativeAiService>();
+        var adaptiveDataService = ServiceProvider.GetRequiredService<IAdaptiveDataService>();
 
         // setup handler and dependencies
         var authService = AuthServiceHelper.Create();
         _handler = new FollowUserHandler(
-            new UserDataService(_usersCollectionProvider, authService, genAiService),
+            new UserDataService(_usersCollectionProvider, authService),
             new FollowsDataService(_followsCollectionProvider),
             new FollowUserRequestValidator());
     }

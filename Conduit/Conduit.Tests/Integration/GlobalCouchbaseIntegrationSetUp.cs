@@ -1,4 +1,5 @@
 ﻿using Conduit.Migrations;
+using Conduit.Web.Adaptive.Services;
 using Couchbase.Extensions.DependencyInjection;
 using Couchbase;
 using Microsoft.Extensions.Configuration;
@@ -87,6 +88,7 @@ public class GlobalCouchbaseIntegrationSetUp
 
         services.AddTransient<IGenerativeAiService, OpenAiService>();
         services.AddTransient<IOpenAIAPI>(x => new OpenAIAPI(_config["OpenAIApiKey"]));
+        services.AddTransient<IAdaptiveDataService, AdaptiveDataService>();
 
         ServiceCollection = services;
     }

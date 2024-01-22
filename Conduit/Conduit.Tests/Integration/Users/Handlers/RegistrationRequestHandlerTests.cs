@@ -6,6 +6,7 @@ using Conduit.Tests.TestHelpers.Data;
 using Conduit.Tests.TestHelpers;
 using Conduit.Web.DataAccess.Providers;
 using Conduit.Tests.TestHelpers.Dto.Handlers;
+using Conduit.Web.Adaptive.Services;
 
 namespace Conduit.Tests.Integration.Users.Handlers;
 
@@ -22,10 +23,14 @@ public class RegistrationRequestHandlerTests : CouchbaseIntegrationTest
 
         // setup the handler and dependencies
         _usersCollectionProvider = ServiceProvider.GetRequiredService<IConduitUsersCollectionProvider>();
-        var genAiService = ServiceProvider.GetRequiredService<IGenerativeAiService>();
+        var adaptiveDataService = ServiceProvider.GetRequiredService<IAdaptiveDataService>();
 
         var authService = AuthServiceHelper.Create();
-        _registrationRequestHandler = new RegistrationRequestHandler(authService, new RegistrationRequestValidator(new SharedUserValidator<RegistrationUserSubmitModel>(), new UserDataService(_usersCollectionProvider, authService, genAiService)), new UserDataService(_usersCollectionProvider, authService, genAiService));
+        _registrationRequestHandler = new RegistrationRequestHandler(
+            authService,
+            new RegistrationRequestValidator(new SharedUserValidator<RegistrationUserSubmitModel>(),
+                new UserDataService(_usersCollectionProvider, authService)),
+            new UserDataService(_usersCollectionProvider, authService));
     }
 
     [Test]

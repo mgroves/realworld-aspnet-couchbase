@@ -1,6 +1,7 @@
 ﻿using Conduit.Tests.TestHelpers;
 using Conduit.Tests.TestHelpers.Data;
 using Conduit.Tests.TestHelpers.Dto.Handlers;
+using Conduit.Web.Adaptive.Services;
 using Conduit.Web.DataAccess.Providers;
 using Conduit.Web.Users.Handlers;
 using Conduit.Web.Users.Services;
@@ -13,6 +14,8 @@ public class UpdateUserHandlerTests : CouchbaseIntegrationTest
 {
     private IConduitUsersCollectionProvider _usersCollectionProvider;
     private UpdateUserHandler _handler;
+    private IConduitArticlesCollectionProvider _articlesCollectionProvider;
+    private IGenerativeAiService _genAiServices;
 
     [OneTimeSetUp]
     public override async Task Setup()
@@ -20,14 +23,16 @@ public class UpdateUserHandlerTests : CouchbaseIntegrationTest
         await base.Setup();
 
         _usersCollectionProvider = ServiceProvider.GetRequiredService<IConduitUsersCollectionProvider>();
-        var genAiService = ServiceProvider.GetRequiredService<IGenerativeAiService>();
+        _articlesCollectionProvider = ServiceProvider.GetRequiredService<IConduitArticlesCollectionProvider>();
+        _genAiServices = ServiceProvider.GetRequiredService<IGenerativeAiService>();
 
         // arrange handler and dependencies
         var authService = AuthServiceHelper.Create();
         _handler = new UpdateUserHandler(
-            new UpdateUserRequestValidator(new UserDataService(_usersCollectionProvider, authService, genAiService), new SharedUserValidator<UpdateUserViewModelUser>()),
+            new UpdateUserRequestValidator(new UserDataService(_usersCollectionProvider, authService), new SharedUserValidator<UpdateUserViewModelUser>()),
             authService,
-            new UserDataService(_usersCollectionProvider, authService, genAiService));
+            new UserDataService(_usersCollectionProvider, authService),
+            new AdaptiveDataService(_articlesCollectionProvider, _genAiServices, _usersCollectionProvider));
     }
 
     [Test]

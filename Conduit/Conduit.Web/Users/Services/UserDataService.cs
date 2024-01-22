@@ -1,4 +1,5 @@
-﻿using Couchbase.Core.Exceptions.KeyValue;
+﻿using Conduit.Web.Adaptive.Services;
+using Couchbase.Core.Exceptions.KeyValue;
 using Couchbase.KeyValue;
 using Couchbase.Query;
 using Conduit.Web.Users.ViewModels;
@@ -16,20 +17,19 @@ public interface IUserDataService
     Task UpdateUserFields(UpdateUserViewModelUser fieldsToUpdate);
     Task<bool> DoesExistUserByEmailAndUsername(string userEmail, string userUsername);
     Task<DataServiceResult<User>> GetProfileByUsername(string requestUsername);
-    Task<List<string>> GetAdaptiveProfileTags(string username);
 }
 
 public class UserDataService : IUserDataService
 {
     private readonly IConduitUsersCollectionProvider _usersCollectionProvider;
     private readonly IAuthService _authService;
-    private readonly IGenerativeAiService _genAiService;
 
-    public UserDataService(IConduitUsersCollectionProvider usersCollectionProvider, IAuthService authService, IGenerativeAiService genAiService)
+    public UserDataService(
+        IConduitUsersCollectionProvider usersCollectionProvider,
+        IAuthService authService)
     {
         _usersCollectionProvider = usersCollectionProvider;
         _authService = authService;
-        _genAiService = genAiService;
     }
 
     public async Task<DataServiceResult<User>> GetUserByEmail(string email)
@@ -128,36 +128,6 @@ public class UserDataService : IUserDataService
                 specs.Upsert("passwordSalt", salt);
             }
         });
-
-        if (!string.IsNullOrEmpty(fieldsToUpdate.Bio))
-        {
-            await UpdateAdaptiveTags(fieldsToUpdate.Username, fieldsToUpdate.Bio);
-        }
-    }
-
-    private async Task UpdateAdaptiveTags(string username, string bio)
-    {
-        var newAdaptiveTags = await _genAiService.GetTagsFromContent(bio);
-        if (newAdaptiveTags.Any())
-        {
-            var collection = await _usersCollectionProvider.GetCollectionAsync();
-            await collection.MutateInAsync(username, specs =>
-            {
-                specs.Upsert("adaptiveTags", newAdaptiveTags);
-            });
-        }
-    }
-
-    public async Task<List<string>> GetAdaptiveProfileTags(string username)
-    {
-        var collection = await _usersCollectionProvider.GetCollectionAsync();
-
-        var userResult = await collection.LookupInAsync(username, specs =>
-        {
-            specs.Get("adaptiveTags");
-        });
-
-        return userResult.ContentAs<List<string>>(0);
     }
 
     public async Task<bool> DoesExistUserByEmailAndUsername(string email, string username)

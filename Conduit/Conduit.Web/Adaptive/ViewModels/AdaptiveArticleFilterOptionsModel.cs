@@ -1,4 +1,4 @@
-﻿namespace Conduit.Web.Articles.ViewModels;
+﻿namespace Conduit.Web.Adaptive.ViewModels;
 
 public class AdaptiveArticleFilterOptionsModel
 {

@@ -1,7 +1,7 @@
 ﻿using Conduit.Web.Articles.ViewModels;
 using FluentValidation.Results;
 
-namespace Conduit.Web.Articles.Handlers;
+namespace Conduit.Web.Adaptive.Handlers;
 
 public class GetAdaptiveArticlesResponse
 {

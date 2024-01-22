@@ -1,4 +1,5 @@
 ﻿using Conduit.Tests.TestHelpers.Data;
+using Conduit.Web.Adaptive.Services;
 using Conduit.Web.Articles.Handlers;
 using Conduit.Web.Articles.Services;
 using Conduit.Web.DataAccess.Providers;
@@ -29,7 +30,7 @@ public class GetArticleHandlerTests : CouchbaseIntegrationTest
         _articleCollectionProvider = ServiceProvider.GetRequiredService<IConduitArticlesCollectionProvider>();
         _followsCollectionProvider = ServiceProvider.GetRequiredService<IConduitFollowsCollectionProvider>();
         _favoriteCollectionProvider = ServiceProvider.GetRequiredService<IConduitFavoritesCollectionProvider>();
-        var genAiService = ServiceProvider.GetRequiredService<IGenerativeAiService>();
+        var adaptiveDataService = ServiceProvider.GetRequiredService<IAdaptiveDataService>();
 
         // setup handler and dependencies
         var jwtSecrets = new JwtSecrets
@@ -41,7 +42,7 @@ public class GetArticleHandlerTests : CouchbaseIntegrationTest
         _authService = new AuthService(new OptionsWrapper<JwtSecrets>(jwtSecrets));
         _articleDataService = new ArticlesDataService(_articleCollectionProvider, _favoriteCollectionProvider);
         _followDataService = new FollowsDataService(_followsCollectionProvider);
-        _userDataService = new UserDataService(_usersCollectionProvider, _authService, genAiService);
+        _userDataService = new UserDataService(_usersCollectionProvider, _authService);
         _handler = new GetArticleHandler(_articleDataService, _userDataService, _followDataService);
     }
 

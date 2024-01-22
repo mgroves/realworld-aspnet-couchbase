@@ -1,4 +1,5 @@
-﻿using Conduit.Web.Users.Handlers;
+﻿using Conduit.Web.Adaptive.Services;
+using Conduit.Web.Users.Handlers;
 using Conduit.Web.Users.Services;
 using Conduit.Web.Users.ViewModels;
 using Moq;
@@ -11,19 +12,22 @@ public class UpdateUserHandlerTests
     private UpdateUserHandler _updateUserHandler;
     private Mock<IAuthService> _authServiceMock;
     private Mock<IUserDataService> _userDataServiceMock;
+    private Mock<IAdaptiveDataService> _adaptiveDataServiceMock;
 
     [SetUp]
     public async Task Setup()
     {
         _authServiceMock = new Mock<IAuthService>();
         _userDataServiceMock = new Mock<IUserDataService>();
+        _adaptiveDataServiceMock = new Mock<IAdaptiveDataService>();
 
         _updateUserHandler =
             new UpdateUserHandler(
                 new UpdateUserRequestValidator(_userDataServiceMock.Object,
                     new SharedUserValidator<UpdateUserViewModelUser>()),
                 _authServiceMock.Object,
-                _userDataServiceMock.Object);
+                _userDataServiceMock.Object,
+                _adaptiveDataServiceMock.Object);
     }
 
     [Test]

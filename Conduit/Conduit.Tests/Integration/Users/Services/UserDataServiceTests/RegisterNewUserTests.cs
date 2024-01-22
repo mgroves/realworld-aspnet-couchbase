@@ -1,5 +1,6 @@
 ﻿using Conduit.Tests.TestHelpers;
 using Conduit.Tests.TestHelpers.Data;
+using Conduit.Web.Adaptive.Services;
 using Conduit.Web.DataAccess.Providers;
 using Conduit.Web.Users.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,9 +19,9 @@ public class RegisterNewUserTests : CouchbaseIntegrationTest
         await base.Setup();
 
         _usersCollectionProvider = ServiceProvider.GetRequiredService<IConduitUsersCollectionProvider>();
-        var genAiService = ServiceProvider.GetRequiredService<IGenerativeAiService>();
+        var adaptiveDataService = ServiceProvider.GetRequiredService<IAdaptiveDataService>();
 
-        _userDataService = new UserDataService(_usersCollectionProvider, AuthServiceHelper.Create(), genAiService);
+        _userDataService = new UserDataService(_usersCollectionProvider, AuthServiceHelper.Create());
     }
 
     [Test]

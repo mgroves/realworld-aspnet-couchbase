@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace Conduit.Web.Articles.Handlers;
+namespace Conduit.Web.Adaptive.Handlers;
 
 public class GetAdaptiveArticlesRequestValidator : AbstractValidator<GetAdaptiveArticlesRequest>
 {

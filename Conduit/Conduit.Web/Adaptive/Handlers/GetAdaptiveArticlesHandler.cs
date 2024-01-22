@@ -1,21 +1,22 @@
-﻿using Conduit.Web.Articles.Services;
+﻿using Conduit.Web.Adaptive.Services;
+using Conduit.Web.Articles.Services;
 using Conduit.Web.DataAccess.Dto;
 using Conduit.Web.Users.Services;
 using FluentValidation;
 using MediatR;
 
-namespace Conduit.Web.Articles.Handlers;
+namespace Conduit.Web.Adaptive.Handlers;
 
 public class GetAdaptiveArticlesHandler : IRequestHandler<GetAdaptiveArticlesRequest, GetAdaptiveArticlesResponse>
 {
     private readonly IValidator<GetAdaptiveArticlesRequest> _validator;
-    private readonly IArticlesDataService _articlesDataService;
+    private readonly IAdaptiveDataService _adaptiveDataService;
     private readonly IUserDataService _userDataService;
 
-    public GetAdaptiveArticlesHandler(IValidator<GetAdaptiveArticlesRequest> validator, IArticlesDataService articlesDataService, IUserDataService userDataService)
+    public GetAdaptiveArticlesHandler(IValidator<GetAdaptiveArticlesRequest> validator, IAdaptiveDataService adaptiveDataService, IUserDataService userDataService)
     {
         _validator = validator;
-        _articlesDataService = articlesDataService;
+        _adaptiveDataService = adaptiveDataService;
         _userDataService = userDataService;
     }
 
@@ -33,9 +34,9 @@ public class GetAdaptiveArticlesHandler : IRequestHandler<GetAdaptiveArticlesReq
 
         // create spec for request
         var spec = request.Spec;
-        spec.Tags = await _userDataService.GetAdaptiveProfileTags(request.Spec.Username); // TODO: get tags from adaptive tags in profile
+        spec.Tags = await _adaptiveDataService.GetAdaptiveProfileTags(request.Spec.Username);
 
-        var result = await _articlesDataService.GetAdaptiveArticles(spec);
+        var result = await _adaptiveDataService.GetAdaptiveArticles(spec);
         if (result.Status != DataResultStatus.Ok)
         {
             return new GetAdaptiveArticlesResponse

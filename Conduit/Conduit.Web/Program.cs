@@ -2,6 +2,7 @@ using System.Reflection.Metadata.Ecma335;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Conduit.Web.Adaptive.Services;
 using Conduit.Web.Articles.Services;
 using Conduit.Web.DataAccess;
 using Conduit.Web.Follows.Services;
@@ -11,8 +12,12 @@ using Couchbase.Extensions.DependencyInjection;
 using FluentValidation;
 using Microsoft.OpenApi.Models;
 using Conduit.Web.DataAccess.Providers;
+using Couchbase;
+using Couchbase.Core.IO.Authentication.X509;
 using Slugify;
 using OpenAI_API;
+using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Conduit.Web
 {
@@ -88,8 +93,11 @@ namespace Conduit.Web
         /// </summary>
         public static void AddConduitServiceDependencies(this IServiceCollection @this, ConfigurationManager configManager)
         {
+            // adaptive application services
             @this.AddTransient<IGenerativeAiService, OpenAiService>();
             @this.AddTransient<IOpenAIAPI>(x => new OpenAIAPI(configManager["OpenAIApiKey"]));
+            @this.AddTransient<IAdaptiveDataService, AdaptiveDataService>();
+
             @this.AddTransient<ISlugHelper, SlugHelper>();
             @this.AddTransient<ISlugService, SlugService>();
             @this.AddValidatorsFromAssemblyContaining<LoginRequestValidator>();
@@ -101,7 +109,19 @@ namespace Conduit.Web
             @this.AddTransient<IArticlesDataService, ArticlesDataService>();
             @this.AddTransient<ICommentsDataService, CommentsDataService>();
             @this.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<Program>());
-            @this.AddCouchbase(configManager.GetSection("Couchbase"));
+            //@this.AddCouchbase(configManager.GetSection("Couchbase"));
+            @this.AddCouchbase(options =>
+            {
+                options.ConnectionString = configManager.GetValue<string>("Couchbase:ConnectionString");
+                options.UserName = configManager.GetValue<string>("Couchbase:Username");
+                options.Password = configManager.GetValue<string>("Couchbase:Password");
+
+                // this is only for use with nonprod Capella
+                // NEVER use this in production!
+                options.HttpCertificateCallbackValidation = (_, _, _, _) => true;
+                options.KvCertificateCallbackValidation = (_, _, _, _) => true;
+            });
+
             @this.AddCouchbaseBucket<IConduitBucketProvider>(configManager["Couchbase:BucketName"], b =>
             {
                 b

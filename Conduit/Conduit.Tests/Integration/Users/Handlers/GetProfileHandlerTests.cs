@@ -1,5 +1,6 @@
 ﻿using Conduit.Tests.TestHelpers;
 using Conduit.Tests.TestHelpers.Data;
+using Conduit.Web.Adaptive.Services;
 using Conduit.Web.DataAccess.Providers;
 using Conduit.Web.Follows.Services;
 using Conduit.Web.Users.Handlers;
@@ -23,10 +24,10 @@ public class GetProfileHandlerTests : CouchbaseIntegrationTest
         // setup handler
         _usersCollectionProvider = ServiceProvider.GetRequiredService<IConduitUsersCollectionProvider>();
         _followsCollectionProvider = ServiceProvider.GetRequiredService<IConduitFollowsCollectionProvider>();
-        var genAiService = ServiceProvider.GetRequiredService<IGenerativeAiService>();
+        var adaptiveDataService = ServiceProvider.GetRequiredService<IAdaptiveDataService>();
 
         _authService = AuthServiceHelper.Create();
-        _getProfileHandler = new GetProfileHandler(new UserDataService(_usersCollectionProvider, _authService, genAiService),
+        _getProfileHandler = new GetProfileHandler(new UserDataService(_usersCollectionProvider, _authService),
             new GetProfileRequestValidator(),
             new FollowsDataService(_followsCollectionProvider),
             _authService);
