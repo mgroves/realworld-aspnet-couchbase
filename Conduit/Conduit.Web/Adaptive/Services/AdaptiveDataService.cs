@@ -14,7 +14,6 @@ public interface IAdaptiveDataService
     Task<DataServiceResult<ArticlesViewModel>> GetAdaptiveArticles(GetAdaptiveArticlesSpec spec);
     Task UpdateUserProfileAdaptiveTags(string username, string bio);
     Task<List<string>> GetAdaptiveProfileTags(string username);
-
 }
 
 public class AdaptiveDataService : IAdaptiveDataService

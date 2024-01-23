@@ -97,6 +97,7 @@ namespace Conduit.Web
             @this.AddTransient<IGenerativeAiService, OpenAiService>();
             @this.AddTransient<IOpenAIAPI>(x => new OpenAIAPI(configManager["OpenAIApiKey"]));
             @this.AddTransient<IAdaptiveDataService, AdaptiveDataService>();
+            @this.AddTransient<IDemoColumnarData, DemoColumnarData>();    // replace this when .NET SDK for columnar works
 
             @this.AddTransient<ISlugHelper, SlugHelper>();
             @this.AddTransient<ISlugService, SlugService>();

@@ -1,6 +1,6 @@
 ﻿using Conduit.Web.Adaptive.Handlers;
+using Conduit.Web.Adaptive.Services;
 using Conduit.Web.Adaptive.ViewModels;
-using Conduit.Web.Articles.Handlers;
 using Conduit.Web.Extensions;
 using Conduit.Web.Users.Services;
 using MediatR;
@@ -15,20 +15,27 @@ public class AdaptiveController : Controller
 {
     private readonly IMediator _mediator;
     private readonly IAuthService _authService;
+    private readonly IDemoColumnarData _demoColumnarData;
 
-    public AdaptiveController(IMediator mediator, IAuthService authService)
+    public AdaptiveController(IMediator mediator, IAuthService authService, IDemoColumnarData demoColumnarData)
     {
         _mediator = mediator;
         _authService = authService;
+        _demoColumnarData = demoColumnarData;
     }
 
     [HttpPost]
     [Route("/api/articles/generateSummary")]
     public async Task<IActionResult> GenerateSummary([FromBody] GenerateSummaryInput input)
     {
-        var generateSummaryRequest = new GenerateSummaryRequest();
-        generateSummaryRequest.RawData = input.RawData;
-        generateSummaryRequest.Tag = input.Tag;
+        // TODO: these results should come from a Columnar query/view and/or dataset manipulated by Tableau reporting UI
+        // var generateSummaryRequest = new GenerateSummaryRequest();
+        // generateSummaryRequest.RawData = input.RawData;
+        // generateSummaryRequest.Tag = input.Tag;
+
+        // instead, pull results from a hardcoded regular SQL++ query
+        // which matches the Tableau report.
+        var generateSummaryRequest = await _demoColumnarData.GetReportRawData();
 
         var getArticlesResponse = await _mediator.Send(generateSummaryRequest);
 
