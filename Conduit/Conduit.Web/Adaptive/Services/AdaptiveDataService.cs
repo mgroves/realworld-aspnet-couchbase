@@ -90,7 +90,7 @@ public class AdaptiveDataService : IAdaptiveDataService
         var filteringByTagPredicate = "";
         if (spec.Tags != null || spec.Tags.Any())
         {
-            filteringByTagPredicate = @" AND ANY t IN a.tagList SATISFIES ARRAY_CONTAINS($tags, t) END ";
+            filteringByTagPredicate = @" AND ANY t IN a.tagList SATISFIES ARRAY_CONTAINS($tags, LOWER(t)) END ";
         }
 
         var sql = $@"SELECT 
@@ -131,7 +131,7 @@ public class AdaptiveDataService : IAdaptiveDataService
         var result = await cluster.QueryAsync<ArticleViewModelWithCount>(sql, options =>
         {
             options.Parameter("loggedInUsername", spec.Username);
-            options.Parameter("tags", spec.Tags);
+            options.Parameter("tags", spec.Tags.Select(t => t.ToLower()).ToList());
             options.Parameter("limit", spec.Limit ?? 20);    // default page size of 20
             options.Parameter("offset", spec.Offset ?? 0);   // default to first page
             options.ScanConsistency(ScanConsistency);
