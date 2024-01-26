@@ -4,7 +4,6 @@ using Conduit.Web.DataAccess.Dto;
 using Conduit.Web.DataAccess.Providers;
 using Couchbase.Query;
 using Couchbase;
-using Conduit.Web.Users.Services;
 using Couchbase.KeyValue;
 
 namespace Conduit.Web.Adaptive.Services;

@@ -6,7 +6,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NoSqlMigrator.Runner;
 using Conduit.Web.DataAccess.Providers;
-using Conduit.Web.Users.Services;
 using OpenAI_API;
 
 namespace Conduit.Tests.Integration;

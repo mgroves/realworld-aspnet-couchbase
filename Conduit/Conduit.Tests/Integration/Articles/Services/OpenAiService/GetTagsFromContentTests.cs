@@ -7,7 +7,7 @@ namespace Conduit.Tests.Integration.Articles.Services.OpenAiService;
 public class GetTagsFromContentTests
 {
     private IConfigurationRoot _config;
-    private Web.Users.Services.OpenAiService _openAi;
+    private Web.Adaptive.Services.OpenAiService _openAi;
 
     [SetUp]
     public async Task Setup()
@@ -18,7 +18,7 @@ public class GetTagsFromContentTests
             .Build();
 
         var openAiApi = new OpenAIAPI(_config["OpenAIApiKey"]);
-        _openAi = new Web.Users.Services.OpenAiService(openAiApi);
+        _openAi = new Web.Adaptive.Services.OpenAiService(openAiApi);
     }
 
     [TestCase("")]

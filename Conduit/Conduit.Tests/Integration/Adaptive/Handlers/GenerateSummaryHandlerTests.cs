@@ -1,9 +1,9 @@
 ﻿using Conduit.Tests.TestHelpers.Data;
 using Conduit.Web.Adaptive.Handlers;
+using Conduit.Web.Adaptive.Services;
 using Conduit.Web.Articles.Services;
 using Conduit.Web.DataAccess.Providers;
 using Conduit.Web.Extensions;
-using Conduit.Web.Users.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Slugify;
 

@@ -1,10 +1,9 @@
-﻿using Conduit.Web.Articles.ViewModels;
-using Conduit.Web.DataAccess.Models;
+﻿using Conduit.Web.DataAccess.Models;
 using Newtonsoft.Json;
 using OpenAI_API;
 using OpenAI_API.Models;
 
-namespace Conduit.Web.Users.Services;
+namespace Conduit.Web.Adaptive.Services;
 
 public interface IGenerativeAiService
 {

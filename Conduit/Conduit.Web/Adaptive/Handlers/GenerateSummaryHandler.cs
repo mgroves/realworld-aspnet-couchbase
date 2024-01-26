@@ -1,5 +1,5 @@
-﻿using Conduit.Web.Articles.Services;
-using Conduit.Web.Users.Services;
+﻿using Conduit.Web.Adaptive.Services;
+using Conduit.Web.Articles.Services;
 using MediatR;
 
 namespace Conduit.Web.Adaptive.Handlers;
